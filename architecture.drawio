@@ -191,8 +191,8 @@
         <mxCell id="b3" value="&lt;b&gt;HelpCenterIndex.__init__&lt;/b&gt;&amp;nbsp; :62&lt;br&gt;for each doc: _tokenize(f&quot;{title} {body}&quot;)&lt;br&gt;regex [a-z0-9]+ , lowercased&lt;br&gt;→ &lt;b&gt;BM25Okapi&lt;/b&gt;(list of token lists)&lt;br&gt;&lt;i&gt;from the rank_bm25 package&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=left;spacing=10;" vertex="1" parent="21">
           <mxGeometry x="420" y="270" width="380" height="110" as="geometry" />
         </mxCell>
-        <mxCell id="b4" value="&lt;b&gt;get_index()&lt;/b&gt;&amp;nbsp; :78&lt;br&gt;_INDEX_CACHE keyed by resolved&lt;br&gt;corpus directory — built once per&lt;br&gt;process, the corpus is static at runtime&lt;br&gt;(tests point at another dir → own index)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=left;spacing=10;" vertex="1" parent="21">
-          <mxGeometry x="900" y="270" width="380" height="110" as="geometry" />
+        <mxCell id="b4" value="&lt;b&gt;get_index()&lt;/b&gt;&amp;nbsp; :78&lt;br&gt;_INDEX_CACHE keyed by resolved&lt;br&gt;corpus directory — built once per&lt;br&gt;process, the corpus is static at runtime&lt;br&gt;(tests point at another dir → own index)&lt;br&gt;&lt;br&gt;&lt;b&gt;one call site in the whole repo:&lt;/b&gt;&lt;br&gt;&lt;b&gt;agent/agent.py:160&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=left;spacing=10;" vertex="1" parent="21">
+          <mxGeometry x="900" y="270" width="380" height="140" as="geometry" />
         </mxCell>
         <mxCell id="b5" value="&lt;b&gt;search(query, k=3)&lt;/b&gt;&amp;nbsp; :66&lt;br&gt;tokenize the query the same way&lt;br&gt;→ bm25.get_scores(...) over every doc&lt;br&gt;→ sort by &lt;b&gt;(-score, policy_id)&lt;/b&gt; ← deterministic tiebreak&lt;br&gt;→ top-k as (PolicyDoc, score)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=left;spacing=10;" vertex="1" parent="21">
           <mxGeometry x="420" y="430" width="380" height="110" as="geometry" />
@@ -222,6 +222,9 @@
         <mxCell id="be4" value="query time" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=11;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="21" source="b3" target="b5"><mxGeometry relative="1" as="geometry" /></mxCell>
         <mxCell id="be5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="21" source="b5" target="b6"><mxGeometry relative="1" as="geometry" /></mxCell>
         <mxCell id="be6" value="then, by id" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=11;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#d79b00;" edge="1" parent="21" source="b6" target="b7"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="be8" value="calls get_index()" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#82b366;strokeWidth=2;jumpStyle=arc;jumpSize=8;fontSize=11;fontStyle=1;labelBackgroundColor=#ffffff;exitX=0.9;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.65;entryDx=0;entryDy=0;" edge="1" parent="21" source="b6" target="b4">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="597" y="575" /><mxPoint x="860" y="575" /><mxPoint x="860" y="361" /></Array></mxGeometry>
+        </mxCell>
         <mxCell id="be7" value="reads the same parsed docs" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=11;labelBackgroundColor=#ffffff;dashed=1;strokeColor=#d79b00;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="21" source="b2" target="b7">
           <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1150" y="175" /><mxPoint x="1150" y="560" /><mxPoint x="978" y="560" /></Array></mxGeometry>
         </mxCell>
