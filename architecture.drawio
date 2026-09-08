@@ -1,0 +1,456 @@
+<mxfile host="app.diagrams.net" agent="claude-code" version="24.7.7">
+
+  <diagram id="p1" name="1 · Runtime architecture">
+    <mxGraphModel dx="1800" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="1050" math="0" shadow="0">
+      <root>
+        <mxCell id="0" /><mxCell id="1" parent="0" />
+
+        <mxCell id="t1" value="Cartwheel — runtime architecture" style="text;html=1;fontSize=22;fontStyle=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="80" y="30" width="600" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="lg" value="&lt;b&gt;How to read&lt;/b&gt;&lt;br&gt;Arrows follow the &lt;i&gt;call direction&lt;/i&gt;, top to bottom:&lt;br&gt;entry point → tool surface → gates → data access → world.&lt;br&gt;&lt;br&gt;&lt;b&gt;Colours&lt;/b&gt;&amp;nbsp; green = provided and complete &amp;nbsp;·&amp;nbsp; orange = homework hole&lt;br&gt;blue = generated ground truth &amp;nbsp;·&amp;nbsp; red = external service&lt;br&gt;&lt;br&gt;The seed layer (bottom left) builds the world once, before any request.&lt;br&gt;Help-center retrieval is on page 2." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#b3b3b3;align=left;verticalAlign=top;spacing=10;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="80" y="90" width="440" height="180" as="geometry" />
+        </mxCell>
+
+        <!-- ===== BAND A : ENTRY POINTS ===== -->
+        <mxCell id="cA" value="Entry points" style="swimlane;html=1;startSize=30;fillColor=none;strokeColor=#9673a6;fontStyle=1;fontSize=14;dashed=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="600" y="90" width="600" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="cli" value="agent/cli.py&#10;chat shell&#10;--role --trace --defenses" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="cA">
+          <mxGeometry x="20" y="40" width="175" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="srv" value="server/app.py — HW2&#10;POST /sessions&#10;POST /sessions/{id}/messages&#10;GET /health" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="cA">
+          <mxGeometry x="210" y="40" width="175" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="rev" value="agent/review.py — HW8&#10;operator refund queue" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="cA">
+          <mxGeometry x="405" y="40" width="175" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ===== BAND B : TOOL SURFACE ===== -->
+        <mxCell id="cB" value="Tool surface (agent/)" style="swimlane;html=1;startSize=30;fillColor=none;strokeColor=#82b366;fontStyle=1;fontSize=14;dashed=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="600" y="260" width="600" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="ag" value="agent.py&#10;system prompt + version hash · model wiring&#10;4 lecture tools · registers tools.py as SDK tools&#10;refunds over $100 → queued_for_approval" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="cB">
+          <mxGeometry x="20" y="40" width="270" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="tl" value="tools.py — HW1&#10;get_policy · search_products · list_orders&#10;cancel_order · update_shipping_address" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="cB">
+          <mxGeometry x="310" y="40" width="270" height="85" as="geometry" />
+        </mxCell>
+
+        <!-- ===== BAND C : GATES ===== -->
+        <mxCell id="cC" value="Gates — every tool call passes these, in this order" style="swimlane;html=1;startSize=30;fillColor=none;strokeColor=#b85450;fontStyle=1;fontSize=14;dashed=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="600" y="440" width="600" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="ks" value="1 · killswitch.py&#10;CARTWHEEL_KILL_SWITCH&#10;degradation ladder" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="cC">
+          <mxGeometry x="20" y="45" width="180" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="gd" value="2 · guards.py — HW8&#10;probabilistic screening&#10;defence in depth, never authz" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="cC">
+          <mxGeometry x="210" y="45" width="180" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="au" value="3 · auth.py&#10;AuthContext + access matrix&#10;the only home of authorization" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;" vertex="1" parent="cC">
+          <mxGeometry x="400" y="45" width="180" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ===== BAND D : DATA ACCESS ===== -->
+        <mxCell id="cD" value="Data access (agent/)" style="swimlane;html=1;startSize=30;fillColor=none;strokeColor=#82b366;fontStyle=1;fontSize=14;dashed=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="600" y="610" width="600" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="cf" value="config.py&#10;paths + cached load_facts()" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="cD">
+          <mxGeometry x="20" y="45" width="180" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="dbpy" value="db.py&#10;typed SQLite access layer" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="cD">
+          <mxGeometry x="210" y="45" width="180" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="hc" value="helpcenter.py&#10;BM25 index over the corpus&#10;(see page 2)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="cD">
+          <mxGeometry x="400" y="45" width="180" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ===== BAND E : WORLD ===== -->
+        <mxCell id="cE" value="Generated world (data/, gitignored)" style="swimlane;html=1;startSize=30;fillColor=none;strokeColor=#6c8ebf;fontStyle=1;fontSize=14;dashed=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="600" y="780" width="600" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="wdb" value="data/cartwheel.db&#10;stores · users · products · orders · refunds&#10;escalations · meta · data_quality_cases&#10;approvals (created on demand)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="cE">
+          <mxGeometry x="20" y="45" width="270" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="wdocs" value="data/policies/*.md&#10;18 docs — 12 platform, 6 store&#10;YAML front matter: policy_id,&#10;title, audience, facts_used" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="cE">
+          <mxGeometry x="310" y="45" width="270" height="85" as="geometry" />
+        </mxCell>
+
+        <!-- ===== SEED (left) ===== -->
+        <mxCell id="cS" value="Seed layer — build time, before any request" style="swimlane;html=1;startSize=30;fillColor=none;strokeColor=#6c8ebf;fontStyle=1;fontSize=14;dashed=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="80" y="560" width="440" height="350" as="geometry" />
+        </mxCell>
+        <mxCell id="fa" value="facts.yaml&#10;every policy number lives here" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=12;" vertex="1" parent="cS">
+          <mxGeometry x="20" y="45" width="400" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="sp" value="policies.py&#10;doc templates" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="cS">
+          <mxGeometry x="20" y="120" width="190" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="se" value="eligibility.py&#10;the refund oracle" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="cS">
+          <mxGeometry x="230" y="120" width="190" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="sg" value="generate.py&#10;deterministic world · calls validate.py after rendering" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="cS">
+          <mxGeometry x="20" y="195" width="400" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="sv" value="validate.py&#10;claims vs facts" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="cS">
+          <mxGeometry x="20" y="270" width="190" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="sa" value="adversarial.py&#10;injection fixtures" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="cS">
+          <mxGeometry x="230" y="270" width="190" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- ===== EXTERNAL (right) ===== -->
+        <mxCell id="cX" value="External services" style="swimlane;html=1;startSize=30;fillColor=none;strokeColor=#b85450;fontStyle=1;fontSize=14;dashed=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1260" y="90" width="320" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="llm" value="Course models&#10;via LiteLLM routing" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="cX">
+          <mxGeometry x="20" y="45" width="280" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="lf" value="Langfuse (self-hosted)&#10;web · worker · postgres&#10;clickhouse · redis · minio" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="cX">
+          <mxGeometry x="20" y="120" width="280" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ins" value="observability/instrument.py — HW2&#10;OpenLLMetry + OTel provider · wraps the agent run&#10;(cli --trace and server) · cartwheel.* span attributes" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1260" y="330" width="320" height="85" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ap" value="agent/approvals.py&#10;approvals audit table — the human decision,&#10;kept out of the refund row's status column" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1260" y="470" width="320" height="85" as="geometry" />
+        </mxCell>
+
+        <!-- ============ EDGES : seed internals ============ -->
+        <mxCell id="s1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#6c8ebf;jumpStyle=arc;jumpSize=8;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="fa" target="sp"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="s2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#6c8ebf;jumpStyle=arc;jumpSize=8;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="fa" target="se"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="s3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#6c8ebf;jumpStyle=arc;jumpSize=8;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="sp" target="sg"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="s4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#6c8ebf;jumpStyle=arc;jumpSize=8;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="se" target="sg"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="s5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#6c8ebf;jumpStyle=arc;jumpSize=8;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="sg" target="sv"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- seed -> world : lane 555 and lane 575 -->
+        <mxCell id="s6" value="seeds, with refund_eligible" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#6c8ebf;jumpStyle=arc;jumpSize=8;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.4;entryDx=0;entryDy=0;verticalAlign=bottom;" edge="1" parent="1" source="sg" target="wdb">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="555" y="782" /><mxPoint x="555" y="859" /></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="s7" value="renders 18 docs" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#6c8ebf;jumpStyle=arc;jumpSize=8;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.8;exitDx=0;exitDy=0;entryX=0.4;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="sg" target="wdocs">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="575" y="799" /><mxPoint x="575" y="965" /><mxPoint x="1018" y="965" /></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="s8" value="checks every number in every doc" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#6c8ebf;dashed=1;jumpStyle=arc;jumpSize=8;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.8;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="sv" target="wdocs">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="195" y="1000" /><mxPoint x="1126" y="1000" /></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="s9" value="temp copy only" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#b85450;dashed=1;jumpStyle=arc;jumpSize=8;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.85;entryDx=0;entryDy=0;" edge="1" parent="1" source="sa" target="wdb">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="535" y="857" /><mxPoint x="535" y="897" /></Array></mxGeometry>
+        </mxCell>
+
+        <!-- facts -> config : lane 565 -->
+        <mxCell id="s10" value="load_facts()" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#6c8ebf;jumpStyle=arc;jumpSize=8;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="fa" target="cf">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="565" y="632" /><mxPoint x="565" y="690" /></Array></mxGeometry>
+        </mxCell>
+
+        <!-- ============ EDGES : the call chain ============ -->
+        <mxCell id="c1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#9673a6;jumpStyle=arc;jumpSize=8;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="cli" target="ag"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="c2" value="one turn" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#9673a6;jumpStyle=arc;jumpSize=8;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="srv" target="ag"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="c3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#82b366;jumpStyle=arc;jumpSize=8;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="ag" target="cC"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="c4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#d79b00;jumpStyle=arc;jumpSize=8;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="tl" target="cC"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="c5" value="authorized calls only" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#82b366;jumpStyle=arc;jumpSize=8;fontSize=11;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="cC" target="cD"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="c6" value="sqlite3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#6c8ebf;jumpStyle=arc;jumpSize=8;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="dbpy" target="wdb">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="900" y="760" /><mxPoint x="755" y="760" /></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="c7" value="BM25 corpus" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#6c8ebf;jumpStyle=arc;jumpSize=8;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="hc" target="wdocs"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- ============ EDGES : right gutter, lanes 1215 and 1240 ============ -->
+        <mxCell id="x1" value="agent loop + tool calls" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#b85450;jumpStyle=arc;jumpSize=8;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="cB" target="llm">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1240" y="365" /><mxPoint x="1240" y="165" /></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="x2" value="approve / deny&#10;writes an audit row" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#d79b00;jumpStyle=arc;jumpSize=8;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="rev" target="ap">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1215" y="165" /><mxPoint x="1215" y="512" /></Array></mxGeometry>
+        </mxCell>
+        <!-- approvals.py writes into data/cartwheel.db; stated in both boxes rather than drawn, to keep the lane clear -->
+        <mxCell id="x4" value="OTel spans" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#b85450;jumpStyle=arc;jumpSize=8;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="ins" target="lf"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+  <diagram id="p2" name="2 · Help-center retrieval (BM25)">
+    <mxGraphModel dx="1400" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="20" /><mxCell id="21" parent="20" />
+
+        <mxCell id="bt" value="Help-center retrieval — how BM25 is used over the policy docs" style="text;html=1;fontSize=22;fontStyle=1;align=left;" vertex="1" parent="21">
+          <mxGeometry x="60" y="30" width="900" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="bsub" value="agent/helpcenter.py — instructor-provided. One document = one BM25 unit: no chunking, no embeddings, no vector store." style="text;html=1;fontSize=13;align=left;fontColor=#666666;" vertex="1" parent="21">
+          <mxGeometry x="60" y="62" width="900" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="b1" value="&lt;b&gt;data/policies/*.md&lt;/b&gt;&lt;br&gt;18 markdown files&lt;br&gt;YAML front matter + body" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="21">
+          <mxGeometry x="80" y="130" width="240" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="b2" value="&lt;b&gt;load_policy_docs()&lt;/b&gt;&amp;nbsp; helpcenter.py:35&lt;br&gt;glob *.md → split on &quot;---&quot; → yaml.safe_load&lt;br&gt;→ PolicyDoc(policy_id, title, audience, body, path)&lt;br&gt;sorted by policy_id" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=left;spacing=10;" vertex="1" parent="21">
+          <mxGeometry x="420" y="130" width="380" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="b3" value="&lt;b&gt;HelpCenterIndex.__init__&lt;/b&gt;&amp;nbsp; :62&lt;br&gt;for each doc: _tokenize(f&quot;{title} {body}&quot;)&lt;br&gt;regex [a-z0-9]+ , lowercased&lt;br&gt;→ &lt;b&gt;BM25Okapi&lt;/b&gt;(list of token lists)&lt;br&gt;&lt;i&gt;from the rank_bm25 package&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=left;spacing=10;" vertex="1" parent="21">
+          <mxGeometry x="420" y="270" width="380" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="b4" value="&lt;b&gt;get_index()&lt;/b&gt;&amp;nbsp; :78&lt;br&gt;_INDEX_CACHE keyed by resolved&lt;br&gt;corpus directory — built once per&lt;br&gt;process, the corpus is static at runtime&lt;br&gt;(tests point at another dir → own index)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=left;spacing=10;" vertex="1" parent="21">
+          <mxGeometry x="900" y="270" width="380" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="b5" value="&lt;b&gt;search(query, k=3)&lt;/b&gt;&amp;nbsp; :66&lt;br&gt;tokenize the query the same way&lt;br&gt;→ bm25.get_scores(...) over every doc&lt;br&gt;→ sort by &lt;b&gt;(-score, policy_id)&lt;/b&gt; ← deterministic tiebreak&lt;br&gt;→ top-k as (PolicyDoc, score)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=left;spacing=10;" vertex="1" parent="21">
+          <mxGeometry x="420" y="430" width="380" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="b6" value="&lt;b&gt;search_help_center&lt;/b&gt;&amp;nbsp; agent/agent.py:154&lt;br&gt;the only caller of get_index()&lt;br&gt;read tool — no permission check&lt;br&gt;empty query → invalid_argument&lt;br&gt;&lt;br&gt;returns per hit: policy_id · title · score&lt;br&gt;&lt;b&gt;snippet = body[:300]&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=left;spacing=10;" vertex="1" parent="21">
+          <mxGeometry x="300" y="600" width="330" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="b7" value="&lt;b&gt;get_policy&lt;/b&gt;&amp;nbsp; agent/tools.py — HW1&lt;br&gt;exact, case-sensitive policy_id&lt;br&gt;via load_policy_docs()&lt;br&gt;&lt;br&gt;returns the &lt;b&gt;full body&lt;/b&gt;&lt;br&gt;no BM25 involved" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;align=left;spacing=10;" vertex="1" parent="21">
+          <mxGeometry x="730" y="600" width="330" height="140" as="geometry" />
+        </mxCell>
+
+        <mxCell id="b8" value="&lt;b&gt;Why two tools&lt;/b&gt;&lt;br&gt;The snippet is the &lt;b&gt;first&lt;/b&gt; 300 characters of the doc, not the matched passage, so it often will not contain the answer.&lt;br&gt;BM25 tells the agent &lt;i&gt;which&lt;/i&gt; policy is relevant; get_policy fetches the text. The intended two-step is&lt;br&gt;&lt;b&gt;search_help_center → read the policy_id → get_policy&lt;/b&gt;." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;align=left;spacing=10;verticalAlign=top;" vertex="1" parent="21">
+          <mxGeometry x="300" y="790" width="760" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="b9" value="&lt;b&gt;Note&lt;/b&gt;&amp;nbsp; audience is parsed into PolicyDoc but never filtered on — search results are not scoped by role, so a shopper query can surface the audience: merchant payouts doc." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;align=left;spacing=10;verticalAlign=top;" vertex="1" parent="21">
+          <mxGeometry x="80" y="430" width="290" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="b10" value="&lt;b&gt;Prose vs numbers&lt;/b&gt;&amp;nbsp; retrieval supplies the prose; facts.yaml and seed/eligibility.py supply every number the agent may state." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;align=left;spacing=10;verticalAlign=top;" vertex="1" parent="21">
+          <mxGeometry x="80" y="600" width="180" height="140" as="geometry" />
+        </mxCell>
+
+        <mxCell id="be1" value="build time (first search)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=11;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="21" source="b1" target="b2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="be2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="21" source="b2" target="b3"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="be3" value="cached by&#10;get_index()" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=11;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="21" source="b3" target="b4"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="be4" value="query time" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=11;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="21" source="b3" target="b5"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="be5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="21" source="b5" target="b6"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="be6" value="then, by id" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=11;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#d79b00;" edge="1" parent="21" source="b6" target="b7"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="be7" value="reads the same parsed docs" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=11;labelBackgroundColor=#ffffff;dashed=1;strokeColor=#d79b00;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="21" source="b2" target="b7">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1150" y="175" /><mxPoint x="1150" y="560" /><mxPoint x="978" y="560" /></Array></mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+  <diagram id="p3" name="3 · Request path">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1300" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="30" /><mxCell id="31" parent="30" />
+
+        <mxCell id="rt" value="One conversation turn — where each safeguard sits" style="text;html=1;fontSize=22;fontStyle=1;align=left;" vertex="1" parent="31">
+          <mxGeometry x="60" y="30" width="800" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="q1" value="Shopper / merchant / support&#10;sends a message" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" vertex="1" parent="31">
+          <mxGeometry x="60" y="110" width="230" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="q2" value="server/app.py&#10;POST /sessions/{id}/messages&#10;verifies the HMAC dev token&#10;→ AuthContext(role, user_id)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" vertex="1" parent="31">
+          <mxGeometry x="60" y="240" width="230" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="q3" value="observability/instrument.py&#10;opens the request span,&#10;stamps cartwheel.* attributes" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" vertex="1" parent="31">
+          <mxGeometry x="60" y="400" width="230" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="q4" value="agent/agent.py&#10;system prompt + AuthContext&#10;→ model loop" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="31">
+          <mxGeometry x="400" y="240" width="230" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="q5" value="the model proposes&#10;a tool call" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" vertex="1" parent="31">
+          <mxGeometry x="400" y="110" width="230" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="h1" value="1 · killswitch.py&#10;is this tool paused?" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="31">
+          <mxGeometry x="740" y="110" width="250" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="h2" value="2 · guards.py&#10;probabilistic screening&#10;defence in depth, never authz" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" vertex="1" parent="31">
+          <mxGeometry x="740" y="215" width="250" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="h3" value="3 · auth.py&#10;the access matrix — the only&#10;place authorization lives" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1;" vertex="1" parent="31">
+          <mxGeometry x="740" y="330" width="250" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="h4" value="4 · tool body&#10;agent/tools.py or agent.py&#10;→ db.py · helpcenter.py" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="31">
+          <mxGeometry x="740" y="445" width="250" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="h5" value="5 · refund threshold&#10;at or below $100 → auto-execute&#10;above $100 → queued_for_approval" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="31">
+          <mxGeometry x="740" y="560" width="250" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="h6" value="structured tool result&#10;{&quot;ok&quot;: True, ...}&#10;or {&quot;ok&quot;: False, &quot;error&quot;, &quot;reason&quot;}&#10;never prose" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="31">
+          <mxGeometry x="740" y="680" width="250" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="q6" value="agent/review.py&#10;operator clears the queue&#10;→ approvals audit row" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" vertex="1" parent="31">
+          <mxGeometry x="1060" y="560" width="200" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="q7" value="reply to the user" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" vertex="1" parent="31">
+          <mxGeometry x="400" y="690" width="230" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="q8" value="Langfuse trace&#10;feeds Module 2 error analysis&#10;and Module 3–4 monitoring&#10;(page 4)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" vertex="1" parent="31">
+          <mxGeometry x="60" y="680" width="230" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="k1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;jumpStyle=arc;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="31" source="q1" target="q2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="k2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;jumpStyle=arc;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="31" source="q2" target="q3"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="k3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;jumpStyle=arc;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="31" source="q2" target="q4"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="k4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;jumpStyle=arc;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="31" source="q4" target="q5"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="k5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;jumpStyle=arc;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="31" source="q5" target="h1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="k6" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;jumpStyle=arc;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="31" source="h1" target="h2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="k7" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;jumpStyle=arc;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="31" source="h2" target="h3"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="k8" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;jumpStyle=arc;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="31" source="h3" target="h4"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="k9" value="write tools only" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;jumpStyle=arc;fontSize=11;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="31" source="h4" target="h5"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="k10" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;jumpStyle=arc;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="31" source="h5" target="h6"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="k11" value="later, out of band" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;dashed=1;jumpStyle=arc;fontSize=11;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="31" source="h5" target="q6"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="k12" value="back into the loop" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;jumpStyle=arc;fontSize=11;labelBackgroundColor=#ffffff;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="31" source="h6" target="q7"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="k13" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;jumpStyle=arc;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="31" source="q7" target="q8"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="k14" value="denied → permission_denied()&#10;is a normal tool result" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;dashed=1;strokeColor=#b85450;jumpStyle=arc;fontSize=11;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="31" source="h3" target="h6">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1030" y="368" /><mxPoint x="1030" y="725" /></Array></mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+  <diagram id="p4" name="4 · Course pipeline">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="40" /><mxCell id="41" parent="40" />
+
+        <mxCell id="ct" value="Course pipeline — what each module adds around the agent" style="text;html=1;fontSize=22;fontStyle=1;align=left;" vertex="1" parent="41">
+          <mxGeometry x="60" y="30" width="900" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="src" value="&lt;b&gt;the running agent&lt;/b&gt;&lt;br&gt;server/app.py&lt;br&gt;+ Langfuse traces&lt;br&gt;&lt;i&gt;(page 1)&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" vertex="1" parent="41">
+          <mxGeometry x="60" y="290" width="180" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- row 1 : module 2 -->
+        <mxCell id="r1" value="Module 2 — scenarios and error analysis" style="swimlane;html=1;startSize=30;fillColor=none;strokeColor=#d6b656;fontStyle=1;fontSize=14;dashed=1;verticalAlign=middle;" vertex="1" parent="41">
+          <mxGeometry x="320" y="100" width="1220" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="m21" value="scenarios/skill/&#10;SKILL.md" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="r1">
+          <mxGeometry x="20" y="45" width="170" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="m22" value="scenarios/validate.py&#10;JSONL contract" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="r1">
+          <mxGeometry x="220" y="45" width="170" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="m23" value="scenarios/runner.py&#10;plays 1–3 turn scenarios&#10;against the endpoint" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="r1">
+          <mxGeometry x="420" y="45" width="170" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="m24" value="scenarios/export_langfuse.py&#10;traces ⨝ scenario_id" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="r1">
+          <mxGeometry x="620" y="45" width="180" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="m25" value="analysis/server.py + ui/&#10;human labels in the browser" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="r1">
+          <mxGeometry x="830" y="45" width="180" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="m26" value="analysis/state/*.json&#10;local mirror, 2s poll loop" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="r1">
+          <mxGeometry x="1030" y="45" width="170" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- row 2 : module 3 -->
+        <mxCell id="r2" value="Module 3 — evaluation, replay, CI" style="swimlane;html=1;startSize=30;fillColor=none;strokeColor=#d6b656;fontStyle=1;fontSize=14;dashed=1;verticalAlign=middle;" vertex="1" parent="41">
+          <mxGeometry x="320" y="290" width="1220" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="m31" value="eval_cases/cases.jsonl&#10;30 tests · input, expected,&#10;initial_state" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="r2">
+          <mxGeometry x="20" y="45" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="m32" value="replay/rollout.py&#10;one case against the real&#10;agent on a fresh world" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="r2">
+          <mxGeometry x="240" y="45" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="m33" value="replay/harness.py — HW&#10;n rollouts, world reset each&#10;time → failure distribution" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="r2">
+          <mxGeometry x="460" y="45" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="m34" value="tests/eval/&#10;unit · integration · e2e&#10;pass@k · fake_model" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="r2">
+          <mxGeometry x="680" y="45" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="m35" value="scripts/check_leakage.py — HW&#10;eval inputs must not appear&#10;in agent or judge prompts" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="r2">
+          <mxGeometry x="900" y="45" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="m36" value=".github/workflows/evals.yml&#10;offline tests · HW structure · leakage · make eval-ci" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="r2">
+          <mxGeometry x="240" y="130" width="400" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="m37" value="tests/test_adversarial.py · test_hw_holes.py · test_seed_determinism.py" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="r2">
+          <mxGeometry x="680" y="130" width="400" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- row 3 : monitoring -->
+        <mxCell id="r3" value="Modules 3–4 — production monitoring (two-track: free code checks on everything, judges on a sample)" style="swimlane;html=1;startSize=30;fillColor=none;strokeColor=#d6b656;fontStyle=1;fontSize=14;dashed=1;verticalAlign=middle;" vertex="1" parent="41">
+          <mxGeometry x="320" y="560" width="1220" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="n1" value="sample.py&#10;pick traces" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="r3">
+          <mxGeometry x="20" y="45" width="200" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="n2" value="run_judges.py&#10;frozen Module 2 judges" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="r3">
+          <mxGeometry x="260" y="45" width="200" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="n3" value="correct.py&#10;Rogan-Gladen correction" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="r3">
+          <mxGeometry x="500" y="45" width="200" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="n4" value="write_scores.py&#10;→ Langfuse Scores API" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="r3">
+          <mxGeometry x="740" y="45" width="200" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="n5" value="chart.py&#10;prevalence over time, SVG" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="r3">
+          <mxGeometry x="980" y="45" width="200" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- row 4 : optimize -->
+        <mxCell id="r4" value="Homework 8–9 — safety tests and prompt optimization (optimize/)" style="swimlane;html=1;startSize=30;fillColor=none;strokeColor=#d6b656;fontStyle=1;fontSize=14;dashed=1;verticalAlign=middle;" vertex="1" parent="41">
+          <mxGeometry x="320" y="750" width="1220" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="o1" value="prepare.py&#10;fixed case split + budget" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="r4">
+          <mxGeometry x="20" y="45" width="180" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="o2" value="gepa_adapter.py&#10;GEPA prompt search" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="r4">
+          <mxGeometry x="220" y="45" width="180" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="o3" value="runner.py&#10;dev / test evaluation" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="r4">
+          <mxGeometry x="420" y="45" width="180" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="o4" value="frontier.py&#10;the one test batch" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="r4">
+          <mxGeometry x="620" y="45" width="180" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="o5" value="safety.py&#10;HW8 gate" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="r4">
+          <mxGeometry x="820" y="45" width="180" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="o6" value="save_version.py&#10;pin the selected version" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="r4">
+          <mxGeometry x="1020" y="45" width="180" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- edges: row 1 chain -->
+        <mxCell id="f1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#d6b656;jumpStyle=arc;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="41" source="m21" target="m22"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#d6b656;jumpStyle=arc;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="41" source="m22" target="m23"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#d6b656;jumpStyle=arc;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="41" source="m23" target="m24"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#d6b656;jumpStyle=arc;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="41" source="m24" target="m25"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#d6b656;jumpStyle=arc;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="41" source="m25" target="m26"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="f6" value="HTTP turns" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#b85450;jumpStyle=arc;fontSize=11;labelBackgroundColor=#ffffff;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="41" source="src" target="m21"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="150" y="172" /></Array></mxGeometry></mxCell>
+        <mxCell id="f7" value="labelled failures become evaluation cases" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#d6b656;dashed=1;jumpStyle=arc;fontSize=11;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="41" source="m26" target="m31">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1435" y="250" /><mxPoint x="430" y="250" /></Array></mxGeometry>
+        </mxCell>
+
+        <!-- edges: row 2 chain -->
+        <mxCell id="f8" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#d6b656;jumpStyle=arc;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="41" source="m31" target="m32"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f9" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#d6b656;jumpStyle=arc;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="41" source="m32" target="m33"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f10" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#d6b656;jumpStyle=arc;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="41" source="m33" target="m34"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f11" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#d6b656;jumpStyle=arc;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="41" source="m34" target="m35"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f12" value="runs the real agent" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#b85450;jumpStyle=arc;fontSize=11;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="41" source="src" target="m31"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- edges: row 3 chain -->
+        <mxCell id="f13" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#d6b656;jumpStyle=arc;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="41" source="n1" target="n2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f14" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#d6b656;jumpStyle=arc;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="41" source="n2" target="n3"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f15" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#d6b656;jumpStyle=arc;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="41" source="n3" target="n4"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f16" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#d6b656;jumpStyle=arc;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="41" source="n4" target="n5"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f17" value="production traces" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#b85450;jumpStyle=arc;fontSize=11;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="41" source="src" target="n1"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="150" y="632" /></Array></mxGeometry></mxCell>
+
+        <!-- edges: row 4 chain -->
+        <mxCell id="f18" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#d6b656;jumpStyle=arc;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="41" source="o1" target="o2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f19" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#d6b656;jumpStyle=arc;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="41" source="o2" target="o3"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f20" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#d6b656;jumpStyle=arc;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="41" source="o3" target="o4"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f21" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#d6b656;jumpStyle=arc;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="41" source="o4" target="o5"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f22" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#d6b656;jumpStyle=arc;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="41" source="o5" target="o6"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f23" value="the same cases" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#d6b656;dashed=1;jumpStyle=arc;fontSize=11;labelBackgroundColor=#ffffff;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="41" source="m31" target="o1">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="280" y="365" /><mxPoint x="280" y="822" /></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="f24" value="a new pinned system prompt version&#10;goes back into agent/agent.py" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#b85450;dashed=1;jumpStyle=arc;fontSize=11;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="41" source="o6" target="src">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1430" y="920" /><mxPoint x="150" y="920" /></Array></mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+</mxfile>
