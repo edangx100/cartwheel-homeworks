@@ -30,6 +30,10 @@ from agent.killswitch import kill_switch
 MAX_SEARCH_LIMIT = 25
 DEFAULT_ORDER_LIMIT = 20
 MAX_ORDER_MATCHES = 5  # find_order returns at most five orders
+# Every status the seed writes to orders.status. list_orders_by_status validates
+# against this set so a typo comes back as an error rather than an empty list.
+ORDER_STATUSES = ("placed", "shipped", "delivered", "cancelled", "refunded")
+STATUS_SCAN_LIMIT = 1000  # rows scanned to count matches beyond the page returned
 FUZZY_MATCH_THRESHOLD = 0.75  # minimum find_order token score to count as a match
 _WORD_RE = re.compile(r"[a-z0-9]+")
 # Filler words in a request like "the earmuffs I bought last week" carry no
@@ -386,3 +390,76 @@ def find_order(ctx: AuthContext, query: str) -> dict[str, Any]:
     # Best match first; equal scores keep the newest-first order from the query.
     scored.sort(key=lambda pair: pair[0], reverse=True)
     return {"ok": True, "orders": [payload for _, payload in scored[:MAX_ORDER_MATCHES]]}
+
+
+def list_orders_by_status(
+    ctx: AuthContext, status: str, limit: int = DEFAULT_ORDER_LIMIT
+) -> dict[str, Any]:
+    """List the caller's orders that currently have one status. Risk tier: read.
+
+    Added for Homework 1 Part A after a merchant asked which of their store's
+    orders had not shipped yet. `list_my_orders` could only return the twenty
+    most recent orders of every status, so the model had to do the filtering
+    itself and reported cancelled orders as work still awaiting shipment.
+
+    Scope matches `list_my_orders` exactly, and for the same reason: the role
+    picks which query runs, so there is no argument through which a caller
+    could reach another user's or another store's orders.
+        - shopper: the caller's own orders.
+        - merchant: the caller's store's orders (ctx.store_id).
+        - support: no orders of their own, so return
+          {"ok": False, "error": "invalid_argument", ...}, as list_my_orders does.
+
+    Args:
+        ctx: The caller's auth context.
+        status: One of ORDER_STATUSES, matched case-insensitively after
+            stripping. Any other value returns "invalid_argument" naming the
+            statuses that are accepted, so the model can retry rather than
+            read an empty list as "no such orders".
+        limit: Maximum orders to return. Clamped to [1, DEFAULT_ORDER_LIMIT].
+
+    Returns:
+        {"ok": True, "status": <normalized>, "orders": [...], "count": n,
+        "total_matching": m} where each order is Order.to_public_dict(),
+        newest first. `count` is how many orders this result carries and
+        `total_matching` how many exist in the caller's scope, so the agent
+        can say "12 of 47" instead of implying the page is everything.
+        No matches is a success with an empty list and both counts zero.
+    """
+    if ctx.role == "support":
+        return {
+            "ok": False,
+            "error": "invalid_argument",
+            "reason": (
+                "support staff have no orders of their own; "
+                "look up a specific order with get_order instead"
+            ),
+        }
+
+    normalized = status.strip().lower()
+    if normalized not in ORDER_STATUSES:
+        return {
+            "ok": False,
+            "error": "invalid_argument",
+            "reason": (
+                f"unknown order status {status!r}; "
+                f"expected one of {', '.join(ORDER_STATUSES)}"
+            ),
+        }
+    limit = max(1, min(int(limit), DEFAULT_ORDER_LIMIT))
+
+    with db.connection() as conn:
+        if ctx.role == "shopper":
+            orders = db.list_orders_for_user(conn, ctx.user_id, STATUS_SCAN_LIMIT)
+        else:
+            orders = db.list_orders_for_store(conn, ctx.store_id, STATUS_SCAN_LIMIT)
+
+    matching = [order for order in orders if order.status == normalized]
+    payload = [order.to_public_dict() for order in matching[:limit]]
+    return {
+        "ok": True,
+        "status": normalized,
+        "orders": payload,
+        "count": len(payload),
+        "total_matching": len(matching),
+    }

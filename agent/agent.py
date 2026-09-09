@@ -392,6 +392,19 @@ def list_my_orders(wrapper: RunContextWrapper[AuthContext]) -> dict[str, Any]:
 
 
 @function_tool
+def list_orders_by_status(
+    wrapper: RunContextWrapper[AuthContext], status: str, limit: int = 20
+) -> dict[str, Any]:
+    """List your orders with one status: placed, shipped, delivered, cancelled or refunded.
+
+    Use this rather than filtering list_my_orders yourself, for example when a
+    merchant asks which orders are still waiting to ship (status "placed").
+    Reports how many orders match in total, not only how many are returned.
+    """
+    return _call(wrapper, hw_tools.list_orders_by_status, status, limit)
+
+
+@function_tool
 def cancel_order(
     wrapper: RunContextWrapper[AuthContext], order_id: int, reason: str
 ) -> dict[str, Any]:
@@ -421,8 +434,8 @@ _COMMON_TOOLS = [
     escalate_to_human,
 ]
 TOOLS_BY_ROLE = {
-    "shopper": _COMMON_TOOLS + [list_my_orders, find_order],
-    "merchant": _COMMON_TOOLS + [list_my_orders, find_order],
+    "shopper": _COMMON_TOOLS + [list_my_orders, list_orders_by_status, find_order],
+    "merchant": _COMMON_TOOLS + [list_my_orders, list_orders_by_status, find_order],
     "support": _COMMON_TOOLS + [find_order],
 }
 
