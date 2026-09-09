@@ -9,6 +9,12 @@ submission (the handout asks only for `agent/tools.py`, `agent/agent.py`, and
 
 - [How `find_order` matches a sentence to a product](find_order-matching.md) —
   fuzzy matching, stopwords, and the 0.75 threshold, step by step.
+  A published version of the same walkthrough, with the diagrams rendered, is
+  in `inside-find-order.html`.
+- [`roles-and-tools.drawio`](roles-and-tools.drawio) — which of the nine tools
+  each role can call, and what happens when the same tool is called by three
+  different callers. Open it at [app.diagrams.net](https://app.diagrams.net) or
+  with the draw.io extension in VS Code.
 
 ## The big picture: where does behavior come from?
 

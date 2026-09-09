@@ -1,0 +1,196 @@
+<mxfile host="app.diagrams.net" agent="claude-code" version="24.7.7">
+
+  <diagram id="r1" name="1 · Tools by role">
+    <mxGraphModel dx="1800" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" /><mxCell id="1" parent="0" />
+
+        <mxCell id="t1" value="Cartwheel — which tools each role can call" style="text;html=1;fontSize=22;fontStyle=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="60" y="30" width="800" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t1b" value="TOOLS_BY_ROLE in agent/agent.py:423 — a session is built with only its role's list, so the model never sees a tool it may not use." style="text;html=1;fontSize=13;align=left;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="60" y="60" width="900" height="20" as="geometry" />
+        </mxCell>
+
+        <mxCell id="lg" value="&lt;b&gt;How to read&lt;/b&gt;&lt;br&gt;One column per authenticated role. Every box is one function tool.&lt;br&gt;&lt;br&gt;&lt;b&gt;Colours&lt;/b&gt;&amp;nbsp; green = read tool &amp;nbsp;·&amp;nbsp; orange = write tool (changes state)&lt;br&gt;red = not registered for this role &amp;nbsp;·&amp;nbsp; the italic line in each box is the &lt;i&gt;scope&lt;/i&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;The catch:&lt;/b&gt; only one tool differs between the three lists. The real&lt;br&gt;difference is the scope inside each shared tool — see page 2." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#b3b3b3;align=left;verticalAlign=top;spacing=10;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="100" width="470" height="150" as="geometry" />
+        </mxCell>
+
+        <mxCell id="lg2" value="&lt;b&gt;The registration, verbatim&lt;/b&gt;&lt;br&gt;&lt;br&gt;_COMMON_TOOLS = [search_help_center, get_policy,&lt;br&gt;&amp;nbsp;&amp;nbsp;search_products, get_order, issue_refund, cancel_order,&lt;br&gt;&amp;nbsp;&amp;nbsp;escalate_to_human]&lt;br&gt;&lt;br&gt;shopper&amp;nbsp; = _COMMON_TOOLS + [list_my_orders, find_order]&lt;br&gt;merchant = _COMMON_TOOLS + [list_my_orders, find_order]&lt;br&gt;support&amp;nbsp; = _COMMON_TOOLS + [find_order]" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#b3b3b3;align=left;verticalAlign=top;spacing=10;fontSize=11;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="560" y="100" width="470" height="150" as="geometry" />
+        </mxCell>
+
+        <mxCell id="lg3" value="&lt;b&gt;Why restrict the list at all?&lt;/b&gt;&lt;br&gt;&lt;br&gt;&quot;Progressive disclosure: a session exposes only the tools its&lt;br&gt;role can use. Fewer tools mean fewer wrong choices and&lt;br&gt;cleaner evals.&quot;&lt;br&gt;&amp;nbsp;&amp;nbsp;— agent/agent.py:410&lt;br&gt;&lt;br&gt;It is not a security boundary. Authorization lives in the tool&lt;br&gt;bodies, because a hidden tool is still only a hidden tool." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#b3b3b3;align=left;verticalAlign=top;spacing=10;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1060" y="100" width="470" height="150" as="geometry" />
+        </mxCell>
+
+        <!-- ===================== SHOPPER ===================== -->
+        <mxCell id="cS" value="shopper — user 1&#10;9 tools" style="swimlane;html=1;startSize=46;fillColor=none;strokeColor=#9673a6;fontStyle=1;fontSize=15;dashed=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="60" y="290" width="470" height="580" as="geometry" />
+        </mxCell>
+        <mxCell id="s1" value="search_help_center&#10;&lt;i&gt;public — BM25 over the policy corpus&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="cS">
+          <mxGeometry x="20" y="60" width="430" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="s2" value="get_policy&#10;&lt;i&gt;public — every role reads every policy doc&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="cS">
+          <mxGeometry x="20" y="116" width="430" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="s3" value="search_products&#10;&lt;i&gt;public — the whole catalogue&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="cS">
+          <mxGeometry x="20" y="172" width="430" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="s4" value="get_order&#10;&lt;i&gt;own orders only — otherwise permission_denied&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="cS">
+          <mxGeometry x="20" y="228" width="430" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="s5" value="list_my_orders&#10;&lt;i&gt;own orders, newest 20 — takes no arguments&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=left;spacingLeft=10;fontStyle=1" vertex="1" parent="cS">
+          <mxGeometry x="20" y="284" width="430" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="s6" value="find_order&#10;&lt;i&gt;own orders, fuzzy match on product title&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="cS">
+          <mxGeometry x="20" y="340" width="430" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="s7" value="issue_refund&#10;&lt;i&gt;own orders · ≤ $100 auto · above → queued for a human&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="cS">
+          <mxGeometry x="20" y="396" width="430" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="s8" value="cancel_order&#10;&lt;i&gt;own orders · only while status is &quot;placed&quot;&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="cS">
+          <mxGeometry x="20" y="452" width="430" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="s9" value="escalate_to_human&#10;&lt;i&gt;always available — opens a ticket&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="cS">
+          <mxGeometry x="20" y="508" width="430" height="46" as="geometry" />
+        </mxCell>
+
+        <!-- ===================== MERCHANT ===================== -->
+        <mxCell id="cM" value="merchant — user 9002, store 2&#10;9 tools" style="swimlane;html=1;startSize=46;fillColor=none;strokeColor=#9673a6;fontStyle=1;fontSize=15;dashed=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="560" y="290" width="470" height="580" as="geometry" />
+        </mxCell>
+        <mxCell id="m1" value="search_help_center&#10;&lt;i&gt;public&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="cM">
+          <mxGeometry x="20" y="60" width="430" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="m2" value="get_policy&#10;&lt;i&gt;public&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="cM">
+          <mxGeometry x="20" y="116" width="430" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="m3" value="search_products&#10;&lt;i&gt;public — including other stores' products&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="cM">
+          <mxGeometry x="20" y="172" width="430" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="m4" value="get_order&#10;&lt;i&gt;own store's orders only — store 1's order 4127 is denied&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="cM">
+          <mxGeometry x="20" y="228" width="430" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="m5" value="list_my_orders&#10;&lt;i&gt;the store's orders, newest 20 — not the caller's own&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=left;spacingLeft=10;fontStyle=1" vertex="1" parent="cM">
+          <mxGeometry x="20" y="284" width="430" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="m6" value="find_order&#10;&lt;i&gt;the store's orders&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="cM">
+          <mxGeometry x="20" y="340" width="430" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="m7" value="issue_refund&#10;&lt;i&gt;own store's orders · same $100 threshold&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="cM">
+          <mxGeometry x="20" y="396" width="430" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="m8" value="cancel_order&#10;&lt;i&gt;own store's orders · still only while &quot;placed&quot;&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="cM">
+          <mxGeometry x="20" y="452" width="430" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="m9" value="escalate_to_human&#10;&lt;i&gt;always available&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="cM">
+          <mxGeometry x="20" y="508" width="430" height="46" as="geometry" />
+        </mxCell>
+
+        <!-- ===================== SUPPORT ===================== -->
+        <mxCell id="cP" value="support — user 9501&#10;8 tools" style="swimlane;html=1;startSize=46;fillColor=none;strokeColor=#9673a6;fontStyle=1;fontSize=15;dashed=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1060" y="290" width="470" height="580" as="geometry" />
+        </mxCell>
+        <mxCell id="p1" value="search_help_center&#10;&lt;i&gt;public&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="cP">
+          <mxGeometry x="20" y="60" width="430" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="p2" value="get_policy&#10;&lt;i&gt;public&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="cP">
+          <mxGeometry x="20" y="116" width="430" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="p3" value="search_products&#10;&lt;i&gt;public&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="cP">
+          <mxGeometry x="20" y="172" width="430" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="p4" value="get_order&#10;&lt;i&gt;ANY order on the platform&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="cP">
+          <mxGeometry x="20" y="228" width="430" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="p5" value="list_my_orders — NOT REGISTERED&#10;&lt;i&gt;support staff have no orders of their own; the tool itself also&lt;/i&gt;&#10;&lt;i&gt;returns invalid_argument and points at get_order&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;align=left;spacingLeft=10;dashed=1;" vertex="1" parent="cP">
+          <mxGeometry x="20" y="284" width="430" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="p6" value="find_order&#10;&lt;i&gt;any order — but only the newest 20 platform-wide&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="cP">
+          <mxGeometry x="20" y="340" width="430" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="p7" value="issue_refund&#10;&lt;i&gt;any order · the $100 threshold still applies&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="cP">
+          <mxGeometry x="20" y="396" width="430" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="p8" value="cancel_order&#10;&lt;i&gt;any order · still only while &quot;placed&quot;&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="cP">
+          <mxGeometry x="20" y="452" width="430" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="p9" value="escalate_to_human&#10;&lt;i&gt;always available&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="cP">
+          <mxGeometry x="20" y="508" width="430" height="46" as="geometry" />
+        </mxCell>
+
+        <mxCell id="note" value="&lt;b&gt;Read the columns side by side.&lt;/b&gt;&amp;nbsp; The lists are nearly identical: eight of the nine tools are registered for all three roles, and only list_my_orders is withheld — from support, the role with the &lt;i&gt;widest&lt;/i&gt; permissions. Every other difference between the columns is in the italic scope line, enforced inside the tool body by agent/auth.py, never by the list." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#b3b3b3;align=left;verticalAlign=middle;spacing=10;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="900" width="1470" height="60" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+  <diagram id="r2" name="2 · Same tool, three callers">
+    <mxGraphModel dx="1800" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" /><mxCell id="1" parent="0" />
+
+        <mxCell id="t2" value="One tool, three callers — get_order(4127)" style="text;html=1;fontSize=22;fontStyle=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="60" y="30" width="900" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t2b" value="Order 4127 belongs to shopper 1 and store 1. The tool is the same object in all three sessions; only the injected AuthContext differs." style="text;html=1;fontSize=13;align=left;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="60" y="60" width="1000" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- callers -->
+        <mxCell id="c1" value="shopper&#10;user 1, store None" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="150" width="200" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="c2" value="merchant&#10;user 9002, store 2" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="330" width="200" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="c3" value="support&#10;user 9501, store None" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="510" width="200" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- the shared tool -->
+        <mxCell id="tool" value="get_order(order_id=4127)&#10;&#10;agent/agent.py:172&#10;the identical function in every session" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="360" y="290" width="240" height="140" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;strokeColor=#666666;" edge="1" parent="1" source="c1" target="tool"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;strokeColor=#666666;" edge="1" parent="1" source="c2" target="tool"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;strokeColor=#666666;" edge="1" parent="1" source="c3" target="tool"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- the gate -->
+        <mxCell id="gate" value="can_view_order(ctx, order.user_id, order.store_id)&#10;agent/auth.py:47&#10;&#10;shopper&amp;nbsp; → order.user_id == ctx.user_id&#10;merchant → order.store_id == ctx.store_id&#10;support&amp;nbsp; → True" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;fontStyle=1;align=left;spacingLeft=12;" vertex="1" parent="1">
+          <mxGeometry x="700" y="280" width="360" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;strokeColor=#666666;" edge="1" parent="1" source="tool" target="gate"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- outcomes -->
+        <mxCell id="o1" value="ok: true&#10;the full order record&#10;&lt;i&gt;1 == 1&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1180" y="150" width="320" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="o2" value="ok: false · permission_denied&#10;&quot;role 'merchant' (user 9002) may not view order #4127&quot;&#10;&lt;i&gt;store 1 ≠ store 2 — and nothing about the order leaks&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1180" y="320" width="320" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="o3" value="ok: true&#10;the full order record&#10;&lt;i&gt;support sees any order&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1180" y="490" width="320" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;strokeColor=#82b366;" edge="1" parent="1" source="gate" target="o1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;strokeColor=#b85450;" edge="1" parent="1" source="gate" target="o2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;strokeColor=#82b366;" edge="1" parent="1" source="gate" target="o3"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="n2" value="&lt;b&gt;Where the AuthContext comes from&lt;/b&gt;&lt;br&gt;&lt;br&gt;resolve_auth() in agent/cli.py:82 reads it from the &lt;b&gt;users table&lt;/b&gt;, exactly as the server would inject it per session.&lt;br&gt;It is never taken from the chat. Nothing the user types — and nothing the model decides — can change ctx.user_id,&lt;br&gt;ctx.role or ctx.store_id. That is what &quot;authorization is not a prompt&quot; (SPEC.md §3, AUTH-1) means in practice." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#b3b3b3;align=left;verticalAlign=top;spacing=10;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="650" width="1440" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n3" value="&lt;b&gt;The same shape repeats in every order tool&lt;/b&gt;&lt;br&gt;&lt;br&gt;issue_refund → can_refund_order (same scope as viewing) &amp;nbsp;·&amp;nbsp; cancel_order → can_cancel_order (same scope again, plus the &quot;placed&quot; rule)&lt;br&gt;list_my_orders and find_order → no check at all, because the role picks &lt;i&gt;which query runs&lt;/i&gt;: there is no order id to smuggle in." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#b3b3b3;align=left;verticalAlign=top;spacing=10;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="790" width="1440" height="110" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+</mxfile>
