@@ -1,0 +1,1051 @@
+<title>Inside find_order</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@500;600&display=swap">
+<style>
+  :root {
+    --ground: #f4f6f5;
+    --surface: #fbfcfb;
+    --surface-2: #eaefed;
+    --ink: #2c3634;
+    --ink-2: #5d6b68;
+    --ink-3: #8a9794;
+    --rule: #dee4e2;
+    --rule-soft: #e8edeb;
+    --accent: #3d6b64;
+    --accent-2: #5c8c84;
+    --accent-wash: #e3ece9;
+    --clay: #96695a;
+    --clay-wash: #efe6e2;
+    --code-bg: #eef1f0;
+    --shadow: 0 1px 2px rgba(44, 54, 52, .04);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #161a19;
+      --surface: #1c2120;
+      --surface-2: #232928;
+      --ink: #ccd5d2;
+      --ink-2: #99a7a3;
+      --ink-3: #6e7b78;
+      --rule: #2c3432;
+      --rule-soft: #262d2c;
+      --accent: #7fb3a8;
+      --accent-2: #6a9e94;
+      --accent-wash: #21302d;
+      --clay: #bf8c78;
+      --clay-wash: #2d2521;
+      --code-bg: #212726;
+      --shadow: none;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground: #161a19;
+    --surface: #1c2120;
+    --surface-2: #232928;
+    --ink: #ccd5d2;
+    --ink-2: #99a7a3;
+    --ink-3: #6e7b78;
+    --rule: #2c3432;
+    --rule-soft: #262d2c;
+    --accent: #7fb3a8;
+    --accent-2: #6a9e94;
+    --accent-wash: #21302d;
+    --clay: #bf8c78;
+    --clay-wash: #2d2521;
+    --code-bg: #212726;
+    --shadow: none;
+  }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 18px;
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 940px;
+    margin: 0 auto;
+    padding: 4.5rem 1.5rem 7rem;
+    display: flex;
+    flex-direction: column;
+    gap: 4.5rem;
+  }
+
+  .col {
+    max-width: 66ch;
+  }
+
+  p, ul, ol {
+    margin: 0;
+  }
+
+  .stack {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .stack-tight {
+    display: flex;
+    flex-direction: column;
+    gap: .9rem;
+  }
+
+  /* ---------- masthead ---------- */
+
+  .eyebrow {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .78rem;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin: 0 0 1.1rem;
+  }
+
+  h1 {
+    font-family: "IBM Plex Serif", Georgia, serif;
+    font-weight: 600;
+    font-size: clamp(2.1rem, 5vw, 2.9rem);
+    line-height: 1.2;
+    letter-spacing: -.01em;
+    text-wrap: balance;
+    margin: 0 0 1.2rem;
+  }
+
+  .standfirst {
+    font-size: 1.18rem;
+    line-height: 1.65;
+    color: var(--ink-2);
+    max-width: 60ch;
+  }
+
+  .byline {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .8rem;
+    color: var(--ink-3);
+    margin-top: 2rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--rule-soft);
+  }
+
+  /* ---------- section headings ---------- */
+
+  h2 {
+    font-family: "IBM Plex Serif", Georgia, serif;
+    font-weight: 600;
+    font-size: 1.6rem;
+    line-height: 1.3;
+    letter-spacing: -.005em;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  h3 {
+    font-family: "IBM Plex Sans", system-ui, sans-serif;
+    font-weight: 600;
+    font-size: 1.05rem;
+    margin: 0;
+  }
+
+  .lede {
+    color: var(--ink-2);
+  }
+
+  strong {
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  code {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .88em;
+    background: var(--code-bg);
+    padding: .12em .38em;
+    border-radius: 3px;
+  }
+
+  /* ---------- step blocks ---------- */
+
+  .step {
+    display: grid;
+    grid-template-columns: 3.2rem 1fr;
+    gap: 0 1.4rem;
+    align-items: start;
+  }
+
+  .step-letter {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .95rem;
+    font-weight: 500;
+    color: var(--accent);
+    background: var(--accent-wash);
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: .1rem;
+  }
+
+  .step-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-width: 0;
+  }
+
+  /* ---------- panels ---------- */
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--rule-soft);
+    border-radius: 8px;
+    padding: 1.8rem;
+    box-shadow: var(--shadow);
+    overflow-x: auto;
+  }
+
+  .panel-wide {
+    background: var(--surface);
+    border: 1px solid var(--rule-soft);
+    border-radius: 8px;
+    padding: 2.2rem 1.8rem;
+    box-shadow: var(--shadow);
+    overflow-x: auto;
+  }
+
+  .caption {
+    font-size: .88rem;
+    color: var(--ink-3);
+    line-height: 1.6;
+  }
+
+  /* ---------- the two strings, side by side ---------- */
+
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 1.4rem;
+    align-items: center;
+  }
+
+  .compare-side {
+    display: flex;
+    flex-direction: column;
+    gap: .6rem;
+  }
+
+  .compare-label {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .72rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  .compare-string {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--ink);
+  }
+
+  .compare-gap {
+    font-family: "IBM Plex Serif", Georgia, serif;
+    font-size: 1.4rem;
+    color: var(--ink-3);
+  }
+
+  @media (max-width: 620px) {
+    .compare {
+      grid-template-columns: 1fr;
+    }
+    .compare-gap {
+      display: none;
+    }
+  }
+
+  /* ---------- token chips ---------- */
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+  }
+
+  .chip {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .85rem;
+    padding: .28rem .7rem;
+    border-radius: 4px;
+    background: var(--surface-2);
+    color: var(--ink-2);
+    border: 1px solid transparent;
+  }
+
+  .chip-keep {
+    background: var(--accent-wash);
+    color: var(--accent);
+    border-color: var(--accent-wash);
+    font-weight: 500;
+  }
+
+  .chip-drop {
+    background: transparent;
+    color: var(--ink-3);
+    border-color: var(--rule);
+    text-decoration: line-through;
+    text-decoration-color: var(--clay);
+    text-decoration-thickness: 1px;
+  }
+
+  .chip-row {
+    display: flex;
+    flex-direction: column;
+    gap: .7rem;
+  }
+
+  .chip-row-label {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .72rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  /* ---------- code ---------- */
+
+  pre {
+    margin: 0;
+    background: var(--code-bg);
+    border-radius: 6px;
+    padding: 1.1rem 1.2rem;
+    overflow-x: auto;
+    line-height: 1.6;
+  }
+
+  pre code {
+    background: none;
+    padding: 0;
+    font-size: .84rem;
+    color: var(--ink);
+  }
+
+  .cmt {
+    color: var(--ink-3);
+  }
+
+  /* ---------- tables ---------- */
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: .92rem;
+  }
+
+  caption {
+    text-align: left;
+    font-size: .88rem;
+    color: var(--ink-3);
+    padding-bottom: .9rem;
+  }
+
+  th {
+    text-align: left;
+    font-weight: 500;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .72rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    padding: 0 1.1rem .7rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  td {
+    padding: .8rem 1.1rem .8rem 0;
+    border-bottom: 1px solid var(--rule-soft);
+    vertical-align: top;
+    color: var(--ink-2);
+  }
+
+  td:first-child {
+    color: var(--ink);
+  }
+
+  .mono {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .88rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .num {
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .yes {
+    color: var(--accent);
+  }
+
+  .no {
+    color: var(--clay);
+  }
+
+  /* ---------- verdict split ---------- */
+
+  .split {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.4rem;
+  }
+
+  .verdict {
+    border-radius: 8px;
+    padding: 1.4rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: .7rem;
+    background: var(--surface);
+    border: 1px solid var(--rule-soft);
+  }
+
+  .verdict-head {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .74rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+
+  .verdict-right .verdict-head { color: var(--accent); }
+  .verdict-wrong .verdict-head { color: var(--clay); }
+  .verdict-right { background: var(--accent-wash); border-color: transparent; }
+  .verdict-wrong { background: var(--clay-wash); border-color: transparent; }
+
+  .verdict-quote {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .82rem;
+    line-height: 1.6;
+    color: var(--ink);
+  }
+
+  .verdict p {
+    font-size: .92rem;
+    line-height: 1.6;
+    color: var(--ink-2);
+  }
+
+  /* ---------- svg text ---------- */
+
+  svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+  }
+
+  .d-box { fill: var(--surface-2); stroke: var(--rule); stroke-width: 1; }
+  .d-box-accent { fill: var(--accent-wash); stroke: none; }
+  .d-title {
+    font-family: "IBM Plex Sans", system-ui, sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    fill: var(--ink);
+  }
+  .d-sub {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 12.5px;
+    fill: var(--ink-2);
+  }
+  .d-label {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 12px;
+    letter-spacing: .06em;
+    fill: var(--ink-3);
+    text-transform: uppercase;
+  }
+  .d-num {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 15px;
+    fill: var(--ink);
+  }
+  .d-num-win {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 15px;
+    font-weight: 500;
+    fill: var(--accent);
+  }
+  .d-line { stroke: var(--rule); stroke-width: 1.2; fill: none; }
+  .d-arrow { stroke: var(--ink-3); stroke-width: 1.2; fill: none; }
+  .d-accent-line { stroke: var(--accent-2); stroke-width: 1.4; fill: none; }
+  .d-dash { stroke: var(--clay); stroke-width: 1.2; stroke-dasharray: 4 4; fill: none; }
+  .d-dot-yes { fill: var(--accent); }
+  .d-dot-no { fill: var(--clay); }
+  .d-bar-lo { fill: var(--clay); opacity: .55; }
+  .d-bar-hi { fill: var(--accent); opacity: .75; }
+
+  a {
+    color: var(--accent);
+    text-underline-offset: 3px;
+    text-decoration-color: var(--rule);
+  }
+
+  a:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  footer {
+    font-size: .9rem;
+    color: var(--ink-3);
+    border-top: 1px solid var(--rule-soft);
+    padding-top: 1.6rem;
+    line-height: 1.7;
+  }
+</style>
+
+<div class="page">
+
+  <header class="col">
+    <p class="eyebrow">Cartwheel &middot; Homework&nbsp;1 &middot; agent/tools.py</p>
+    <h1>Inside find_order</h1>
+    <p class="standfirst">
+      A shopper types a sentence. The database holds a product title. They never look
+      alike, and yet the agent has to connect them. This is how the matching works,
+      one step at a time.
+    </p>
+    <p class="byline">Study notes &middot; no prior Python needed</p>
+  </header>
+
+  <!-- ================= 1. the problem ================= -->
+
+  <section class="stack">
+    <div class="col stack-tight">
+      <h2>The problem, in one line</h2>
+      <p class="lede">
+        Ask a computer whether these two strings are equal and it says no, then stops.
+        Everything below exists to get a more useful answer than <em>no</em>.
+      </p>
+    </div>
+
+    <div class="panel-wide">
+      <div class="compare">
+        <div class="compare-side">
+          <span class="compare-label">What the shopper types</span>
+          <span class="compare-string">"the vase I bought last week"</span>
+        </div>
+        <span class="compare-gap" aria-hidden="true">&ne;</span>
+        <div class="compare-side">
+          <span class="compare-label">What the database has</span>
+          <span class="compare-string">"Heavy-Duty Vase"</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col stack-tight">
+      <p>
+        <code>_match_score</code> is the function that replaces that flat <em>no</em> with
+        a number. It takes two strings and returns <strong>one value between 0.0 and
+        1.0</strong> &mdash; how much the sentence sounds like the title. For the pair above
+        it returns <strong class="mono">0.95</strong>.
+      </p>
+    </div>
+  </section>
+
+  <!-- ================= 2. pipeline ================= -->
+
+  <section class="stack">
+    <div class="col stack-tight">
+      <h2>Where that number is used</h2>
+      <p class="lede">
+        The score is only step&nbsp;2 of four. Everything around it is bookkeeping &mdash;
+        which is worth knowing before you look at the scoring itself, because it keeps
+        the hard part small.
+      </p>
+    </div>
+
+    <div class="panel-wide">
+      <svg viewBox="0 0 900 250" role="img" aria-label="Four stages: fetch the caller's own orders, score each product title, keep scores at or above 0.75, then sort and keep the best five.">
+        <text class="d-label" x="0" y="18">a sentence comes in</text>
+
+        <!-- stage 1 -->
+        <rect class="d-box" x="0" y="42" width="192" height="86" rx="8"></rect>
+        <text class="d-title" x="20" y="72">1 &nbsp;Fetch orders</text>
+        <text class="d-sub" x="20" y="94">shopper &rarr; own</text>
+        <text class="d-sub" x="20" y="112">merchant &rarr; store</text>
+
+        <!-- stage 2 -->
+        <rect class="d-box" x="236" y="42" width="192" height="86" rx="8"></rect>
+        <text class="d-title" x="256" y="72">2 &nbsp;Score titles</text>
+        <text class="d-sub" x="256" y="94">_match_score</text>
+        <text class="d-sub" x="256" y="112">once per order</text>
+
+        <!-- stage 3 -->
+        <rect class="d-box" x="472" y="42" width="192" height="86" rx="8"></rect>
+        <text class="d-title" x="492" y="72">3 &nbsp;Keep &ge; 0.75</text>
+        <text class="d-sub" x="492" y="94">the threshold</text>
+        <text class="d-sub" x="492" y="112">drops the rest</text>
+
+        <!-- stage 4 -->
+        <rect class="d-box-accent" x="708" y="42" width="192" height="86" rx="8"></rect>
+        <text class="d-title" x="728" y="72">4 &nbsp;Best five</text>
+        <text class="d-sub" x="728" y="94">highest first</text>
+        <text class="d-sub" x="728" y="112">at most 5 orders</text>
+
+        <!-- arrows -->
+        <path class="d-arrow" d="M196 85 L232 85"></path>
+        <path class="d-arrow" d="M226 80 L232 85 L226 90"></path>
+        <path class="d-arrow" d="M432 85 L468 85"></path>
+        <path class="d-arrow" d="M462 80 L468 85 L462 90"></path>
+        <path class="d-arrow" d="M668 85 L704 85"></path>
+        <path class="d-arrow" d="M698 80 L704 85 L698 90"></path>
+
+        <!-- worked example beneath -->
+        <line class="d-line" x1="0" y1="160" x2="900" y2="160"></line>
+        <text class="d-label" x="0" y="186">shopper 1, asking for a vase</text>
+
+        <text class="d-sub" x="0" y="216">order 4455 &middot; Heavy-Duty Vase</text>
+        <text class="d-num-win" x="212" y="216">0.95</text>
+        <text class="d-sub" x="262" y="216">kept</text>
+
+        <text class="d-sub" x="340" y="216">order 4127 &middot; Heavy-Duty Vase</text>
+        <text class="d-num-win" x="552" y="216">0.95</text>
+        <text class="d-sub" x="602" y="216">kept</text>
+
+        <text class="d-sub" x="680" y="216">3711 &middot; Compact Mug</text>
+        <text class="d-num" x="838" y="216" style="fill:var(--clay)">0.29</text>
+      </svg>
+    </div>
+
+    <div class="col">
+      <p>
+        Stage&nbsp;1 is the security part, and it is not a filter applied afterwards: the
+        caller&rsquo;s role decides <em>which database query runs</em>. A shopper&rsquo;s search
+        physically cannot reach another shopper&rsquo;s orders, however the sentence is worded.
+      </p>
+    </div>
+  </section>
+
+  <!-- ================= 3. the six steps ================= -->
+
+  <section class="stack">
+    <div class="col stack-tight">
+      <h2>Inside the score, step by step</h2>
+      <p class="lede">
+        Six steps, lettered as they appear in the function. The first one usually ends
+        the job early.
+      </p>
+    </div>
+
+    <!-- step A -->
+    <div class="step col">
+      <div class="step-letter" aria-hidden="true">A</div>
+      <div class="step-body">
+        <h3>Try the cheap win first</h3>
+        <p>
+          Lowercase both strings, then ask a single question: is the whole query sitting
+          inside the title? If so, return <span class="mono">1.0</span> and stop.
+        </p>
+        <div class="panel">
+<pre><code>is "vase" inside "heavy-duty vase"?   <span class="cmt">&rarr; yes, return 1.0</span>
+is "the vase i bought last week"
+                inside "heavy-duty vase"?   <span class="cmt">&rarr; no, keep going</span></code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- step B -->
+    <div class="step col">
+      <div class="step-letter" aria-hidden="true">B</div>
+      <div class="step-body">
+        <h3>Chop both strings into words</h3>
+        <p>
+          The pattern <code>[a-z0-9]+</code> means &ldquo;runs of letters and digits&rdquo;, so
+          punctuation quietly disappears &mdash; which is how the hyphen in
+          <span class="mono">Heavy-Duty</span> stops being a problem.
+        </p>
+        <div class="panel stack-tight">
+          <div class="chip-row">
+            <span class="chip-row-label">the query</span>
+            <div class="chips">
+              <span class="chip">the</span><span class="chip">vase</span><span class="chip">i</span><span class="chip">bought</span><span class="chip">last</span><span class="chip">week</span>
+            </div>
+          </div>
+          <div class="chip-row">
+            <span class="chip-row-label">the title</span>
+            <div class="chips">
+              <span class="chip">heavy</span><span class="chip">duty</span><span class="chip">vase</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- step C -->
+    <div class="step col">
+      <div class="step-letter" aria-hidden="true">C</div>
+      <div class="step-body">
+        <h3>Throw away the filler words</h3>
+        <p>
+          The stopword list applies <strong>only to the query</strong>, never to the title.
+          Words shorter than three letters go too.
+        </p>
+        <div class="panel">
+          <div class="chips">
+            <span class="chip chip-drop">the</span>
+            <span class="chip chip-keep">vase</span>
+            <span class="chip chip-drop">i</span>
+            <span class="chip chip-drop">bought</span>
+            <span class="chip chip-drop">last</span>
+            <span class="chip chip-drop">week</span>
+          </div>
+        </div>
+        <p class="caption">
+          Why bother: &ldquo;bought&rdquo; and &ldquo;week&rdquo; say nothing about <em>which</em>
+          product. Left in, the word &ldquo;week&rdquo; would happily match a product called
+          Weekend&nbsp;Bag and the tool would return the wrong order.
+        </p>
+      </div>
+    </div>
+
+    <!-- step D -->
+    <div class="step col">
+      <div class="step-letter" aria-hidden="true">D</div>
+      <div class="step-body">
+        <h3>Compare every kept word against every title word</h3>
+        <p>
+          One surviving query word, three title words, so three comparisons. Each cell is
+          filled by one of two rules: a substring hit scores <span class="mono">0.95</span>,
+          and anything else falls through to a similarity measure.
+        </p>
+        <div class="panel-wide">
+          <svg viewBox="0 0 700 240" role="img" aria-label="A grid scoring the query word vase against the title words heavy, duty and vase: 0.22, 0.00 and 0.95. The highest is 0.95.">
+            <text class="d-label" x="118" y="30">title words</text>
+            <text class="d-title" x="150" y="62">heavy</text>
+            <text class="d-title" x="288" y="62">duty</text>
+            <text class="d-title" x="418" y="62">vase</text>
+
+            <text class="d-label" x="0" y="112">query</text>
+            <text class="d-title" x="0" y="136">vase</text>
+
+            <rect class="d-box" x="118" y="82" width="130" height="76" rx="6"></rect>
+            <rect class="d-box" x="256" y="82" width="130" height="76" rx="6"></rect>
+            <rect class="d-box-accent" x="394" y="82" width="130" height="76" rx="6"></rect>
+
+            <text class="d-num" x="183" y="118" text-anchor="middle">0.22</text>
+            <text class="d-sub" x="183" y="140" text-anchor="middle">similarity</text>
+
+            <text class="d-num" x="321" y="118" text-anchor="middle">0.00</text>
+            <text class="d-sub" x="321" y="140" text-anchor="middle">similarity</text>
+
+            <text class="d-num-win" x="459" y="118" text-anchor="middle">0.95</text>
+            <text class="d-sub" x="459" y="140" text-anchor="middle">substring</text>
+
+            <path class="d-accent-line" d="M534 120 L588 120"></path>
+            <path class="d-accent-line" d="M582 115 L588 120 L582 125"></path>
+            <text class="d-num-win" x="600" y="115">0.95</text>
+            <text class="d-label" x="600" y="136">the max</text>
+
+            <text class="d-sub" x="0" y="206">"vase" vs "heavy" &rarr; 0.22 &nbsp;&middot;&nbsp; "vase" vs "duty" &rarr; 0.00 &nbsp;&middot;&nbsp; "earmufs" vs "earmuffs" &rarr; 0.93, which is how typos survive</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- step E -->
+    <div class="step col">
+      <div class="step-letter" aria-hidden="true">E</div>
+      <div class="step-body">
+        <h3>Keep the single best cell</h3>
+        <p>
+          Not the average of the row. The biggest number in the grid becomes the score for
+          this order, which is the one real design decision in the function &mdash;
+          <a href="#tradeoff">the next section</a> is about why.
+        </p>
+      </div>
+    </div>
+
+    <!-- step F -->
+    <div class="step col">
+      <div class="step-letter" aria-hidden="true">F</div>
+      <div class="step-body">
+        <h3>Compare against the threshold</h3>
+        <p>
+          Back in <code>find_order</code>, one line decides whether this order is shown at
+          all. Every mark below is a measured score against the title
+          <span class="mono">Heavy-Duty Vase</span>.
+        </p>
+        <div class="panel-wide">
+          <svg viewBox="0 0 900 230" role="img" aria-label="A number line from 0 to 1. The cutoff sits at 0.75. Below it: zzzznonexistent at 0.09, mug at 0.29, earmufs at 0.33. Above it: the sentence at 0.95 and an exact title at 1.00.">
+            <!-- regions -->
+            <rect x="60" y="96" width="600" height="30" rx="4" fill="var(--surface-2)"></rect>
+            <rect x="660" y="96" width="200" height="30" rx="4" fill="var(--accent-wash)"></rect>
+
+            <!-- axis -->
+            <line class="d-line" x1="60" y1="126" x2="860" y2="126"></line>
+
+            <text class="d-label" x="60" y="150">0.0</text>
+            <text class="d-label" x="260" y="150">0.25</text>
+            <text class="d-label" x="460" y="150">0.50</text>
+            <text class="d-label" x="845" y="150">1.0</text>
+
+            <!-- threshold -->
+            <line class="d-dash" x1="660" y1="60" x2="660" y2="176"></line>
+            <text class="d-label" x="660" y="52" text-anchor="middle" style="fill:var(--clay)">cutoff 0.75</text>
+
+            <text class="d-label" x="330" y="88" text-anchor="middle">ignored</text>
+            <text class="d-label" x="760" y="88" text-anchor="middle" style="fill:var(--accent)">matched</text>
+
+            <!-- marks below the line -->
+            <circle class="d-dot-no" cx="132" cy="126" r="5"></circle>
+            <text class="d-sub" x="132" y="176" text-anchor="middle">0.09</text>
+            <text class="d-sub" x="132" y="196" text-anchor="middle">"zzzznonexistent"</text>
+
+            <circle class="d-dot-no" cx="292" cy="126" r="5"></circle>
+            <text class="d-sub" x="292" y="176" text-anchor="middle">0.29</text>
+            <text class="d-sub" x="292" y="196" text-anchor="middle">"mug"</text>
+
+            <circle class="d-dot-no" cx="324" cy="126" r="5"></circle>
+            <text class="d-sub" x="392" y="216" text-anchor="middle">0.33 &nbsp;"earmufs"</text>
+            <path class="d-line" d="M324 132 L360 206"></path>
+
+            <!-- marks above the line -->
+            <circle class="d-dot-yes" cx="820" cy="126" r="5"></circle>
+            <text class="d-sub" x="820" y="82" text-anchor="end">0.95 &nbsp;the whole sentence</text>
+
+            <circle class="d-dot-yes" cx="860" cy="126" r="5"></circle>
+            <text class="d-sub" x="860" y="196" text-anchor="end">1.00 &nbsp;"vase"</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 4. tradeoff ================= -->
+
+  <section class="stack" id="tradeoff">
+    <div class="col stack-tight">
+      <h2>Why the best word wins, not the average</h2>
+      <p class="lede">
+        This is the choice worth understanding, because it is the one that could
+        reasonably have gone the other way.
+      </p>
+    </div>
+
+    <div class="panel-wide">
+      <svg viewBox="0 0 700 270" role="img" aria-label="Two bars compared against the 0.75 cutoff: the average of the row is 0.39 and falls below it; the maximum is 0.95 and clears it.">
+        <line class="d-dash" x1="40" y1="72" x2="620" y2="72"></line>
+        <text class="d-label" x="628" y="68" style="fill:var(--clay)">0.75</text>
+
+        <line class="d-line" x1="40" y1="222" x2="620" y2="222"></line>
+
+        <rect class="d-bar-lo" x="120" y="144" width="120" height="78" rx="3"></rect>
+        <text class="d-num" x="180" y="132" text-anchor="middle">0.39</text>
+        <text class="d-title" x="180" y="246" text-anchor="middle">average of the row</text>
+        <text class="d-sub" x="180" y="266" text-anchor="middle">(0.22 + 0.00 + 0.95) &divide; 3</text>
+
+        <rect class="d-bar-hi" x="400" y="32" width="120" height="190" rx="3"></rect>
+        <text class="d-num-win" x="460" y="22" text-anchor="middle">0.95</text>
+        <text class="d-title" x="460" y="246" text-anchor="middle">best in the row</text>
+        <text class="d-sub" x="460" y="266" text-anchor="middle">max(0.22, 0.00, 0.95)</text>
+      </svg>
+    </div>
+
+    <div class="col stack-tight">
+      <p>
+        With an average, a sentence would <em>always</em> score badly: most of its words are
+        unrelated to any one product title, so the good word gets diluted by the bad ones.
+        Taking the maximum means <strong>one strong word is enough</strong>.
+      </p>
+      <p>
+        The price is real. <span class="mono">"I want a vase and also a mug"</span> matches
+        vases <em>and</em> mugs, because each has a word that scores high. For a
+        help-me-find-my-order tool, offering five candidates the shopper can choose between
+        beats offering nothing.
+      </p>
+    </div>
+  </section>
+
+  <!-- ================= 5. measured ================= -->
+
+  <section class="stack">
+    <div class="col stack-tight">
+      <h2>Measured, not guessed</h2>
+      <p class="lede">
+        Every number on this page came out of the real function running against the real
+        seeded catalogue.
+      </p>
+    </div>
+
+    <div class="panel-wide col">
+      <table>
+        <caption>Scores against the title <span class="mono">Heavy-Duty Vase</span></caption>
+        <thead>
+          <tr>
+            <th scope="col">Query</th>
+            <th scope="col" class="num">Score</th>
+            <th scope="col">Outcome</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="mono">"Heavy-Duty Vase"</td><td class="num mono">1.00</td><td class="yes">whole query inside the title</td></tr>
+          <tr><td class="mono">"vase"</td><td class="num mono">1.00</td><td class="yes">whole query inside the title</td></tr>
+          <tr><td class="mono">"the vase I bought last week"</td><td class="num mono">0.95</td><td class="yes">one strong word survives the filler</td></tr>
+          <tr><td class="mono">"heavy duty"</td><td class="num mono">0.95</td><td class="yes">substring hit</td></tr>
+          <tr><td class="mono">"earmufs"</td><td class="num mono">0.33</td><td class="no">genuinely a different product</td></tr>
+          <tr><td class="mono">"mug"</td><td class="num mono">0.29</td><td class="no">below the cutoff</td></tr>
+          <tr><td class="mono">"zzzznonexistent9999"</td><td class="num mono">0.09</td><td class="no">below the cutoff</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="col stack-tight">
+      <p>Reproduce them from the repository root:</p>
+      <div class="panel">
+<pre><code>uv run python -c "
+from agent import tools
+for q in ['vase', 'the vase I bought last week', 'mug']:
+    print(q, tools._match_score(q, 'Heavy-Duty Vase'))
+"</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 6. glossary + knobs ================= -->
+
+  <section class="stack">
+    <div class="col stack-tight">
+      <h2>The names, one line each</h2>
+    </div>
+
+    <div class="panel-wide col">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">What it is</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="mono">MAX_ORDER_MATCHES = 5</td><td>Never return more than five orders. The docstring requires it.</td></tr>
+          <tr><td class="mono">FUZZY_MATCH_THRESHOLD = 0.75</td><td>The cutoff line. Lower means more matches and more junk.</td></tr>
+          <tr><td class="mono">_WORD_RE = [a-z0-9]+</td><td>&ldquo;A word is letters and digits.&rdquo; Punctuation is dropped.</td></tr>
+          <tr><td class="mono">_QUERY_STOPWORDS</td><td>Filler words that must never win a match on their own.</td></tr>
+          <tr><td class="mono">_words()</td><td>The chopper: text into a list of lowercase words.</td></tr>
+          <tr><td class="mono">_match_score()</td><td>The scorer: a query and a title into one number, 0.0 to 1.0.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="col stack-tight">
+      <h3>Knobs to turn when a conversation shows a problem</h3>
+      <p>
+        <strong>Real orders being missed</strong> &mdash; lower the threshold from 0.75 toward
+        0.65, or remove a word from the stopword list that turned out to carry meaning.
+      </p>
+      <p>
+        <strong>Unrelated orders coming back</strong> &mdash; raise the threshold, or add the
+        offending filler word to the stopword list.
+      </p>
+      <p>
+        <strong>Only the title is searched.</strong> Descriptions and categories are not. A
+        shopper asking for &ldquo;the ceramic thing&rdquo; matches nothing unless the word
+        ceramic is in the product&rsquo;s name.
+      </p>
+    </div>
+  </section>
+
+  <!-- ================= 7. context ================= -->
+
+  <section class="stack">
+    <div class="col stack-tight">
+      <h2>Where this sits in the agent</h2>
+      <p class="lede">
+        <span class="mono">SPEC.md</span> describes what the support agent should do, but the
+        application never reads it. Every requirement has to be translated into one of three
+        places, and choosing the right place is the whole point of the exercise.
+      </p>
+    </div>
+
+    <div class="panel-wide">
+      <svg viewBox="0 0 900 250" role="img" aria-label="SPEC.md feeds three destinations: the system prompt for model decisions, tool code and auth for rules that must hold regardless, and facts.yaml for exact numbers.">
+        <rect class="d-box" x="0" y="78" width="200" height="90" rx="8"></rect>
+        <text class="d-title" x="20" y="112">SPEC.md</text>
+        <text class="d-sub" x="20" y="134">a design document,</text>
+        <text class="d-sub" x="20" y="152">never executed</text>
+
+        <path class="d-arrow" d="M204 123 L262 44 L300 44"></path>
+        <path class="d-arrow" d="M294 39 L300 44 L294 49"></path>
+        <path class="d-arrow" d="M204 123 L300 123"></path>
+        <path class="d-arrow" d="M294 118 L300 123 L294 128"></path>
+        <path class="d-arrow" d="M204 123 L262 204 L300 204"></path>
+        <path class="d-arrow" d="M294 199 L300 204 L294 209"></path>
+
+        <rect class="d-box" x="300" y="8" width="230" height="72" rx="8"></rect>
+        <text class="d-title" x="320" y="38">the system prompt</text>
+        <text class="d-sub" x="320" y="60">what the model decides</text>
+        <text class="d-sub" x="552" y="38">scope, refusals, which tool</text>
+        <text class="d-sub" x="552" y="60">to call, citing policy ids</text>
+
+        <rect class="d-box-accent" x="300" y="88" width="230" height="72" rx="8"></rect>
+        <text class="d-title" x="320" y="118">tool code and auth</text>
+        <text class="d-sub" x="320" y="140">what must always hold</text>
+        <text class="d-sub" x="552" y="118">who may see or change what,</text>
+        <text class="d-sub" x="552" y="140">even when the model misbehaves</text>
+
+        <rect class="d-box" x="300" y="168" width="230" height="72" rx="8"></rect>
+        <text class="d-title" x="320" y="198">facts.yaml</text>
+        <text class="d-sub" x="320" y="220">the exact numbers</text>
+        <text class="d-sub" x="552" y="198">a 30-day return window,</text>
+        <text class="d-sub" x="552" y="220">a $100 approval threshold</text>
+      </svg>
+    </div>
+
+    <div class="col">
+      <p>
+        The practical consequence: when the agent does something wrong, <em>where</em> the fix
+        belongs depends on which box failed. A model that answered badly with correct data is
+        a prompt problem. A tool that returned the wrong data is a code problem. Authorization
+        is never a prompt problem, because authorization is never in the prompt.
+      </p>
+    </div>
+
+    <div class="col stack-tight">
+      <h3>The same idea, in the one tool that writes</h3>
+      <p>
+        <code>cancel_order</code> checks the caller&rsquo;s scope <em>before</em> it checks the
+        order&rsquo;s shipping state. Both orderings pass every supplied test. Only one keeps
+        another store&rsquo;s fulfilment private.
+      </p>
+    </div>
+
+    <div class="split col">
+      <div class="verdict verdict-right">
+        <span class="verdict-head">Scope, then state</span>
+        <p class="verdict-quote">&ldquo;role 'merchant' (user 9002) may not cancel order&nbsp;4127&rdquo;</p>
+        <p>The merchant learns nothing about the order.</p>
+      </div>
+      <div class="verdict verdict-wrong">
+        <span class="verdict-head">State, then scope</span>
+        <p class="verdict-quote">&ldquo;order 4127 has status 'delivered'&rdquo;</p>
+        <p>Leaked: the order exists, it shipped, and it was delivered &mdash; to someone with no right to ask.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="col">
+    Study notes written while completing Homework 1 of Evaluating and Improving AI Agents.
+    Not part of the submission, which is <span class="mono">agent/tools.py</span>,
+    <span class="mono">agent/agent.py</span> and <span class="mono">hw1-session.jsonl</span>.
+  </footer>
+
+</div>
