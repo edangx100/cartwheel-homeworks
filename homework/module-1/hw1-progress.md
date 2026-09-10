@@ -46,7 +46,20 @@ Observations parked for later:
 `explain_code/` holds plain-language walkthroughs written alongside the work
 (index + the `find_order` matching deep dive). Not a submission deliverable.
 
+## Upstream contract change (2026-09-10)
+Merging `origin/main` brought `d5aada8`, which rewrote the `find_order` contract
+after this work was recorded: search the complete authorised scope through
+`db.list_order_search_candidates`, keep the helper's newest-first order, return
+`to_public_dict()` unchanged (so no `product_title`), and reject an unsupported
+role instead of falling back to all orders. `find_order` was rewritten to match
+and `tests/test_hw_holes.py -k hw1` passes, 8 tests. Fixing it also exposed a
+real bug in `_match_score`: containment against a one- or two-letter title token
+("the c in USB-C") scored 0.95 against any query containing that letter. The old
+20-order cap hid it; support's full-table scope did not.
+
+Part B transcripts were NOT re-run. See the C10 note in `hw1-part-b-plan.md`.
+
 ## Next step
-Commit the outstanding work, then the video. Everything else is done: Part A
-(five tools plus `list_orders_by_status`), Part B (`hw1-session.jsonl`, written
-up in `hw1-part-b-plan.md`), Part C (`hw1-part-c.md`).
+The video. Everything else is done: Part A (five tools plus
+`list_orders_by_status`), Part B (`hw1-session.jsonl`, written up in
+`hw1-part-b-plan.md`), Part C (`hw1-part-c.md`).

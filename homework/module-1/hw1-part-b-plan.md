@@ -121,6 +121,18 @@ agent's. Each row names the requirement the case was judged against.
 
 **4 of 12 met the requirement.** Six failures trace to the prompt, two to the tool layer.
 
+> **Note on C10, added 2026-09-10.** These conversations were recorded against
+> the earlier `find_order` contract, when the tool added a `product_title` key
+> to each order and sorted matches by fuzzy score. Upstream `d5aada8` replaced
+> that contract: `find_order` now searches the complete authorised scope via
+> `list_order_search_candidates`, keeps the helper's newest-first order, and
+> returns `Order.to_public_dict()` unchanged, so `product_title` is gone. The
+> transcript above is the observed record and has not been re-run. The C10
+> finding does not depend on the removed key: the failure is that the agent
+> picked #4455 without acknowledging that three orders matched. What the new
+> contract does cost is the agent's ability to name the product from
+> `find_order` alone, which is the gap worth raising separately.
+
 ### How defensible each verdict is
 
 The handout has no answer key: the assessment is the deliverable, and a reader

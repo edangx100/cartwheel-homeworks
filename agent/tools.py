@@ -84,12 +84,25 @@ def _match_score(query: str, title: str) -> float:
     best = 0.0
     for word in query_words:
         for title_word in title_words:
-            if word in title_word or title_word in word:
+            # Containment only counts for a title word long enough to carry
+            # meaning. A one- or two-letter token such as the "c" in "USB-C"
+            # is a substring of half the words in English, and would otherwise
+            # score 0.95 against any query that happens to contain it.
+            if len(title_word) > 2 and (word in title_word or title_word in word):
                 score = 0.95
             else:
                 score = SequenceMatcher(None, word, title_word).ratio()
             best = max(best, score)
     return best
+
+
+def _no_search_scope(role: str, missing: str) -> dict[str, Any]:
+    """The find_order scope error for a caller whose context lacks an identity."""
+    return {
+        "ok": False,
+        "error": "invalid_argument",
+        "reason": f"{role} context has no {missing}, so its order search scope is unknown",
+    }
 
 
 def get_policy(ctx: AuthContext, policy_id: str) -> dict[str, Any]:
@@ -362,40 +375,49 @@ def find_order(ctx: AuthContext, query: str) -> dict[str, Any]:
         (at most 5), each as the dict returned by agent.db. If no orders
         match, return {"ok": True, "orders": []}.
     """
-    with db.connection() as conn:
-        if ctx.role == "shopper":
-            orders = db.list_orders_for_user(conn, ctx.user_id, DEFAULT_ORDER_LIMIT)
-        elif ctx.role == "merchant":
-            orders = db.list_orders_for_store(conn, ctx.store_id, DEFAULT_ORDER_LIMIT)
-        else:
-            # Support may search any order. agent.db has no "every order"
-            # helper, so this reuses the same row mapper over the same table
-            # rather than introducing a second data layer.
-            rows = conn.execute(
-                "SELECT * FROM orders ORDER BY ordered_at DESC, id DESC LIMIT ?",
-                (DEFAULT_ORDER_LIMIT,),
-            ).fetchall()
-            orders = [db._order_from_row(row) for row in rows]
+    # The scope comes from the authenticated context, never from the query, and
+    # the helper takes exactly one scope: an invalid role or a missing identity
+    # is an error, not a reason to fall back to searching everything.
+    if ctx.role == "shopper":
+        if ctx.user_id is None:
+            return _no_search_scope("shopper", "user id")
+        scope: dict[str, Any] = {"user_id": ctx.user_id}
+    elif ctx.role == "merchant":
+        if ctx.store_id is None:
+            return _no_search_scope("merchant", "store id")
+        scope = {"store_id": ctx.store_id}
+    elif ctx.role == "support":
+        scope = {"all_orders": True}
+    else:
+        return {
+            "ok": False,
+            "error": "invalid_argument",
+            "reason": f"role {ctx.role!r} cannot search orders",
+        }
 
+    with db.connection() as conn:
+        # The helper returns the whole authorised scope, newest first, with no
+        # limit: matching has to happen before the five-result cut, or an old
+        # match hides behind newer orders.
+        orders = db.list_order_search_candidates(conn, **scope)
         titles = {
             product.id: product.title
             for product in db.list_products(conn)
         }
 
-    scored = []
+    # Keep the helper's newest-first order rather than sorting by score, and
+    # stop at five, so the caller sees the most recent matches.
+    matches = []
     for order in orders:
         title = titles.get(order.product_id)
         if title is None:
             continue
-        score = _match_score(query, title)
-        if score >= FUZZY_MATCH_THRESHOLD:
-            payload = order.to_public_dict()
-            payload["product_title"] = title
-            scored.append((score, payload))
+        if _match_score(query, title) >= FUZZY_MATCH_THRESHOLD:
+            matches.append(order.to_public_dict())
+            if len(matches) == MAX_ORDER_MATCHES:
+                break
 
-    # Best match first; equal scores keep the newest-first order from the query.
-    scored.sort(key=lambda pair: pair[0], reverse=True)
-    return {"ok": True, "orders": [payload for _, payload in scored[:MAX_ORDER_MATCHES]]}
+    return {"ok": True, "orders": matches}
 
 
 def list_orders_by_status(
