@@ -122,10 +122,18 @@ def record_tool_result(ctx: "AuthContext", result: dict[str, Any]) -> None:
     span = trace.get_current_span()
     if not span.is_recording():
         return
-    ### YOUR CODE HERE (HW2)
-    raise NotImplementedError(
-        "HW2: add authenticated caller and permission attributes to the tool span"
-    )
+    # Identity is recorded on every tool span, not only on the request's root
+    # span, so a single tool call can be audited without walking back up the
+    # trace. The values are the same for every call in one request.
+    span.set_attribute("cartwheel.user_role", ctx.role)
+    # A user id is an identifier, not a quantity: string, so nothing downstream
+    # is tempted to sum or average it.
+    span.set_attribute("cartwheel.user_id", str(ctx.user_id))
+    if ctx.role == "merchant" and ctx.store_id is not None:
+        # Integer here, unlike user_id: the handout asks for the store scope as
+        # a number, and only merchants carry one.
+        span.set_attribute("cartwheel.store_id", ctx.store_id)
+    _set_permission_denied_attributes(span, result)
 
 
 def _set_permission_denied_attributes(
@@ -149,5 +157,15 @@ def _set_permission_denied_attributes(
     the smoke report counts them and Module 3 asserts on them. This is the one place in the
     course where you touch instrumentation by hand.
     """
-    ### YOUR CODE HERE (HW2)
-    raise NotImplementedError("HW2: set the cartwheel.permission_denied span attribute")
+    # result.get, never result["error"]: a success dict has no "error" key, and
+    # an exception here would break the tool call itself rather than just the
+    # recording.
+    denied = result.get("error") == "permission_denied"
+    # Always set, including False. An absent attribute cannot be told apart from
+    # an allowed call, which would make the denial count in reports/smoke.sql
+    # impossible to check for coverage.
+    span.set_attribute("cartwheel.permission_denied", denied)
+    if denied:
+        span.set_attribute(
+            "cartwheel.permission_denied.reason", result.get("reason", "")
+        )
