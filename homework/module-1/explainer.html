@@ -1,0 +1,630 @@
+<title>Inside _call</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    color-scheme: light dark;
+    --fs: 18px;
+    --paper:#ECEEF1;
+    --surface:#F7F8FA;
+    --sunken:#E2E6EB;
+    --ink:#1E242B;
+    --ink-soft:#525D69;
+    --ink-faint:#7A8590;
+    --rule:#D1D7DE;
+    --rule-soft:#DFE4E9;
+    --trust:#14625C;
+    --trust-soft:#DDEAE8;
+    --model:#8F5230;
+    --model-soft:#F0E5DB;
+    --measure:64ch;
+    --serif:"Spectral", Georgia, "Times New Roman", serif;
+    --mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#171B1F;
+      --surface:#1F252A;
+      --sunken:#12161A;
+      --ink:#D2D8DD;
+      --ink-soft:#9BA6B0;
+      --ink-faint:#79848E;
+      --rule:#2F373E;
+      --rule-soft:#262D33;
+      --trust:#74C3B9;
+      --trust-soft:#1A2E2C;
+      --model:#D2965F;
+      --model-soft:#2C2520;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#171B1F;
+    --surface:#1F252A;
+    --sunken:#12161A;
+    --ink:#D2D8DD;
+    --ink-soft:#9BA6B0;
+    --ink-faint:#79848E;
+    --rule:#2F373E;
+    --rule-soft:#262D33;
+    --trust:#74C3B9;
+    --trust-soft:#1A2E2C;
+    --model:#D2965F;
+    --model-soft:#2C2520;
+  }
+
+  html{ font-size: var(--fs); }
+  body{
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  *{ box-sizing: border-box; }
+
+  .page{
+    max-width: calc(var(--measure) + 6rem);
+    margin: 0 auto;
+    padding: 3.5rem 3rem 6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3.25rem;
+  }
+  @media (max-width: 620px){
+    .page{ padding: 2.25rem 1.25rem 4rem; gap: 2.5rem; }
+  }
+
+  /* ---------- header ---------- */
+  .masthead{ display:flex; flex-direction:column; gap:1.15rem; }
+  .kicker{
+    font-family: var(--mono);
+    font-size: .68rem;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  h1{
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: clamp(2.1rem, 6vw, 2.9rem);
+    line-height: 1.12;
+    letter-spacing: -0.015em;
+    margin: 0;
+    text-wrap: balance;
+  }
+  h1 .fn{ font-family: var(--mono); font-weight: 500; font-size: .82em; }
+  .deck{
+    font-size: 1.18rem;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    max-width: 34ch;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .deck b{ color: var(--ink); font-weight: 600; }
+
+  .prefs{
+    display:flex; align-items:center; gap:.5rem;
+    margin-top:.35rem;
+    font-family: var(--mono);
+    font-size:.7rem;
+    color: var(--ink-faint);
+    letter-spacing:.06em;
+  }
+  .prefs button{
+    font: inherit;
+    font-size:.78rem;
+    line-height:1;
+    color: var(--ink-soft);
+    background: var(--surface);
+    border:1px solid var(--rule);
+    border-radius:4px;
+    padding:.4rem .6rem;
+    cursor:pointer;
+  }
+  .prefs button:hover{ color: var(--ink); border-color: var(--ink-faint); }
+  .prefs button:focus-visible{ outline:2px solid var(--trust); outline-offset:2px; }
+
+  /* ---------- text ---------- */
+  section{ display:flex; flex-direction:column; gap:1.1rem; }
+  h2{
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 1.5rem;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    margin: 0;
+    text-wrap: balance;
+  }
+  h3{
+    font-family: var(--mono);
+    font-weight: 500;
+    font-size: .78rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0;
+  }
+  p{ margin:0; max-width: var(--measure); }
+  .lede{ font-size:1.06rem; }
+  em{ font-style: italic; }
+  strong{ font-weight:600; }
+  code{
+    font-family: var(--mono);
+    font-size: .84em;
+    background: var(--sunken);
+    padding: .1em .34em;
+    border-radius: 3px;
+  }
+  .t{ color: var(--trust); }
+  .m{ color: var(--model); }
+
+  hr{
+    border:0;
+    border-top:1px solid var(--rule-soft);
+    margin:.5rem 0;
+  }
+
+  /* ---------- figures ---------- */
+  figure{ margin:0; display:flex; flex-direction:column; gap:.85rem; }
+  .frame{
+    background: var(--surface);
+    border:1px solid var(--rule-soft);
+    border-radius:10px;
+    padding:1.35rem 1.1rem;
+    overflow-x:auto;
+  }
+  .frame svg{ display:block; min-width:520px; width:100%; height:auto; }
+  figcaption{
+    font-size:.88rem;
+    line-height:1.6;
+    color: var(--ink-soft);
+    max-width: var(--measure);
+  }
+  .figlabel{
+    font-family: var(--mono);
+    font-size:.68rem;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color: var(--ink-faint);
+  }
+  .s-box{ fill: var(--surface); stroke: var(--rule); stroke-width:1.25; }
+  .s-trust{ fill: var(--trust-soft); stroke: var(--trust); stroke-width:1.25; }
+  .s-model{ fill: var(--model-soft); stroke: var(--model); stroke-width:1.25; }
+  .s-group{ fill: none; stroke: var(--rule); stroke-width:1.25; stroke-dasharray:5 4; }
+  .s-line{ fill:none; stroke: var(--ink-faint); stroke-width:1.4; }
+  .m-faint{ fill: var(--ink-faint); }
+  .m-trust{ fill: var(--trust); }
+  .s-line-dash{ fill:none; stroke: var(--trust); stroke-width:1.4; stroke-dasharray:5 4; }
+  text{ font-family: var(--mono); }
+  .tx{ fill: var(--ink); font-size:13px; }
+  .tx-sm{ fill: var(--ink-soft); font-size:11.5px; }
+  .tx-tag{ fill: var(--ink-faint); font-size:10px; letter-spacing:.1em; }
+  .tx-trust{ fill: var(--trust); font-size:10px; letter-spacing:.1em; }
+  .tx-model{ fill: var(--model); font-size:10px; letter-spacing:.1em; }
+  .tx-code{ fill: var(--ink); font-size:12.5px; }
+
+  .legend{
+    display:flex; flex-wrap:wrap; gap:.4rem 1.5rem;
+    font-family: var(--mono); font-size:.74rem; color: var(--ink-soft);
+  }
+  .legend span{ display:inline-flex; align-items:center; gap:.45rem; }
+  .swatch{ width:.7rem; height:.7rem; border-radius:2px; display:inline-block; }
+
+  /* ---------- code ---------- */
+  pre{
+    font-family: var(--mono);
+    font-size: .82rem;
+    line-height: 1.85;
+    background: var(--surface);
+    border:1px solid var(--rule-soft);
+    border-left:3px solid var(--rule);
+    border-radius: 6px;
+    padding: 1.1rem 1.2rem;
+    margin:0;
+    overflow-x:auto;
+    color: var(--ink);
+    tab-size:4;
+  }
+  pre .kw{ color: var(--ink-faint); }
+  pre .str{ color: var(--ink-soft); }
+  pre .t{ color: var(--trust); }
+  pre .m{ color: var(--model); }
+  pre .doc{
+    color: var(--ink-soft);
+    background: var(--model-soft);
+    border-radius:3px;
+    padding:.05em .2em;
+  }
+  .ref{
+    font-family: var(--mono);
+    font-size:.72rem;
+    color: var(--ink-faint);
+  }
+
+  /* ---------- chores ---------- */
+  .chores{ display:flex; flex-direction:column; gap:0; margin:0; padding:0; list-style:none; }
+  .chores li{
+    display:grid;
+    grid-template-columns: 1.6rem 1fr;
+    gap: .35rem 1rem;
+    padding: 1.15rem 0;
+    border-top:1px solid var(--rule-soft);
+  }
+  .chores li:last-child{ border-bottom:1px solid var(--rule-soft); }
+  .chores .n{
+    font-family: var(--mono); font-size:.78rem; color: var(--ink-faint);
+    line-height:1.9;
+  }
+  .chores .what{ font-weight:600; }
+  .chores .snippet{
+    grid-column:2;
+    font-family: var(--mono); font-size:.78rem;
+    color: var(--ink-soft);
+    background: var(--sunken);
+    border-radius:4px;
+    padding:.35rem .55rem;
+    display:block;
+    overflow-x:auto;
+    white-space:pre;
+  }
+  .chores p{ grid-column:2; }
+
+  /* ---------- syntax aside ---------- */
+  .aside{
+    background: var(--surface);
+    border:1px solid var(--rule-soft);
+    border-radius:10px;
+    padding:1.3rem 1.35rem;
+    display:flex; flex-direction:column; gap:1rem;
+  }
+  .aside dl{ margin:0; display:flex; flex-direction:column; gap:.9rem; }
+  .aside dt{
+    font-family: var(--mono); font-size:.86rem; font-weight:500; color: var(--ink);
+  }
+  .aside dd{ margin:.15rem 0 0; font-size:.94rem; color: var(--ink-soft); max-width: 58ch; }
+
+  /* ---------- the trip ---------- */
+  .trip{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; }
+  .trip li{
+    display:grid;
+    grid-template-columns: 2.6rem 1fr;
+    align-items:start;
+    gap:0 1rem;
+    padding-bottom:1.5rem;
+    position:relative;
+  }
+  .trip li::before{
+    content:"";
+    position:absolute;
+    left: 0.85rem;
+    top: 1.7rem;
+    bottom: -0.2rem;
+    width:1px;
+    background: var(--rule);
+  }
+  .trip li:last-child{ padding-bottom:0; }
+  .trip li:last-child::before{ display:none; }
+  .trip .dot{
+    grid-column:1; grid-row:1 / span 2;
+    width:1.75rem; height:1.75rem;
+    border-radius:50%;
+    background: var(--surface);
+    border:1px solid var(--rule);
+    color: var(--ink-soft);
+    font-family: var(--mono); font-size:.72rem;
+    display:flex; align-items:center; justify-content:center;
+    position:relative; z-index:1;
+  }
+  .trip .step{ grid-column:2; font-weight:600; line-height:1.5; }
+  .trip .detail{
+    grid-column:2;
+    font-size:.94rem; color: var(--ink-soft);
+    margin-top:.2rem;
+  }
+  .trip .detail code{ background: var(--sunken); }
+
+  /* ---------- closing notes ---------- */
+  .notes{ display:flex; flex-direction:column; gap:1.5rem; }
+  .note{
+    border-left:3px solid var(--rule);
+    padding: .1rem 0 .1rem 1.3rem;
+    display:flex; flex-direction:column; gap:.6rem;
+  }
+  .note.principle{ border-left-color: var(--trust); }
+  .note.gotcha{ border-left-color: var(--model); }
+  .note h4{
+    margin:0; font-family: var(--serif); font-weight:600; font-size:1.12rem;
+    line-height:1.35; text-wrap:balance;
+  }
+  .note .tag{
+    font-family: var(--mono); font-size:.66rem; letter-spacing:.14em;
+    text-transform:uppercase;
+  }
+  .note.principle .tag{ color: var(--trust); }
+  .note.gotcha .tag{ color: var(--model); }
+  .note p{ font-size:.98rem; }
+
+  .shapes{
+    display:grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap:.75rem; margin-top:.3rem;
+  }
+  .shape{
+    font-family: var(--mono); font-size:.76rem; line-height:1.7;
+    background: var(--sunken); border-radius:6px; padding:.7rem .8rem;
+    overflow-x:auto; white-space:pre;
+  }
+  .shape b{ display:block; font-weight:500; color: var(--ink-faint); font-size:.68rem;
+            letter-spacing:.1em; text-transform:uppercase; margin-bottom:.3rem; }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition:none !important; animation:none !important; }
+  }
+</style>
+
+<main class="page">
+
+  <header class="masthead">
+    <div class="kicker">Cartwheel &middot; agent/agent.py</div>
+    <h1>Inside <span class="fn">_call</span></h1>
+    <p class="deck">The AI brings the request. Your server brings the identity. <b>These six lines are where they meet</b> — and where they stay separate.</p>
+    <div class="prefs">
+      <span>Text size</span>
+      <button type="button" id="smaller" aria-label="Decrease text size">A&minus;</button>
+      <button type="button" id="larger" aria-label="Increase text size">A+</button>
+    </div>
+  </header>
+
+  <section>
+    <p class="lede">You have an AI that can <em>ask</em> to do things: look up a policy, cancel an order, issue a refund. It never actually does them. It asks, and your Python code decides what really happens.</p>
+    <p>The functions it can ask for are called <strong>tools</strong>. The two pieces of code below are the plumbing between the AI's request and the real function. They look like almost nothing — a wrapper that calls a wrapper — but they carry the most important rule in the whole application, so they are worth reading slowly.</p>
+  </section>
+
+  <hr>
+
+  <section>
+    <h2>Every tool exists twice</h2>
+    <p>Look at the names and you will see near-duplicates:</p>
+    <p><code>search_help_center_logic</code> is the one that does the actual searching. <code>search_help_center</code> is a thin shell around it.</p>
+    <p>Think of a restaurant. The <strong>kitchen</strong> cooks. The <strong>waiter</strong> takes the order and carries the plate out. The <code>_logic</code> function is the kitchen; the other one is the waiter.</p>
+    <p>Why bother with a waiter? Because you want to taste-test the kitchen without seating a customer and running the whole restaurant. The tests do exactly that — they call the <code>_logic</code> function directly. No AI, no network, no API key, instant.</p>
+
+    <figure>
+      <div class="figlabel">Figure 1</div>
+      <div class="frame">
+        <svg viewBox="0 0 700 296" role="img" aria-label="Diagram: the AI model reaches the outer wrapper function, while tests call the inner logic function directly.">
+          <defs>
+            <marker id="ah-faint" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path class="m-faint" d="M0,0 L10,5 L0,10 z"/>
+            </marker>
+            <marker id="ah-trust" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path class="m-trust" d="M0,0 L10,5 L0,10 z"/>
+            </marker>
+          </defs>
+
+          <rect class="s-group" x="196" y="18" width="392" height="170" rx="10"/>
+          <text class="tx-tag" x="214" y="42">WHAT THE SDK SEES</text>
+          <text class="tx-code" x="214" y="64">search_help_center()</text>
+
+          <rect class="s-trust" x="222" y="82" width="340" height="86" rx="8"/>
+          <text class="tx-code" x="242" y="112">search_help_center_logic()</text>
+          <text class="tx-sm" x="242" y="136">plain Python &mdash; ranks the policy docs</text>
+
+          <rect class="s-model" x="20" y="42" width="140" height="44" rx="22"/>
+          <text class="tx" x="90" y="70" text-anchor="middle">the AI model</text>
+          <path class="s-line" d="M162,64 H190" marker-end="url(#ah-faint)"/>
+
+          <rect class="s-box" x="20" y="216" width="140" height="44" rx="22"/>
+          <text class="tx" x="90" y="244" text-anchor="middle">your tests</text>
+          <path class="s-line-dash" d="M162,238 H372 Q392,238 392,218 V176" marker-end="url(#ah-trust)"/>
+          <text class="tx-trust" x="410" y="232">STRAIGHT TO THE KITCHEN</text>
+          <text class="tx-sm" x="410" y="250">no AI, no network</text>
+        </svg>
+      </div>
+      <figcaption>The dashed outline is the boundary the AI can see across. Tests step over it and talk to the real function directly &mdash; which is the whole reason the two halves are kept apart.</figcaption>
+    </figure>
+
+    <p>That <code>@function_tool</code> line above the waiter is what puts it on the menu. The SDK reads the function's name, its parameters and its one-line description, and shows all of it to the AI. So this sentence:</p>
+    <pre>"""<span class="doc">Search Cartwheel's help-center policy docs. Returns top matches with policy ids.</span>"""</pre>
+    <p>is not a note for programmers. <strong>The AI reads it.</strong> It is the menu description, and it is how the AI decides whether this is the tool it wants. That is why it is one crisp sentence.</p>
+  </section>
+
+  <hr>
+
+  <section>
+    <h2>Who is asking?</h2>
+    <p>Here is the part to really understand.</p>
+    <p>When the AI asks for a search, it gets to fill in exactly one blank &mdash; the search words. But your code also needs to know <em>who is asking</em>. Is this shopper #7? A merchant? A support agent? That matters enormously: a shopper must not be able to read someone else's orders.</p>
+    <p>So where does that come from? Not from the AI. When someone signs in, the server looks them up and makes a small identity card &mdash; user id, role, and for merchants a store id. That card is tucked into a container that travels along with the whole conversation. The container is the <code>wrapper</code>; the card sits inside it at <code>wrapper.context</code>.</p>
+
+    <figure>
+      <div class="figlabel">Figure 2</div>
+      <div class="frame">
+        <svg viewBox="0 0 700 292" role="img" aria-label="Diagram: the model supplies only the query, the server supplies the identity, and both arrive inside the logic function.">
+          <defs>
+            <marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path class="m-faint" d="M0,0 L10,5 L0,10 z"/>
+            </marker>
+          </defs>
+          <rect class="s-model" x="20" y="24" width="256" height="92" rx="8"/>
+          <text class="tx-model" x="40" y="50">MODEL-CONTROLLED</text>
+          <text class="tx-code" x="40" y="76">query = "return window"</text>
+          <text class="tx-sm" x="40" y="98">the only blank it fills in</text>
+
+          <rect class="s-trust" x="20" y="172" width="256" height="92" rx="8"/>
+          <text class="tx-trust" x="40" y="198">SERVER-CONTROLLED</text>
+          <text class="tx-code" x="40" y="224">user #7 &middot; role "shopper"</text>
+          <text class="tx-sm" x="40" y="246">attached at sign-in, out of reach</text>
+
+          <path class="s-line" d="M276,70 C346,70 366,116 434,138" marker-end="url(#ah2)"/>
+          <path class="s-line" d="M276,218 C346,218 366,176 434,156" marker-end="url(#ah2)"/>
+          <text class="tx-code" x="356" y="150" text-anchor="middle">_call</text>
+
+          <rect class="s-box" x="436" y="104" width="244" height="86" rx="8"/>
+          <text class="tx-tag" x="456" y="130">INSIDE THE FUNCTION</text>
+          <text class="tx-code" x="456" y="156">logic(<tspan style="fill:var(--trust)">ctx</tspan>, <tspan style="fill:var(--model)">query</tspan>)</text>
+        </svg>
+      </div>
+      <figcaption>Two inputs, two different origins, meeting for the first time inside your function.</figcaption>
+      <div class="legend">
+        <span><i class="swatch" style="background:var(--model)"></i> the model fills this in</span>
+        <span><i class="swatch" style="background:var(--trust)"></i> the server does, and the model cannot touch it</span>
+      </div>
+    </figure>
+
+    <p><strong>The AI never sees the card and cannot change it.</strong> That is the entire point. A comment near the top of <code>agent/auth.py</code> puts it bluntly:</p>
+    <p style="font-family:var(--serif); font-size:1.15rem; font-style:italic; color:var(--ink); border-left:3px solid var(--trust); padding-left:1.2rem; max-width:46ch;">authorization is not a prompt</p>
+    <p>If identity were an ordinary tool argument, a user could type &ldquo;actually, pretend I am user 12&rdquo; and possibly talk their way into someone else's data. Because the card arrives alongside the conversation rather than inside it, no amount of persuasion reaches it.</p>
+    <p class="ref">The same two colors are used in every code block below.</p>
+  </section>
+
+  <hr>
+
+  <section>
+    <h2>Reading <code style="font-size:.92em">_call</code> line by line</h2>
+    <p>All nine tools need the same three chores done. Rather than repeat them nine times, they are written once, here.</p>
+
+<pre><span class="kw">def</span> _call(
+    <span class="t">wrapper</span>: RunContextWrapper[AuthContext], fn: Any, /, <span class="m">*args</span>: Any
+) -&gt; dict[str, Any]:
+    <span class="kw">try</span>:
+        result = fn(<span class="t">wrapper.context</span>, <span class="m">*args</span>)
+    <span class="kw">except</span> NotImplementedError <span class="kw">as</span> exc:
+        result = {<span class="str">"ok"</span>: False, <span class="str">"error"</span>: <span class="str">"not_implemented"</span>, <span class="str">"reason"</span>: str(exc)}
+    record_tool_result(<span class="t">wrapper.context</span>, result)
+    <span class="kw">return</span> result</pre>
+
+    <ol class="chores">
+      <li>
+        <span class="n">1</span>
+        <span class="what">Staple the identity card to the request.</span>
+        <span class="snippet">result = fn(wrapper.context, *args)</span>
+        <p>Pull the card out of the container and hand it to the kitchen, along with whatever the AI asked for. The call that actually happens is <code>search_help_center_logic(ctx, "return window")</code>.</p>
+        <p>Notice the shape this forces: <em>every</em> <code>_logic</code> function takes the identity first, even the ones that do not need it. <code>get_policy</code> does not check permissions at all &mdash; policy docs are public &mdash; and its docstring says so outright: &ldquo;Unused here, but every tool takes it.&rdquo; That sameness is what lets one small function serve all nine tools.</p>
+      </li>
+      <li>
+        <span class="n">2</span>
+        <span class="what">Do not let unfinished homework crash the app.</span>
+        <span class="snippet">except NotImplementedError as exc:</span>
+        <p>This is a course repository, and several tools are blank spaces for you to fill in. A blank one throws a fit when called. Without this line, running the agent before finishing the assignment gives you an ugly stack trace and a dead chat.</p>
+        <p>Instead the fit is quietly turned into a polite note &mdash; <em>that one is not available yet</em>. The AI reads the note, tells the user, and the conversation carries on. Note that it catches <em>only</em> this one kind of error; a genuine bug still crashes loudly, which is what you want.</p>
+      </li>
+      <li>
+        <span class="n">3</span>
+        <span class="what">Write down what happened.</span>
+        <span class="snippet">record_tool_result(wrapper.context, result)</span>
+        <p>Record who called, which tool, and whether they were turned away. Later you can ask questions like &ldquo;how often do shoppers get denied?&rdquo; This runs whether the call succeeded or failed.</p>
+      </li>
+    </ol>
+
+    <div class="aside">
+      <h3>Two bits of Python punctuation</h3>
+      <dl>
+        <div>
+          <dt>/</dt>
+          <dd>Everything before the slash must be passed by position, never by name. You may write <code>_call(wrapper, fn, ...)</code> but not <code>_call(fn=...)</code>. It prevents a collision: since <code>*args</code> forwards arguments onward, a tool that happened to have a parameter named <code>fn</code> would otherwise clash with <code>_call</code>'s own.</dd>
+        </div>
+        <div>
+          <dt>*args</dt>
+          <dd>&ldquo;However many extra pieces there were, collect them and pass them all along.&rdquo; Searching sends one (the query). Escalating to a human sends two (a summary and some context). The same <code>_call</code> handles both without knowing or caring.</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <hr>
+
+  <section>
+    <h2>The whole trip</h2>
+    <p>One question from a user, start to finish.</p>
+    <ol class="trip">
+      <li>
+        <span class="dot">1</span>
+        <span class="step">The AI asks for a search.</span>
+        <span class="detail">It fills in one blank: <code class="m">query = "return window"</code></span>
+      </li>
+      <li>
+        <span class="dot">2</span>
+        <span class="step">The waiter takes the order.</span>
+        <span class="detail"><code>search_help_center</code> &mdash; the function whose docstring the AI read on the menu.</span>
+      </li>
+      <li>
+        <span class="dot">3</span>
+        <span class="step"><code>_call</code> opens the container.</span>
+        <span class="detail">It takes out the identity card and puts it in front of the request.</span>
+      </li>
+      <li>
+        <span class="dot">4</span>
+        <span class="step">The kitchen cooks.</span>
+        <span class="detail"><code>search_help_center_logic(ctx, query)</code> trims the query, rejects it if empty, and ranks the policy documents.</span>
+      </li>
+      <li>
+        <span class="dot">5</span>
+        <span class="step">The result is written down.</span>
+        <span class="detail">Who asked, and how it went.</span>
+      </li>
+      <li>
+        <span class="dot">6</span>
+        <span class="step">The plate goes out.</span>
+        <span class="detail"><code>{"ok": True, "results": [...]}</code> is handed back to the AI, which writes the reply the user reads.</span>
+      </li>
+    </ol>
+  </section>
+
+  <hr>
+
+  <section class="notes">
+    <h2>Two things worth noticing</h2>
+
+    <div class="note principle">
+      <span class="tag">A habit worth keeping</span>
+      <h4>Failures are answers here, not crashes.</h4>
+      <p><code>_call</code> never lets a failure escape as an error. It hands one back as ordinary information. That is because the caller is an AI, not Python code &mdash; a crash tells it nothing, but a message tells it something it can explain to the user.</p>
+      <p>So every tool in this repository answers in one of exactly two shapes:</p>
+      <div class="shapes">
+        <div class="shape"><b>It worked</b>{"ok": True,
+ "results": [...] }</div>
+        <div class="shape"><b>It did not</b>{"ok": False,
+ "error": "not_found",
+ "reason": "..." }</div>
+      </div>
+    </div>
+
+    <div class="note gotcha">
+      <span class="tag">An oddity, on purpose</span>
+      <h4>One line sits outside the safety net.</h4>
+      <p>Look closely and you will see that <code>record_tool_result</code> comes <em>after</em> the block that catches unfinished homework. So if that function is itself unfinished, it will crash &mdash; and it is unfinished. It is the next assignment.</p>
+      <p>What saves you is that it checks first whether note-taking is even switched on. While it is off, the line does nothing and you never notice. The day you switch note-taking on, it speaks up: <em>your turn</em>.</p>
+      <p>That is deliberate. The assignments are stacked so the second one stays invisible until you are ready for it.</p>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  (function () {
+    var sizes = [16, 18, 20];
+    var i = 1;
+    try {
+      var saved = parseInt(localStorage.getItem("callFontStep"), 10);
+      if (!isNaN(saved) && saved >= 0 && saved < sizes.length) i = saved;
+    } catch (e) {}
+
+    function apply() {
+      document.documentElement.style.setProperty("--fs", sizes[i] + "px");
+      try { localStorage.setItem("callFontStep", String(i)); } catch (e) {}
+    }
+    apply();
+
+    document.getElementById("smaller").addEventListener("click", function () {
+      if (i > 0) { i--; apply(); }
+    });
+    document.getElementById("larger").addEventListener("click", function () {
+      if (i < sizes.length - 1) { i++; apply(); }
+    });
+  })();
+</script>
