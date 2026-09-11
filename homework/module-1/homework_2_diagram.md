@@ -16,7 +16,7 @@ work and the tracing happen.
 flowchart TD
     You["You<br/>HTTP client"]
 
-    subgraph B["Part B &nbsp;·&nbsp; POST /sessions"]
+    subgraph B["Part B &nbsp;·&nbsp; POST /sessions<br/>create_session()"]
         direction TB
         CS["create_session<br/><i>server/app.py</i>"]
         DB[("cartwheel.db<br/>users table")]
@@ -29,7 +29,7 @@ flowchart TD
         Sign["sign the token"]
     end
 
-    subgraph C["Part C &nbsp;·&nbsp; POST messages"]
+    subgraph C["Part C &nbsp;·&nbsp; POST messages<br/>post_message()"]
         direction TB
         PM["post_message<br/><i>server/app.py</i>"]
         Authz["_authorize<br/><i>provided</i><br/>401 · 403 · 404<br/><b>returns AuthContext</b>"]
@@ -78,6 +78,14 @@ flowchart TD
 **Legend.** Thick red outline = code you write in Homework 2. Dashed grey =
 provided or recorded automatically by OpenLLMetry. Dotted red = error paths the
 handout requires.
+
+**The two halves are two separate HTTP requests, not one sequence.** Everything
+in the Part B box is `create_session` in `server/app.py`; everything in the
+Part C box is `post_message`. `create_session` runs once, does a database read
+and signs a token, and opens no span: nothing unpredictable happens in it.
+`post_message` runs once per message and is where the model and the tools run,
+which is why the root span lives there and is named `session_message` rather
+than `session`. A session with five messages produces five traces.
 
 **`_SESSIONS` holds a pair, and the two halves come out at different moments.**
 
@@ -162,11 +170,11 @@ underneath.
 flowchart TD
     subgraph TR["one trace &nbsp;·&nbsp; one trace_id"]
         direction TB
-        subgraph ROOT["cartwheel.session_message &nbsp;·&nbsp; ROOT &nbsp;·&nbsp; Part C"]
+        subgraph ROOT["cartwheel.session_message<br/>ROOT span &nbsp;·&nbsp; Part C"]
             direction TB
-            subgraph WF["Agent Workflow &nbsp;·&nbsp; not a model call"]
+            subgraph WF["Agent Workflow<br/>not a model call"]
                 direction TB
-                subgraph AG["cartwheel-support.agent &nbsp;·&nbsp; invoke_agent"]
+                subgraph AG["cartwheel-support.agent<br/>invoke_agent"]
                     direction TB
                     M1["chat gpt-5.5<br/><i>asks for a tool</i>"]
                     TS["list_my_orders.tool<br/><i>Part A attributes</i>"]
