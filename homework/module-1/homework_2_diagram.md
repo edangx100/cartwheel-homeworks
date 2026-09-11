@@ -32,8 +32,8 @@ flowchart TD
     subgraph C["Part C &nbsp;·&nbsp; POST /sessions/id/messages"]
         direction TB
         PM["post_message<br/><i>server/app.py</i>"]
-        Authz["_authorize<br/><i>provided</i><br/>401 missing or bad token<br/>403 token for another session<br/>404 unknown session"]
-        Recover["recover AuthContext<br/>from _SESSIONS<br/><b>never from the message text</b>"]
+        Authz["_authorize<br/><i>provided</i><br/>401 missing or bad token<br/>403 token for another session<br/>404 unknown session<br/><b>returns the AuthContext from _SESSIONS</b>"]
+        Recover["recover the SQLiteSession<br/>from _SESSIONS<br/><i>the conversation history</i><br/><b>identity came from _authorize,<br/>never from the message text</b>"]
         Root["open ROOT span<br/><b>cartwheel.session_message</b><br/>user_role · user_id<br/>prompt_version · scenario_id<br/>gen_ai.input.messages<br/>gen_ai.output.messages"]
         Run["Runner.run agent, message, context"]
         Model["model span<br/>gen_ai.request.model<br/>gen_ai.usage.*"]
@@ -79,6 +79,22 @@ flowchart TD
 provided or recorded automatically by OpenLLMetry. Dotted red = error paths the
 handout requires.
 
+**`_SESSIONS` holds a pair, and the two halves come out at different moments.**
+
+```python
+_SESSIONS: dict[str, tuple[AuthContext, SQLiteSession]] = {}
+#                          who you are   what has been said
+
+ctx = _authorize(session_id, authorization)   # returns [0], the AuthContext
+_, session = _SESSIONS[session_id]            # takes [1], the SQLiteSession
+```
+
+`_authorize` ends with `return _SESSIONS[session_id][0]`, so identity is already
+recovered by the time the endpoint fetches the conversation history. The `_` in
+the second line discards the context it has just been handed. `Runner.run` needs
+the `SQLiteSession` so the agent remembers earlier turns; that is a separate
+concern from who the caller is.
+
 ### Reading the diagram
 
 | Stage | What happens | Why it matters |
@@ -111,15 +127,18 @@ underneath.
 
 ```mermaid
 flowchart TD
-    subgraph TR["one trace &nbsp;·&nbsp; trace_id 4bf92f3577b34da6…"]
+    subgraph TR["one trace &nbsp;·&nbsp; trace_id eaf80ae0ac8900ef…"]
         direction TB
         subgraph ROOT["cartwheel.session_message &nbsp;·&nbsp; ROOT span &nbsp;·&nbsp; you open this in Part C"]
             direction TB
             subgraph WF["Agent Workflow &nbsp;·&nbsp; grouping span, NOT a model call"]
                 direction TB
-                M1["chat gpt-5.5<br/><i>model span</i>"]
-                TS["execute_tool<br/>list_my_orders<br/><i>your Part A attributes land here</i>"]
-                M2["chat gpt-5.5<br/><i>model span, writes the reply</i>"]
+                subgraph AG["cartwheel-support.agent &nbsp;·&nbsp; gen_ai.operation.name = invoke_agent"]
+                    direction TB
+                    M1["chat gpt-5.5<br/><i>model span, asks for a tool</i>"]
+                    TS["list_my_orders.tool<br/><i>your Part A attributes land here</i>"]
+                    M2["chat gpt-5.5<br/><i>model span, writes the reply</i>"]
+                end
             end
         end
     end
@@ -133,12 +152,34 @@ flowchart TD
     class M1,M2 auto
     style ROOT stroke:#c0392b,stroke-width:3px
     style WF stroke:#7f8c8d,stroke-width:1px,stroke-dasharray: 5 3
+    style AG stroke:#7f8c8d,stroke-width:1px,stroke-dasharray: 5 3
     style TR stroke:#7f8c8d,stroke-width:1px
 ```
 
-A real trace has more spans than this — one model span per turn of the loop —
-but the shape repeats: model spans and tool spans alternate under
-`Agent Workflow`, all of them under your one root span.
+Two naming details, both observed rather than guessed: the tool span is named
+`<tool>.tool`, not `execute_tool <tool>` — the tool name lives in the
+`gen_ai.tool.name` attribute, and the span name is its own thing. And there is a
+`cartwheel-support.agent` span between `Agent Workflow` and the tool spans,
+named after the agent and carrying `gen_ai.operation.name = invoke_agent`.
+
+A real trace has more spans than this: one model span per turn of the loop, and
+one tool span per tool call.
+
+**What has been confirmed so far.** The nesting above down to the tool span was
+observed offline, running one request through `post_message` with
+`tests.eval.fake_model` and an in-memory OTel exporter:
+
+```text
+cartwheel.session_message
+└── Agent Workflow
+    └── cartwheel-support.agent
+        └── list_my_orders.tool
+```
+
+The fake model is not an instrumented client, so **no model span appeared** in
+that run. The two `chat gpt-5.5` boxes above are where model spans are expected
+once a real provider is called. Confirm their exact placement and names against
+Langfuse in Part E, and correct this diagram if they sit elsewhere.
 
 ### Every attribute, and who sets it
 
@@ -157,6 +198,7 @@ This table is also your implementation checklist for Parts A and C.
 | `cartwheel.store_id` | each tool span | **you** | A | **integer**, merchants only |
 | `cartwheel.permission_denied` | each tool span | **you** | A | boolean, set on **every** call, not just denials |
 | `cartwheel.permission_denied.reason` | each tool span | **you** | A | only when denied |
+| `gen_ai.operation.name` | agent span | automatic | — | the value `invoke_agent` |
 | `gen_ai.operation.name` | each tool span | automatic | — | the value `execute_tool` |
 | `gen_ai.tool.name` | each tool span | automatic | — | e.g. `list_my_orders` |
 | tool arguments and result | each tool span | automatic | — | needs `TRACELOOP_TRACE_CONTENT=true` |
@@ -179,33 +221,36 @@ Two things the table makes obvious:
 Indentation carries the nesting, so nothing has to be squeezed into a box:
 
 ```text
-trace_id: 4bf92f3577b34da6…              one trace = one request
+trace_id: eaf80ae0ac8900ef…                  one trace = one request
 │
-└── cartwheel.session_message            ROOT span — you create it (Part C)
-    │     cartwheel.user_role      = "shopper"
-    │     cartwheel.user_id        = "1"
-    │     cartwheel.prompt_version = "b3f4a5686618"
-    │     gen_ai.input.messages    = [{"role":"user",      "parts":[…]}]
-    │     gen_ai.output.messages   = [{"role":"assistant", "parts":[…]}]
+└── cartwheel.session_message                ROOT span — you create it (Part C)
+    │   cartwheel.user_role      = "shopper"
+    │   cartwheel.user_id        = "1"
+    │   cartwheel.prompt_version = "057b0f9f70cb"
+    │   gen_ai.input.messages    = [{"role":"user",      "parts":[…]}]
+    │   gen_ai.output.messages   = [{"role":"assistant", "parts":[…]}]
     │
-    └── Agent Workflow                   automatic; groups the run,
-        │                                NOT another model call
+    └── Agent Workflow                       automatic; groups the run,
+        │                                    NOT another model call
         │
-        ├── chat gpt-5.5                 automatic (model span)
-        │       gen_ai.request.model     = "gpt-5.5"
-        │       gen_ai.usage.input_tokens  = 1204
-        │       gen_ai.usage.output_tokens = 37
-        │
-        ├── execute_tool list_my_orders  automatic (tool span)
-        │       gen_ai.operation.name    = "execute_tool"   ┐ standard,
-        │       gen_ai.tool.name         = "list_my_orders" ┘ free
-        │       cartwheel.user_role      = "shopper"        ┐ yours,
-        │       cartwheel.user_id        = "1"              │ added by
-        │       cartwheel.permission_denied = false         ┘ Part A
-        │
-        └── chat gpt-5.5                 automatic; writes the final reply
-                gen_ai.usage.input_tokens  = 1631
-                gen_ai.usage.output_tokens = 88
+        └── cartwheel-support.agent          automatic; named after the agent
+            │   gen_ai.operation.name = "invoke_agent"
+            │
+            ├── chat gpt-5.5                 automatic (model span)
+            │   │   gen_ai.request.model       = "gpt-5.5"
+            │   │   gen_ai.usage.input_tokens  = 1204
+            │   │   gen_ai.usage.output_tokens = 37
+            │
+            ├── list_my_orders.tool          automatic (tool span)
+            │   │   gen_ai.operation.name    = "execute_tool"   ┐ standard,
+            │   │   gen_ai.tool.name         = "list_my_orders" ┘ free
+            │   │   cartwheel.user_role      = "shopper"        ┐ yours,
+            │   │   cartwheel.user_id        = "1"              │ added by
+            │   │   cartwheel.permission_denied = false         ┘ Part A
+            │
+            └── chat gpt-5.5                 automatic; writes the final reply
+                    gen_ai.usage.input_tokens  = 1631
+                    gen_ai.usage.output_tokens = 88
 ```
 
 Note where Part A and Part C write: **two different levels**. Identity once per

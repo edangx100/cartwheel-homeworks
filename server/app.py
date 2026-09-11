@@ -123,8 +123,37 @@ def create_session(body: SessionCreate) -> dict[str, Any]:
     session id and a signed token. The token payload must contain session_id,
     user_id, role, store_id, and issued_at.
     """
-    ### YOUR CODE HERE (HW2)
-    raise NotImplementedError("HW2: implement POST /sessions")
+    if body.role not in ROLES:
+        raise HTTPException(status_code=400, detail=f"unknown role: {body.role!r}")
+
+    with db.connection() as conn:
+        user = db.get_user(conn, body.user_id)
+    if user is None:
+        raise HTTPException(status_code=404, detail=f"unknown user: {body.user_id}")
+    if user.role != body.role:
+        # The claim loses to the database. This is the check that stops a
+        # caller from asking for a role they do not hold; the reason stays
+        # vague so a probe cannot read back the stored role.
+        raise HTTPException(
+            status_code=403, detail="claimed role does not match the stored role"
+        )
+
+    # Every field comes from the verified row, never from the request body.
+    # SessionCreate carries no store_id, so a merchant cannot name a store.
+    ctx = AuthContext(user_id=user.id, role=user.role, store_id=user.store_id)
+    session_id = uuid.uuid4().hex
+    _SESSIONS[session_id] = (ctx, SQLiteSession(session_id, str(SESSIONS_DB)))
+
+    token = create_token(
+        {
+            "session_id": session_id,
+            "user_id": ctx.user_id,
+            "role": ctx.role,
+            "store_id": ctx.store_id,
+            "issued_at": int(time.time()),
+        }
+    )
+    return {"session_id": session_id, "token": token}
 
 
 def _authorize(session_id: str, authorization: str | None) -> AuthContext:
@@ -138,6 +167,22 @@ def _authorize(session_id: str, authorization: str | None) -> AuthContext:
     if session_id not in _SESSIONS:
         raise HTTPException(status_code=404, detail="unknown session (server restarted?)")
     return _SESSIONS[session_id][0]
+
+
+def _trace_content_enabled() -> bool:
+    """Whether message content may be recorded on spans.
+
+    observability.instrument defaults this to "false". Part E asks for
+    TRACELOOP_TRACE_CONTENT=true to capture the fictional course data, and
+    false when content must not be recorded, so the switch has to reach the
+    hand-written attributes too and not only the library's.
+    """
+    return os.environ.get("TRACELOOP_TRACE_CONTENT", "false").strip().lower() == "true"
+
+
+def _genai_message(role: str, text: str) -> str:
+    """One OTel GenAI message, serialised for a span attribute."""
+    return json.dumps([{"role": role, "parts": [{"type": "text", "content": text}]}])
 
 
 @app.post("/sessions/{session_id}/messages")
@@ -158,8 +203,53 @@ async def post_message(
     gen_ai.output.messages on the root span as JSON arrays of OTel GenAI
     messages with role and parts fields.
     """
-    ### YOUR CODE HERE (HW2)
-    raise NotImplementedError("HW2: implement the traced message endpoint")
+    # Authorization first: nothing below runs for a caller who failed the
+    # token checks. _authorize raises 401, 403 or 404 itself.
+    ctx = _authorize(session_id, authorization)
+    _, session = _SESSIONS[session_id]
+
+    agent = build_agent(ctx, model=body.model)
+    version = prompt_version(render_system_prompt(ctx))
+
+    # start_as_current_span both opens the span and makes it current, so every
+    # span the SDK creates inside this block, model calls and tool calls alike,
+    # nests underneath it and shares its trace id.
+    with _tracer.start_as_current_span("cartwheel.session_message") as span:
+        span.set_attribute("cartwheel.user_role", ctx.role)
+        span.set_attribute("cartwheel.user_id", str(ctx.user_id))
+        span.set_attribute("cartwheel.prompt_version", version)
+        if body.scenario_id:
+            # Only when the scenario runner supplies one; a manual session
+            # leaves it null and the attribute stays off the span.
+            span.set_attribute("cartwheel.scenario_id", body.scenario_id)
+
+        record_content = _trace_content_enabled()
+        if record_content:
+            span.set_attribute(
+                "gen_ai.input.messages", _genai_message("user", body.message)
+            )
+
+        result = await Runner.run(
+            agent,
+            body.message,
+            session=session,
+            context=ctx,
+            max_turns=MAX_TURNS,
+        )
+        reply = str(result.final_output)
+
+        # After the run, not before: the reply does not exist until the agent
+        # has finished writing it.
+        if record_content:
+            span.set_attribute(
+                "gen_ai.output.messages", _genai_message("assistant", reply)
+            )
+
+    return {
+        "session_id": session_id,
+        "reply": reply,
+        "prompt_version": version,
+    }
 
 
 @app.get("/health")

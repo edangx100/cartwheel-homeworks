@@ -17,7 +17,34 @@ and the reason. Regression check offline: 30 passed, 11 xfailed
 (`test_agent_tools`, `test_extra_tools`, `test_auth`, `test_adversarial`).
 The remaining xfails are the HW2 holes still to be filled.
 
-**Next:** Part B, `create_session` in `server/app.py`.
+Part B is implemented. The handout's focused test passes. All four paths
+verified offline: role "wizard" 400, user 999999 404, user 9002 claiming
+shopper 403, user 9002 as merchant 200 with `store_id=2` recovered from the
+users table rather than the request. Full suite offline: 139 passed, 9 xpassed,
+12 skipped, 21 xfailed, 1 failed (the known network-dependent m2 test).
+
+Part C is implemented. Verified offline end to end with `tests.eval.fake_model`
+and an in-memory OTel exporter: one request produced a four-span trace, root
+`cartwheel.session_message` carrying user_role, user_id, prompt_version and both
+gen_ai message attributes, with `Agent Workflow` -> `cartwheel-support.agent` ->
+`list_my_orders.tool` nested underneath, and Part A's attributes on the tool
+span. Checks offline: `-k hw2` 1 passed; full suite 139 passed, 9 xpassed,
+12 skipped, 21 xfailed, 1 failed (the known network-dependent m2 test).
+
+Message content is guarded on TRACELOOP_TRACE_CONTENT, per the `post_message`
+docstring, so Part E's privacy switch also governs the hand-written attributes.
+
+`homework_2_diagram.md` corrected from the observed run: Diagram 1's Part C
+boxes now say `_authorize` returns the AuthContext and the following step
+recovers the SQLiteSession, since `_SESSIONS` holds both and the old label named
+the wrong half. Diagram 2 gained the `cartwheel-support.agent` span
+(`gen_ai.operation.name=invoke_agent`) between `Agent Workflow` and the tool
+span, and tool spans are named `<tool>.tool` rather than `execute_tool <tool>`.
+Model span placement in that diagram is still unconfirmed: the fake model is not
+an instrumented client, so none appeared. Confirm against Langfuse in Part E.
+
+**Next:** Part D, `tests/test_observability.py` with the two authentication
+tests.
 
 ## Deliverable checklist
 
@@ -25,8 +52,8 @@ The remaining xfails are the HW2 holes still to be filled.
 | --- | --- | --- | --- |
 | 0 | Environment synced | — | done |
 | 1 | `record_tool_result`, `_set_permission_denied_attributes` | `observability/instrument.py` | **done**, Langfuse check pending in Part E |
-| 2 | `create_session` | `server/app.py` | not started |
-| 3 | `post_message` in a `cartwheel.session_message` root span | `server/app.py` | not started |
+| 2 | `create_session` | `server/app.py` | **done** |
+| 3 | `post_message` in a `cartwheel.session_message` root span | `server/app.py` | **done** |
 | 4 | Two authentication tests | `tests/test_observability.py` | not started |
 | 5 | At least five traced requests, inspected in Langfuse | Part E | not started |
 | 6 | Two differing `cartwheel.prompt_version` hashes | Part F | not started |
