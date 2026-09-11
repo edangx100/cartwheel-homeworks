@@ -35,12 +35,17 @@ flowchart TD
         Authz["_authorize<br/><i>provided</i><br/>401 · 403 · 404<br/><b>returns AuthContext</b>"]
         Recover["recover<br/>SQLiteSession<br/><i>chat history</i>"]
         Root["open ROOT span<br/><b>cartwheel.</b><br/><b>session_message</b>"]
-        Run["Runner.run"]
-        Model["model span<br/>gen_ai.usage.*"]
-        TSpan["tool span<br/>gen_ai.tool.name"]
-        Tool["tool body<br/><i>agent/tools.py</i>"]
-        Matrix["access matrix<br/><i>agent/auth.py</i>"]
-        Rec["record_tool_result<br/><i>Part A</i><br/>adds cartwheel.*"]
+        Run["await Runner.run<br/><i>last line the</i><br/><i>endpoint controls</i>"]
+
+        subgraph RUN["inside Runner.run<br/>the model decides this<br/>at runtime &nbsp;·&nbsp; NOT lines<br/>in post_message"]
+            direction TB
+            Model["model span<br/>gen_ai.usage.*"]
+            TSpan["tool span<br/>gen_ai.tool.name"]
+            Tool["tool body<br/><i>agent/tools.py</i>"]
+            Matrix["access matrix<br/><i>agent/auth.py</i>"]
+            Rec["record_tool_result<br/><i>Part A</i><br/>adds cartwheel.*"]
+        end
+
         Reply["final reply"]
     end
 
@@ -72,6 +77,7 @@ flowchart TD
     classDef err stroke:#c0392b,stroke-width:1px,stroke-dasharray: 2 2
     class CS,Ctx,Save,Sign,PM,Recover,Root,Rec yours
     class Model,TSpan,Authz auto
+    style RUN stroke:#7f8c8d,stroke-width:2px,stroke-dasharray: 8 4
     class E400,E403,E404 err
 ```
 
@@ -215,6 +221,56 @@ post_message                                        server/app.py
 
 Line numbers shift as files change; `grep -rn can_view_order agent/` finds the
 call sites.
+
+**The endpoint is not even on the call stack.** Captured from a real request,
+printing the frames inside this repository at the moment `can_view_order` runs:
+
+```text
+    agent/agent.py:336  in get_order()
+        return _call(wrapper, get_order_logic, order_id)
+    agent/agent.py:318  in _call()
+        result = fn(wrapper.context, *args)
+    agent/agent.py:180  in get_order_logic()
+        if not can_view_order(ctx, order.user_id, order.store_id):
+
+    -> agent/auth.py  can_view_order()   <<< THE MATRIX
+```
+
+No frame from `server/app.py` appears at all. The SDK runs the tool on a worker
+thread, so by the time the matrix executes the endpoint's frame is gone.
+
+### Which boxes are lines in post_message, and which are not
+
+Six of the Part C boxes are lines you can point to. Five are not:
+
+```python
+    ctx = _authorize(session_id, authorization)        # box: _authorize
+    _, session = _SESSIONS[session_id]                 # box: recover SQLiteSession
+    agent = build_agent(ctx, model=body.model)         #   (not drawn)
+    version = prompt_version(render_system_prompt(ctx))#   (not drawn)
+
+    with _tracer.start_as_current_span("cartwheel.…"): # box: open ROOT span
+        span.set_attribute(...)                        #   (the attribute list)
+
+        result = await Runner.run(agent, ...)          # box: await Runner.run
+        # ────────────────────────────────────────────────────────────────
+        #  EVERYTHING ELSE IN THE DIAGRAM HAPPENS INSIDE THIS ONE CALL:
+        #     model span          OpenLLMetry creates it
+        #     tool span           OpenLLMetry creates it
+        #     tool body           agent/tools.py
+        #     access matrix       agent/auth.py
+        #     record_tool_result  observability/instrument.py
+        #  None of these is a line you can point to in post_message.
+        # ────────────────────────────────────────────────────────────────
+
+        reply = str(result.final_output)               # box: final reply
+```
+
+Those five are drawn inside a dashed `inside Runner.run` box in Diagram 1 for
+exactly this reason. `post_message` cannot contain them, because it does not
+know they will happen: the model reads the message and decides at runtime
+whether to call a tool, which tool, and with what arguments. One request calls
+no tools and produces no tool span at all; another calls three.
 
 **Why the check cannot live at the endpoint.** `post_message` does not know
 which tools will run, because *the model decides that* after reading the
