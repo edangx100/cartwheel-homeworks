@@ -146,6 +146,116 @@ nonempty one, and `gen_ai.input.messages` / `gen_ai.output.messages` when
 `TRACELOOP_TRACE_CONTENT` is true. The attribute table in Diagram 2 lists the
 types and which Part sets each one.
 
+### Where the "open ROOT span" box is in the code
+
+It is **one line**, in `post_message`:
+
+```python
+with _tracer.start_as_current_span("cartwheel.session_message") as span:
+     └──────────────┬─────────────┘ └───────────┬────────────┘
+       "open ROOT span"              "cartwheel.session_message"
+```
+
+The box's three lines of text all come from that single line:
+
+| Box text | Where it comes from |
+| --- | --- |
+| `open ROOT span` | `start_as_current_span(...)`, the call that opens it |
+| `cartwheel.` | these two are **one string**, `"cartwheel.session_message"`, |
+| `session_message` | split across two lines only so the label does not clip |
+
+There is nothing in the code called `cartwheel.` on its own. It is one name,
+broken in half to fit the box.
+
+**What "open a span" means concretely.** `with` is Python for "do this, and
+everything indented below happens inside it":
+
+```python
+    with _tracer.start_as_current_span("cartwheel.session_message") as span:  # span opens
+        span.set_attribute("cartwheel.user_role", ctx.role)
+        ...
+        result = await Runner.run(agent, body.message, ...)                   # model and
+        ...                                                                   # tools run here
+        span.set_attribute("gen_ai.output.messages", ...)
+                                                                              # span closes
+    return {...}                                                              # outside again
+```
+
+The span starts a stopwatch when the `with` line runs and stops it when the
+indented block ends. Everything in between is recorded as happening *within* it,
+including `Runner.run`, which is where the model runs and the tools are called.
+That is why their spans nest underneath: they happened while this one was open.
+`as span` gives the handle the `set_attribute` calls use.
+
+**It is not in `create_session`.** That function ends well above `post_message`
+begins, serves a different URL, and opens no span at all. See the note under the
+legend for why.
+
+### Where the access matrix is triggered
+
+Nowhere in `post_message`. It is reached from **one** line there, and everything
+below that line happens in code the endpoint never names:
+
+```text
+post_message                                        server/app.py
+└── await Runner.run(agent, …, context=ctx)         ← the only line in post_message
+    │
+    └── the model reads the message and decides: "call get_order(4127)"
+        │
+        └── get_order(wrapper, order_id)            agent/agent.py   @function_tool
+            └── _call(wrapper, get_order_logic, 4127)
+                │
+                ├── get_order_logic(ctx, 4127)      agent/agent.py:174
+                │   ├── db.get_order(conn, 4127)        fetch the row
+                │   └── can_view_order(ctx, …)      agent/auth.py    ← THE MATRIX
+                │       └── False → return permission_denied(…)
+                │
+                └── record_tool_result(ctx, result) ← your Part A code runs here
+```
+
+Line numbers shift as files change; `grep -rn can_view_order agent/` finds the
+call sites.
+
+**Why the check cannot live at the endpoint.** `post_message` does not know
+which tools will run, because *the model decides that* after reading the
+message. One request calls no tools, another calls three. So the check has to
+sit inside each tool, where the specific order being touched is known.
+
+What the endpoint contributes is the *identity*: `context=ctx`. That one
+argument travels the whole chain and arrives as the `ctx` in
+`can_view_order(ctx, …)`. The endpoint makes sure the identity is correct; the
+tool enforces what that identity may do.
+
+This is what `SPEC.md` means by **"Authorization is not a prompt"**:
+
+> The server injects the auth context per session, tools call these checks
+> before touching data, and the model cannot request data outside the caller's
+> row of the matrix.
+
+If the model is jailbroken, hallucinates, or simply calls `get_order(4127)` for
+a shopper who does not own order 4127, the check still returns
+`permission_denied`. The model never receives the data, so it cannot leak it.
+
+**Reading this in Diagram 1.** The Part C boxes are drawn as a chain, but only
+the first is a line in `post_message`:
+
+| Box | Where that code actually lives |
+| --- | --- |
+| `post_message` | `server/app.py` |
+| `_authorize` | `server/app.py`, called from `post_message` |
+| recover SQLiteSession | `server/app.py`, called from `post_message` |
+| open ROOT span | `server/app.py`, called from `post_message` |
+| `Runner.run` | `server/app.py`, the last line the endpoint controls |
+| model span · tool span | created by OpenLLMetry, inside the run |
+| tool body | `agent/tools.py`, or `agent/agent.py` for the lecture tools |
+| access matrix | `agent/auth.py`, called by the tool |
+| `record_tool_result` | `observability/instrument.py`, called by `_call` |
+| final reply | returned back up the chain to `post_message` |
+
+The diagram shows the **path a request takes**, not the contents of one
+function. The same is true of the root span box above: one line of
+`post_message`, with everything else nested inside the call it makes.
+
 **The `record_tool_result` box** adds `cartwheel.user_role`,
 `cartwheel.user_id`, `cartwheel.store_id` for merchants, and
 `cartwheel.permission_denied` with `.reason` when a tool denied the request.
