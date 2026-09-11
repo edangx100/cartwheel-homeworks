@@ -43,8 +43,22 @@ span, and tool spans are named `<tool>.tool` rather than `execute_tool <tool>`.
 Model span placement in that diagram is still unconfirmed: the fake model is not
 an instrumented client, so none appeared. Confirm against Langfuse in Part E.
 
-**Next:** Part D, `tests/test_observability.py` with the two authentication
-tests.
+Part D is implemented: `tests/test_observability.py`, 14 tests, offline. Both
+required cases plus a positive control, a forged-payload case that rewrites the
+role and keeps the signature (401), malformed headers (401) and an unknown
+session (404). The fixture redirects SESSIONS_DB to tmp_path so a run leaves no
+file in the repo.
+
+Mutation-checked rather than trusted: disabling the role check failed 2 tests,
+disabling the session-binding check failed 3, and `git checkout` restored
+`server/app.py` before continuing.
+
+All three handout checks offline: `-k hw2` 1 passed; `test_observability.py`
+14 passed; full suite 153 passed, 9 xpassed, 12 skipped, 21 xfailed, 1 failed
+(the known network-dependent m2 test).
+
+**Next:** Part E. Needs Docker, a local Langfuse, and a live model key, so it is
+a different kind of session from Parts A to D.
 
 ## Deliverable checklist
 
@@ -54,11 +68,11 @@ tests.
 | 1 | `record_tool_result`, `_set_permission_denied_attributes` | `observability/instrument.py` | **done**, Langfuse check pending in Part E |
 | 2 | `create_session` | `server/app.py` | **done** |
 | 3 | `post_message` in a `cartwheel.session_message` root span | `server/app.py` | **done** |
-| 4 | Two authentication tests | `tests/test_observability.py` | not started |
+| 4 | Two authentication tests | `tests/test_observability.py` | **done**, 14 tests |
 | 5 | At least five traced requests, inspected in Langfuse | Part E | not started |
 | 6 | Two differing `cartwheel.prompt_version` hashes | Part F | not started |
 | 7 | Exactly two trace objects | `hw2-traces.json` | not started |
-| 8 | Checks pass (see below) | — | not started |
+| 8 | Checks pass (see below) | — | **offline checks pass** |
 | 9 | Video, 5 minutes or less | — | **student** |
 | 10 | Student assessments | — | **student** |
 
