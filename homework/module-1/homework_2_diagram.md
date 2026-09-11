@@ -14,37 +14,37 @@ work and the tracing happen.
 
 ```mermaid
 flowchart TD
-    You["You<br/>curl or any HTTP client"]
+    You["You<br/>HTTP client"]
 
     subgraph B["Part B &nbsp;·&nbsp; POST /sessions"]
         direction TB
         CS["create_session<br/><i>server/app.py</i>"]
-        DB[("data/cartwheel.db<br/>users table")]
+        DB[("cartwheel.db<br/>users table")]
         RoleOK{"stored role ==<br/>claimed role?"}
-        E400["HTTP 400<br/>unknown role"]
-        E404["HTTP 404<br/>unknown user id"]
+        E400["HTTP 400<br/>bad role"]
+        E404["HTTP 404<br/>no such user"]
         E403["HTTP 403<br/>role mismatch"]
-        Ctx["AuthContext<br/>user_id, role, store_id<br/><b>built from the database</b>"]
-        Save["_SESSIONS session_id =<br/>AuthContext + SQLiteSession"]
-        Sign["sign token<br/>body + HMAC signature"]
+        Ctx["AuthContext<br/><b>from the database</b>"]
+        Save["store in _SESSIONS"]
+        Sign["sign the token"]
     end
 
-    subgraph C["Part C &nbsp;·&nbsp; POST /sessions/id/messages"]
+    subgraph C["Part C &nbsp;·&nbsp; POST messages"]
         direction TB
         PM["post_message<br/><i>server/app.py</i>"]
-        Authz["_authorize<br/><i>provided</i><br/>401 missing or bad token<br/>403 token for another session<br/>404 unknown session<br/><b>returns the AuthContext from _SESSIONS</b>"]
-        Recover["recover the SQLiteSession<br/>from _SESSIONS<br/><i>the conversation history</i><br/><b>identity came from _authorize,<br/>never from the message text</b>"]
-        Root["open ROOT span<br/><b>cartwheel.session_message</b><br/>user_role · user_id<br/>prompt_version · scenario_id<br/>gen_ai.input.messages<br/>gen_ai.output.messages"]
-        Run["Runner.run agent, message, context"]
-        Model["model span<br/>gen_ai.request.model<br/>gen_ai.usage.*"]
-        TSpan["tool span<br/>gen_ai.operation.name = execute_tool<br/>gen_ai.tool.name"]
+        Authz["_authorize<br/><i>provided</i><br/>401 · 403 · 404<br/><b>returns AuthContext</b>"]
+        Recover["recover<br/>SQLiteSession<br/><i>chat history</i>"]
+        Root["open ROOT span<br/><b>cartwheel.</b><br/><b>session_message</b>"]
+        Run["Runner.run"]
+        Model["model span<br/>gen_ai.usage.*"]
+        TSpan["tool span<br/>gen_ai.tool.name"]
         Tool["tool body<br/><i>agent/tools.py</i>"]
-        Matrix["access matrix check<br/><i>agent/auth.py</i>"]
-        Rec["record_tool_result<br/><i>observability/instrument.py</i><br/>adds cartwheel.user_role<br/>cartwheel.user_id · store_id<br/>cartwheel.permission_denied<br/>+ .reason when denied"]
-        Reply["final assistant reply"]
+        Matrix["access matrix<br/><i>agent/auth.py</i>"]
+        Rec["record_tool_result<br/><i>Part A</i><br/>adds cartwheel.*"]
+        Reply["final reply"]
     end
 
-    LF[/"Langfuse<br/>http://localhost:3000"/]
+    LF[/"Langfuse<br/>localhost:3000"/]
 
     You -->|"1 . user_id + role"| CS
     CS --> RoleOK
@@ -97,17 +97,50 @@ concern from who the caller is.
 
 ### Reading the diagram
 
+The boxes are kept short so nothing is clipped when the diagram renders. The
+detail each one stands for is here.
+
 | Stage | What happens | Why it matters |
 |---|---|---|
 | 1 | You claim a user id and a role | A *claim*, nothing more — not yet trusted |
 | — | `create_session` reads the users table | The database is the authority, not the request |
 | — | Claimed role vs stored role | Mismatch is HTTP 403. This is the check that stops "I am support staff" |
+| — | `AuthContext` is built | Every field comes from the verified row, including `store_id`, which the request has no field to send |
 | 2 | Server returns a session id and a signed token | Identity is now stored **server-side** |
-| 3 | Each message carries the token | Proves entitlement to that session |
+| 3 | Each message carries the token | Proves entitlement to that session, not who you are |
 | — | Root span opens | Everything below it shares one `trace_id` |
 | — | Tools run and check the matrix | `agent/auth.py` enforces it in code, not in the prompt |
 | — | `record_tool_result` fires | Your `cartwheel.*` attributes land on the tool span |
 | 4 | Reply returns, spans export | The trace becomes the durable record |
+
+**The `_authorize` box, in full.** It performs three checks before returning
+anything, and raises rather than returning on each failure:
+
+| Code | Condition |
+|---|---|
+| 401 | header missing, not `Bearer …`, or the HMAC signature does not verify |
+| 403 | the token was issued for a different session |
+| 404 | no such session on this server (it restarted, and `_SESSIONS` is in memory) |
+
+Only after all three does it `return _SESSIONS[session_id][0]`, the
+`AuthContext`. There is no path where the endpoint holds an identity that
+skipped these checks.
+
+**The "recover SQLiteSession" box.** `_SESSIONS` stores a pair per session, and
+the halves come out at different moments: `_authorize` returns the
+`AuthContext`, then the endpoint fetches the `SQLiteSession`, the conversation
+history `Runner.run` needs so the agent remembers earlier turns. Identity never
+comes from the message text.
+
+**The root span box** carries `cartwheel.user_role`, `cartwheel.user_id`,
+`cartwheel.prompt_version`, `cartwheel.scenario_id` when the request supplies a
+nonempty one, and `gen_ai.input.messages` / `gen_ai.output.messages` when
+`TRACELOOP_TRACE_CONTENT` is true. The attribute table in Diagram 2 lists the
+types and which Part sets each one.
+
+**The `record_tool_result` box** adds `cartwheel.user_role`,
+`cartwheel.user_id`, `cartwheel.store_id` for merchants, and
+`cartwheel.permission_denied` with `.reason` when a tool denied the request.
 
 Note that `record_tool_result` runs **inside** the tool span, not after it.
 `_call` in `agent/agent.py` invokes it while that span is still active, which is
@@ -127,17 +160,17 @@ underneath.
 
 ```mermaid
 flowchart TD
-    subgraph TR["one trace &nbsp;·&nbsp; trace_id eaf80ae0ac8900ef…"]
+    subgraph TR["one trace &nbsp;·&nbsp; one trace_id"]
         direction TB
-        subgraph ROOT["cartwheel.session_message &nbsp;·&nbsp; ROOT span &nbsp;·&nbsp; you open this in Part C"]
+        subgraph ROOT["cartwheel.session_message &nbsp;·&nbsp; ROOT &nbsp;·&nbsp; Part C"]
             direction TB
-            subgraph WF["Agent Workflow &nbsp;·&nbsp; grouping span, NOT a model call"]
+            subgraph WF["Agent Workflow &nbsp;·&nbsp; not a model call"]
                 direction TB
-                subgraph AG["cartwheel-support.agent &nbsp;·&nbsp; gen_ai.operation.name = invoke_agent"]
+                subgraph AG["cartwheel-support.agent &nbsp;·&nbsp; invoke_agent"]
                     direction TB
-                    M1["chat gpt-5.5<br/><i>model span, asks for a tool</i>"]
-                    TS["list_my_orders.tool<br/><i>your Part A attributes land here</i>"]
-                    M2["chat gpt-5.5<br/><i>model span, writes the reply</i>"]
+                    M1["chat gpt-5.5<br/><i>asks for a tool</i>"]
+                    TS["list_my_orders.tool<br/><i>Part A attributes</i>"]
+                    M2["chat gpt-5.5<br/><i>writes the reply</i>"]
                 end
             end
         end
