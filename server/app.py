@@ -209,7 +209,7 @@ async def post_message(
     _, session = _SESSIONS[session_id]
 
     agent = build_agent(ctx, model=body.model)
-    version = prompt_version(render_system_prompt(ctx))
+    version = prompt_version()
 
     # start_as_current_span both opens the span and makes it current, so every
     # span the SDK creates inside this block, model calls and tool calls alike,

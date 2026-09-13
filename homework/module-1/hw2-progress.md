@@ -88,6 +88,27 @@ uv run pytest tests/test_observability.py
 uv run pytest
 ```
 
+## Known fallout from merging origin/main (2026-09-13)
+
+Upstream changed the HW2 contract after this work was done and verified.
+
+- **Fixed:** the merge removed the `render_system_prompt` import from
+  `server/app.py` while `post_message` still called it, so every message raised
+  `NameError`. No test drives `post_message` end to end, so the suite stayed
+  green. Now `version = prompt_version()`, matching `hw2-reference.patch`.
+  Verified with one live message: HTTP 200, `prompt_version=87a13cef5393`.
+- **Not fixed:** `cartwheel.store_id` should now be a string; this code writes
+  an integer.
+- **Not fixed:** the root span should also record `cartwheel.session_id`.
+- **Not fixed:** `prompt_version` now hashes the template alone, so it is the
+  same for every user. The Part F reasoning in `homework_2_report.md` and
+  `homework_2_diagram.md` (each role gets its own hash) no longer describes the
+  running code, and the Part F hashes `057b0f9f70cb` / `b3f4a5686618` will not
+  reproduce.
+
+None of the three unfixed items blocks HW3: the smoke report and trace export
+do not read `store_id` or `session_id`.
+
 ## Things to watch
 
 - `test_m2_run_judge_persists_store_predictions_for_prevalence` fails offline in
