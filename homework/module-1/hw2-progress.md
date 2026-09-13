@@ -1,0 +1,108 @@
+# HW2 progress note (local, not a submission deliverable)
+
+Branch: `homework_2` (created off `main` at 65db317)
+Handout: [hw2.md](hw2.md)
+Style: interactive tutorial, student drives, one step per go-ahead.
+
+## Current status
+
+Environment synced: `uv sync` reported 140 resolved, 136 audited, nothing to
+install. HW1 is complete and merged, so the five support tools and the local
+database are in place as the handout requires.
+
+Part A is implemented. Verified with an in-memory OTel exporter: a shopper's
+allowed call records user_role, string user_id and `permission_denied=False`;
+a merchant's denied call also records integer store_id, `permission_denied=True`
+and the reason. Regression check offline: 30 passed, 11 xfailed
+(`test_agent_tools`, `test_extra_tools`, `test_auth`, `test_adversarial`).
+The remaining xfails are the HW2 holes still to be filled.
+
+Part B is implemented. The handout's focused test passes. All four paths
+verified offline: role "wizard" 400, user 999999 404, user 9002 claiming
+shopper 403, user 9002 as merchant 200 with `store_id=2` recovered from the
+users table rather than the request. Full suite offline: 139 passed, 9 xpassed,
+12 skipped, 21 xfailed, 1 failed (the known network-dependent m2 test).
+
+Part C is implemented. Verified offline end to end with `tests.eval.fake_model`
+and an in-memory OTel exporter: one request produced a four-span trace, root
+`cartwheel.session_message` carrying user_role, user_id, prompt_version and both
+gen_ai message attributes, with `Agent Workflow` -> `cartwheel-support.agent` ->
+`list_my_orders.tool` nested underneath, and Part A's attributes on the tool
+span. Checks offline: `-k hw2` 1 passed; full suite 139 passed, 9 xpassed,
+12 skipped, 21 xfailed, 1 failed (the known network-dependent m2 test).
+
+Message content is guarded on TRACELOOP_TRACE_CONTENT, per the `post_message`
+docstring, so Part E's privacy switch also governs the hand-written attributes.
+
+`homework_2_diagram.md` corrected from the observed run: Diagram 1's Part C
+boxes now say `_authorize` returns the AuthContext and the following step
+recovers the SQLiteSession, since `_SESSIONS` holds both and the old label named
+the wrong half. Diagram 2 gained the `cartwheel-support.agent` span
+(`gen_ai.operation.name=invoke_agent`) between `Agent Workflow` and the tool
+span, and tool spans are named `<tool>.tool` rather than `execute_tool <tool>`.
+Model span placement in that diagram is still unconfirmed: the fake model is not
+an instrumented client, so none appeared. Confirm against Langfuse in Part E.
+
+Part D is implemented: `tests/test_observability.py`, 14 tests, offline. Both
+required cases plus a positive control, a forged-payload case that rewrites the
+role and keeps the signature (401), malformed headers (401) and an unknown
+session (404). The fixture redirects SESSIONS_DB to tmp_path so a run leaves no
+file in the repo.
+
+Mutation-checked rather than trusted: disabling the role check failed 2 tests,
+disabling the session-binding check failed 3, and `git checkout` restored
+`server/app.py` before continuing.
+
+All three handout checks offline: `-k hw2` 1 passed; `test_observability.py`
+14 passed; full suite 153 passed, 9 xpassed, 12 skipped, 21 xfailed, 1 failed
+(the known network-dependent m2 test).
+
+**Next:** Part E. Needs Docker, a local Langfuse, and a live model key, so it is
+a different kind of session from Parts A to D.
+
+## Deliverable checklist
+
+| # | Deliverable | Where | Status |
+| --- | --- | --- | --- |
+| 0 | Environment synced | — | done |
+| 1 | `record_tool_result`, `_set_permission_denied_attributes` | `observability/instrument.py` | **done**, Langfuse check pending in Part E |
+| 2 | `create_session` | `server/app.py` | **done** |
+| 3 | `post_message` in a `cartwheel.session_message` root span | `server/app.py` | **done** |
+| 4 | Two authentication tests | `tests/test_observability.py` | **done**, 14 tests |
+| 5 | At least five traced requests, inspected in Langfuse | Part E | not started |
+| 6 | Two differing `cartwheel.prompt_version` hashes | Part F | not started |
+| 7 | Exactly two trace objects | `hw2-traces.json` | not started |
+| 8 | Checks pass (see below) | — | **offline checks pass** |
+| 9 | Video, 5 minutes or less | — | **student** |
+| 10 | Student assessments | — | **student** |
+
+Files to commit, per the handout: `observability/instrument.py`,
+`server/app.py`, `tests/test_observability.py`, `hw2-traces.json`.
+
+## Checks the handout requires
+
+```bash
+uv run pytest --runxfail -vv tests/test_hw_holes.py -k "create_session_binds"
+uv run pytest --runxfail tests/test_hw_holes.py -k hw2
+uv run pytest tests/test_observability.py
+uv run pytest
+```
+
+## Things to watch
+
+- `test_m2_run_judge_persists_store_predictions_for_prevalence` fails offline in
+  this environment with `httpx.ConnectError: Connection refused`. It wants a
+  live model and is unrelated to HW2 work. It passes in a clean checkout with
+  no `.env`. Do not treat it as an HW2 regression.
+- Part E needs `TRACELOOP_TRACE_CONTENT=true` in `.env` before starting the
+  server, or message content is omitted from the traces.
+- Part F needs the same database state for both runs;
+  `uv run python -m seed.generate` resets it.
+- Student has not used a terminal HTTP client before, so Part E commands get
+  broken down flag by flag.
+
+## Study notes
+
+[homework_2_diagram.md](homework_2_diagram.md) holds the request path diagram,
+the span tree with its attribute table, and the session token explanation.
+Written alongside the work; not a submission deliverable.

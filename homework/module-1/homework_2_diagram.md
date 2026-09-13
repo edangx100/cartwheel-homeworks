@@ -14,37 +14,42 @@ work and the tracing happen.
 
 ```mermaid
 flowchart TD
-    You["You<br/>curl or any HTTP client"]
+    You["You<br/>HTTP client"]
 
-    subgraph B["Part B &nbsp;·&nbsp; POST /sessions"]
+    subgraph B["Part B &nbsp;·&nbsp; POST /sessions<br/>create_session()"]
         direction TB
         CS["create_session<br/><i>server/app.py</i>"]
-        DB[("data/cartwheel.db<br/>users table")]
+        DB[("cartwheel.db<br/>users table")]
         RoleOK{"stored role ==<br/>claimed role?"}
-        E400["HTTP 400<br/>unknown role"]
-        E404["HTTP 404<br/>unknown user id"]
+        E400["HTTP 400<br/>bad role"]
+        E404["HTTP 404<br/>no such user"]
         E403["HTTP 403<br/>role mismatch"]
-        Ctx["AuthContext<br/>user_id, role, store_id<br/><b>built from the database</b>"]
-        Save["_SESSIONS session_id =<br/>AuthContext + SQLiteSession"]
-        Sign["sign token<br/>body + HMAC signature"]
+        Ctx["AuthContext<br/><b>from the database</b>"]
+        Save["store in _SESSIONS"]
+        Sign["sign the token"]
     end
 
-    subgraph C["Part C &nbsp;·&nbsp; POST /sessions/id/messages"]
+    subgraph C["Part C &nbsp;·&nbsp; POST messages<br/>post_message()"]
         direction TB
         PM["post_message<br/><i>server/app.py</i>"]
-        Authz["_authorize<br/><i>provided</i><br/>401 missing or bad token<br/>403 token for another session<br/>404 unknown session"]
-        Recover["recover AuthContext<br/>from _SESSIONS<br/><b>never from the message text</b>"]
-        Root["open ROOT span<br/><b>cartwheel.session_message</b><br/>user_role · user_id<br/>prompt_version · scenario_id<br/>gen_ai.input.messages<br/>gen_ai.output.messages"]
-        Run["Runner.run agent, message, context"]
-        Model["model span<br/>gen_ai.request.model<br/>gen_ai.usage.*"]
-        TSpan["tool span<br/>gen_ai.operation.name = execute_tool<br/>gen_ai.tool.name"]
-        Tool["tool body<br/><i>agent/tools.py</i>"]
-        Matrix["access matrix check<br/><i>agent/auth.py</i>"]
-        Rec["record_tool_result<br/><i>observability/instrument.py</i><br/>adds cartwheel.user_role<br/>cartwheel.user_id · store_id<br/>cartwheel.permission_denied<br/>+ .reason when denied"]
-        Reply["final assistant reply"]
+        Authz["_authorize<br/><i>provided</i><br/>401 · 403 · 404<br/><b>returns AuthContext</b>"]
+        Recover["recover<br/>SQLiteSession<br/><i>chat history</i>"]
+        Root["open ROOT span<br/><b>cartwheel.</b><br/><b>session_message</b>"]
+        Run["await Runner.run<br/><i>last line the</i><br/><i>endpoint controls</i>"]
+
+        subgraph RUN["inside Runner.run<br/>the model decides this<br/>at runtime &nbsp;·&nbsp; NOT lines<br/>in post_message"]
+            direction TB
+            Model["model span<br/>gen_ai.usage.*"]
+            TSpan["tool span<br/>gen_ai.tool.name"]
+            Tool["tool body<br/><i>agent/tools.py</i>"]
+            Matrix["access matrix<br/><i>agent/auth.py</i>"]
+            Rec["record_tool_result<br/><i>Part A</i><br/>adds cartwheel.*"]
+        end
+
+        Reply["final reply"]
     end
 
-    LF[/"Langfuse<br/>http://localhost:3000"/]
+    LF[/"Langfuse<br/>localhost:3000"/]
 
     You -->|"1 . user_id + role"| CS
     CS --> RoleOK
@@ -72,6 +77,7 @@ flowchart TD
     classDef err stroke:#c0392b,stroke-width:1px,stroke-dasharray: 2 2
     class CS,Ctx,Save,Sign,PM,Recover,Root,Rec yours
     class Model,TSpan,Authz auto
+    style RUN stroke:#7f8c8d,stroke-width:2px,stroke-dasharray: 8 4
     class E400,E403,E404 err
 ```
 
@@ -79,19 +85,236 @@ flowchart TD
 provided or recorded automatically by OpenLLMetry. Dotted red = error paths the
 handout requires.
 
+**The two halves are two separate HTTP requests, not one sequence.** Everything
+in the Part B box is `create_session` in `server/app.py`; everything in the
+Part C box is `post_message`. `create_session` runs once, does a database read
+and signs a token, and opens no span: nothing unpredictable happens in it.
+`post_message` runs once per message and is where the model and the tools run,
+which is why the root span lives there and is named `session_message` rather
+than `session`. A session with five messages produces five traces.
+
+**`_SESSIONS` holds a pair, and the two halves come out at different moments.**
+
+```python
+_SESSIONS: dict[str, tuple[AuthContext, SQLiteSession]] = {}
+#                          who you are   what has been said
+
+ctx = _authorize(session_id, authorization)   # returns [0], the AuthContext
+_, session = _SESSIONS[session_id]            # takes [1], the SQLiteSession
+```
+
+`_authorize` ends with `return _SESSIONS[session_id][0]`, so identity is already
+recovered by the time the endpoint fetches the conversation history. The `_` in
+the second line discards the context it has just been handed. `Runner.run` needs
+the `SQLiteSession` so the agent remembers earlier turns; that is a separate
+concern from who the caller is.
+
 ### Reading the diagram
+
+The boxes are kept short so nothing is clipped when the diagram renders. The
+detail each one stands for is here.
 
 | Stage | What happens | Why it matters |
 |---|---|---|
 | 1 | You claim a user id and a role | A *claim*, nothing more — not yet trusted |
 | — | `create_session` reads the users table | The database is the authority, not the request |
 | — | Claimed role vs stored role | Mismatch is HTTP 403. This is the check that stops "I am support staff" |
+| — | `AuthContext` is built | Every field comes from the verified row, including `store_id`, which the request has no field to send |
 | 2 | Server returns a session id and a signed token | Identity is now stored **server-side** |
-| 3 | Each message carries the token | Proves entitlement to that session |
+| 3 | Each message carries the token | Proves entitlement to that session, not who you are |
 | — | Root span opens | Everything below it shares one `trace_id` |
 | — | Tools run and check the matrix | `agent/auth.py` enforces it in code, not in the prompt |
 | — | `record_tool_result` fires | Your `cartwheel.*` attributes land on the tool span |
 | 4 | Reply returns, spans export | The trace becomes the durable record |
+
+**The `_authorize` box, in full.** It performs three checks before returning
+anything, and raises rather than returning on each failure:
+
+| Code | Condition |
+|---|---|
+| 401 | header missing, not `Bearer …`, or the HMAC signature does not verify |
+| 403 | the token was issued for a different session |
+| 404 | no such session on this server (it restarted, and `_SESSIONS` is in memory) |
+
+Only after all three does it `return _SESSIONS[session_id][0]`, the
+`AuthContext`. There is no path where the endpoint holds an identity that
+skipped these checks.
+
+**The "recover SQLiteSession" box.** `_SESSIONS` stores a pair per session, and
+the halves come out at different moments: `_authorize` returns the
+`AuthContext`, then the endpoint fetches the `SQLiteSession`, the conversation
+history `Runner.run` needs so the agent remembers earlier turns. Identity never
+comes from the message text.
+
+**The root span box** carries `cartwheel.user_role`, `cartwheel.user_id`,
+`cartwheel.prompt_version`, `cartwheel.scenario_id` when the request supplies a
+nonempty one, and `gen_ai.input.messages` / `gen_ai.output.messages` when
+`TRACELOOP_TRACE_CONTENT` is true. The attribute table in Diagram 2 lists the
+types and which Part sets each one.
+
+### Where the "open ROOT span" box is in the code
+
+It is **one line**, in `post_message`:
+
+```python
+with _tracer.start_as_current_span("cartwheel.session_message") as span:
+     └──────────────┬─────────────┘ └───────────┬────────────┘
+       "open ROOT span"              "cartwheel.session_message"
+```
+
+The box's three lines of text all come from that single line:
+
+| Box text | Where it comes from |
+| --- | --- |
+| `open ROOT span` | `start_as_current_span(...)`, the call that opens it |
+| `cartwheel.` | these two are **one string**, `"cartwheel.session_message"`, |
+| `session_message` | split across two lines only so the label does not clip |
+
+There is nothing in the code called `cartwheel.` on its own. It is one name,
+broken in half to fit the box.
+
+**What "open a span" means concretely.** `with` is Python for "do this, and
+everything indented below happens inside it":
+
+```python
+    with _tracer.start_as_current_span("cartwheel.session_message") as span:  # span opens
+        span.set_attribute("cartwheel.user_role", ctx.role)
+        ...
+        result = await Runner.run(agent, body.message, ...)                   # model and
+        ...                                                                   # tools run here
+        span.set_attribute("gen_ai.output.messages", ...)
+                                                                              # span closes
+    return {...}                                                              # outside again
+```
+
+The span starts a stopwatch when the `with` line runs and stops it when the
+indented block ends. Everything in between is recorded as happening *within* it,
+including `Runner.run`, which is where the model runs and the tools are called.
+That is why their spans nest underneath: they happened while this one was open.
+`as span` gives the handle the `set_attribute` calls use.
+
+**It is not in `create_session`.** That function ends well above `post_message`
+begins, serves a different URL, and opens no span at all. See the note under the
+legend for why.
+
+### Where the access matrix is triggered
+
+Nowhere in `post_message`. It is reached from **one** line there, and everything
+below that line happens in code the endpoint never names:
+
+```text
+post_message                                        server/app.py
+└── await Runner.run(agent, …, context=ctx)         ← the only line in post_message
+    │
+    └── the model reads the message and decides: "call get_order(4127)"
+        │
+        └── get_order(wrapper, order_id)            agent/agent.py   @function_tool
+            └── _call(wrapper, get_order_logic, 4127)
+                │
+                ├── get_order_logic(ctx, 4127)      agent/agent.py:174
+                │   ├── db.get_order(conn, 4127)        fetch the row
+                │   └── can_view_order(ctx, …)      agent/auth.py    ← THE MATRIX
+                │       └── False → return permission_denied(…)
+                │
+                └── record_tool_result(ctx, result) ← your Part A code runs here
+```
+
+Line numbers shift as files change; `grep -rn can_view_order agent/` finds the
+call sites.
+
+**The endpoint is not even on the call stack.** Captured from a real request,
+printing the frames inside this repository at the moment `can_view_order` runs:
+
+```text
+    agent/agent.py:336  in get_order()
+        return _call(wrapper, get_order_logic, order_id)
+    agent/agent.py:318  in _call()
+        result = fn(wrapper.context, *args)
+    agent/agent.py:180  in get_order_logic()
+        if not can_view_order(ctx, order.user_id, order.store_id):
+
+    -> agent/auth.py  can_view_order()   <<< THE MATRIX
+```
+
+No frame from `server/app.py` appears at all. The SDK runs the tool on a worker
+thread, so by the time the matrix executes the endpoint's frame is gone.
+
+### Which boxes are lines in post_message, and which are not
+
+Six of the Part C boxes are lines you can point to. Five are not:
+
+```python
+    ctx = _authorize(session_id, authorization)        # box: _authorize
+    _, session = _SESSIONS[session_id]                 # box: recover SQLiteSession
+    agent = build_agent(ctx, model=body.model)         #   (not drawn)
+    version = prompt_version(render_system_prompt(ctx))#   (not drawn)
+
+    with _tracer.start_as_current_span("cartwheel.…"): # box: open ROOT span
+        span.set_attribute(...)                        #   (the attribute list)
+
+        result = await Runner.run(agent, ...)          # box: await Runner.run
+        # ────────────────────────────────────────────────────────────────
+        #  EVERYTHING ELSE IN THE DIAGRAM HAPPENS INSIDE THIS ONE CALL:
+        #     model span          OpenLLMetry creates it
+        #     tool span           OpenLLMetry creates it
+        #     tool body           agent/tools.py
+        #     access matrix       agent/auth.py
+        #     record_tool_result  observability/instrument.py
+        #  None of these is a line you can point to in post_message.
+        # ────────────────────────────────────────────────────────────────
+
+        reply = str(result.final_output)               # box: final reply
+```
+
+Those five are drawn inside a dashed `inside Runner.run` box in Diagram 1 for
+exactly this reason. `post_message` cannot contain them, because it does not
+know they will happen: the model reads the message and decides at runtime
+whether to call a tool, which tool, and with what arguments. One request calls
+no tools and produces no tool span at all; another calls three.
+
+**Why the check cannot live at the endpoint.** `post_message` does not know
+which tools will run, because *the model decides that* after reading the
+message. One request calls no tools, another calls three. So the check has to
+sit inside each tool, where the specific order being touched is known.
+
+What the endpoint contributes is the *identity*: `context=ctx`. That one
+argument travels the whole chain and arrives as the `ctx` in
+`can_view_order(ctx, …)`. The endpoint makes sure the identity is correct; the
+tool enforces what that identity may do.
+
+This is what `SPEC.md` means by **"Authorization is not a prompt"**:
+
+> The server injects the auth context per session, tools call these checks
+> before touching data, and the model cannot request data outside the caller's
+> row of the matrix.
+
+If the model is jailbroken, hallucinates, or simply calls `get_order(4127)` for
+a shopper who does not own order 4127, the check still returns
+`permission_denied`. The model never receives the data, so it cannot leak it.
+
+**Reading this in Diagram 1.** The Part C boxes are drawn as a chain, but only
+the first is a line in `post_message`:
+
+| Box | Where that code actually lives |
+| --- | --- |
+| `post_message` | `server/app.py` |
+| `_authorize` | `server/app.py`, called from `post_message` |
+| recover SQLiteSession | `server/app.py`, called from `post_message` |
+| open ROOT span | `server/app.py`, called from `post_message` |
+| `Runner.run` | `server/app.py`, the last line the endpoint controls |
+| model span · tool span | created by OpenLLMetry, inside the run |
+| tool body | `agent/tools.py`, or `agent/agent.py` for the lecture tools |
+| access matrix | `agent/auth.py`, called by the tool |
+| `record_tool_result` | `observability/instrument.py`, called by `_call` |
+| final reply | returned back up the chain to `post_message` |
+
+The diagram shows the **path a request takes**, not the contents of one
+function. The same is true of the root span box above: one line of
+`post_message`, with everything else nested inside the call it makes.
+
+**The `record_tool_result` box** adds `cartwheel.user_role`,
+`cartwheel.user_id`, `cartwheel.store_id` for merchants, and
+`cartwheel.permission_denied` with `.reason` when a tool denied the request.
 
 Note that `record_tool_result` runs **inside** the tool span, not after it.
 `_call` in `agent/agent.py` invokes it while that span is still active, which is
@@ -111,15 +334,18 @@ underneath.
 
 ```mermaid
 flowchart TD
-    subgraph TR["one trace &nbsp;·&nbsp; trace_id 4bf92f3577b34da6…"]
+    subgraph TR["one trace &nbsp;·&nbsp; one trace_id"]
         direction TB
-        subgraph ROOT["cartwheel.session_message &nbsp;·&nbsp; ROOT span &nbsp;·&nbsp; you open this in Part C"]
+        subgraph ROOT["cartwheel.session_message<br/>ROOT span &nbsp;·&nbsp; Part C"]
             direction TB
-            subgraph WF["Agent Workflow &nbsp;·&nbsp; grouping span, NOT a model call"]
+            subgraph WF["Agent Workflow<br/>not a model call"]
                 direction TB
-                M1["chat gpt-5.5<br/><i>model span</i>"]
-                TS["execute_tool<br/>list_my_orders<br/><i>your Part A attributes land here</i>"]
-                M2["chat gpt-5.5<br/><i>model span, writes the reply</i>"]
+                subgraph AG["cartwheel-support.agent<br/>invoke_agent"]
+                    direction TB
+                    M1["chat gpt-5.5<br/><i>asks for a tool</i>"]
+                    TS["list_my_orders.tool<br/><i>Part A attributes</i>"]
+                    M2["chat gpt-5.5<br/><i>writes the reply</i>"]
+                end
             end
         end
     end
@@ -133,12 +359,34 @@ flowchart TD
     class M1,M2 auto
     style ROOT stroke:#c0392b,stroke-width:3px
     style WF stroke:#7f8c8d,stroke-width:1px,stroke-dasharray: 5 3
+    style AG stroke:#7f8c8d,stroke-width:1px,stroke-dasharray: 5 3
     style TR stroke:#7f8c8d,stroke-width:1px
 ```
 
-A real trace has more spans than this — one model span per turn of the loop —
-but the shape repeats: model spans and tool spans alternate under
-`Agent Workflow`, all of them under your one root span.
+Two naming details, both observed rather than guessed: the tool span is named
+`<tool>.tool`, not `execute_tool <tool>` — the tool name lives in the
+`gen_ai.tool.name` attribute, and the span name is its own thing. And there is a
+`cartwheel-support.agent` span between `Agent Workflow` and the tool spans,
+named after the agent and carrying `gen_ai.operation.name = invoke_agent`.
+
+A real trace has more spans than this: one model span per turn of the loop, and
+one tool span per tool call.
+
+**What has been confirmed so far.** The nesting above down to the tool span was
+observed offline, running one request through `post_message` with
+`tests.eval.fake_model` and an in-memory OTel exporter:
+
+```text
+cartwheel.session_message
+└── Agent Workflow
+    └── cartwheel-support.agent
+        └── list_my_orders.tool
+```
+
+The fake model is not an instrumented client, so **no model span appeared** in
+that run. The two `chat gpt-5.5` boxes above are where model spans are expected
+once a real provider is called. Confirm their exact placement and names against
+Langfuse in Part E, and correct this diagram if they sit elsewhere.
 
 ### Every attribute, and who sets it
 
@@ -157,6 +405,7 @@ This table is also your implementation checklist for Parts A and C.
 | `cartwheel.store_id` | each tool span | **you** | A | **integer**, merchants only |
 | `cartwheel.permission_denied` | each tool span | **you** | A | boolean, set on **every** call, not just denials |
 | `cartwheel.permission_denied.reason` | each tool span | **you** | A | only when denied |
+| `gen_ai.operation.name` | agent span | automatic | — | the value `invoke_agent` |
 | `gen_ai.operation.name` | each tool span | automatic | — | the value `execute_tool` |
 | `gen_ai.tool.name` | each tool span | automatic | — | e.g. `list_my_orders` |
 | tool arguments and result | each tool span | automatic | — | needs `TRACELOOP_TRACE_CONTENT=true` |
@@ -179,33 +428,36 @@ Two things the table makes obvious:
 Indentation carries the nesting, so nothing has to be squeezed into a box:
 
 ```text
-trace_id: 4bf92f3577b34da6…              one trace = one request
+trace_id: eaf80ae0ac8900ef…                  one trace = one request
 │
-└── cartwheel.session_message            ROOT span — you create it (Part C)
-    │     cartwheel.user_role      = "shopper"
-    │     cartwheel.user_id        = "1"
-    │     cartwheel.prompt_version = "b3f4a5686618"
-    │     gen_ai.input.messages    = [{"role":"user",      "parts":[…]}]
-    │     gen_ai.output.messages   = [{"role":"assistant", "parts":[…]}]
+└── cartwheel.session_message                ROOT span — you create it (Part C)
+    │   cartwheel.user_role      = "shopper"
+    │   cartwheel.user_id        = "1"
+    │   cartwheel.prompt_version = "057b0f9f70cb"
+    │   gen_ai.input.messages    = [{"role":"user",      "parts":[…]}]
+    │   gen_ai.output.messages   = [{"role":"assistant", "parts":[…]}]
     │
-    └── Agent Workflow                   automatic; groups the run,
-        │                                NOT another model call
+    └── Agent Workflow                       automatic; groups the run,
+        │                                    NOT another model call
         │
-        ├── chat gpt-5.5                 automatic (model span)
-        │       gen_ai.request.model     = "gpt-5.5"
-        │       gen_ai.usage.input_tokens  = 1204
-        │       gen_ai.usage.output_tokens = 37
-        │
-        ├── execute_tool list_my_orders  automatic (tool span)
-        │       gen_ai.operation.name    = "execute_tool"   ┐ standard,
-        │       gen_ai.tool.name         = "list_my_orders" ┘ free
-        │       cartwheel.user_role      = "shopper"        ┐ yours,
-        │       cartwheel.user_id        = "1"              │ added by
-        │       cartwheel.permission_denied = false         ┘ Part A
-        │
-        └── chat gpt-5.5                 automatic; writes the final reply
-                gen_ai.usage.input_tokens  = 1631
-                gen_ai.usage.output_tokens = 88
+        └── cartwheel-support.agent          automatic; named after the agent
+            │   gen_ai.operation.name = "invoke_agent"
+            │
+            ├── chat gpt-5.5                 automatic (model span)
+            │   │   gen_ai.request.model       = "gpt-5.5"
+            │   │   gen_ai.usage.input_tokens  = 1204
+            │   │   gen_ai.usage.output_tokens = 37
+            │
+            ├── list_my_orders.tool          automatic (tool span)
+            │   │   gen_ai.operation.name    = "execute_tool"   ┐ standard,
+            │   │   gen_ai.tool.name         = "list_my_orders" ┘ free
+            │   │   cartwheel.user_role      = "shopper"        ┐ yours,
+            │   │   cartwheel.user_id        = "1"              │ added by
+            │   │   cartwheel.permission_denied = false         ┘ Part A
+            │
+            └── chat gpt-5.5                 automatic; writes the final reply
+                    gen_ai.usage.input_tokens  = 1631
+                    gen_ai.usage.output_tokens = 88
 ```
 
 Note where Part A and Part C write: **two different levels**. Identity once per
