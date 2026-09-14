@@ -166,7 +166,7 @@ Style: interactive tutorial, student drives, one step per go-ahead.
       each makes the request its key expects. Three openings share "I need a
       refund" (0033, 0037, 0043).
       Validator on all 50: 18 coverage, 32 challenge, 9 data quality, no errors.
-- [ ] **★ Remedy A step 3: student reviews a sample of 8, one at a time.**
+- [x] **★ Remedy A step 3: student reviews a sample of 8, one at a time.**
       - pilot-0046 **revised (student)**: the answer key's reason said the agent
         "must not grant or deny access based on the product's store", which
         reads as if refusing were wrong. It now says access follows the order's
@@ -350,8 +350,59 @@ Style: interactive tutorial, student drives, one step per go-ahead.
       ids, turns, duplicates) passes.
 - [x] **Part C complete.** `validate --final` passes on
       `support_scenarios.jsonl`.
-- [ ] **Part D: reset data, restart the server, run all 250 on gpt-5.5.**
-      ← next (about 345 requests, roughly 45 minutes)
+- [x] **Part D: final run complete.** Langfuse up, data reset, server restarted
+      with tracing on, then the runner on `scenarios/support_scenarios.jsonl`
+      with `--model gpt-5.5`: **250/250 completed**, no errors or timeouts,
+      every final id present once, model gpt-5.5 on every record.
+      - coverage: 175 completed, average 16.7 s, 49 min
+      - challenge: 75 completed, average 19.8 s, 25 min
+      Total about 74 minutes, against a 45-minute estimate (the handout's 8 s
+      per scenario did not hold; the real average was about 19 s).
+      `jq` is not installed, so the handout's status query was run in Python
+      with the same result; install `jq` before recording the video, whose
+      last step uses it.
+- [x] Part E step 1: `reports/smoke-output.txt` saved (90 lines, exit 0) with
+      the handout's command. The error query returned no rows. The report
+      reads every trace in Langfuse, so its totals include earlier work; a
+      separate read-only breakdown reconciles its 416 traces exactly:
+      - final run (`support-`): 350 traces, 1,156,913 input / 174,298 output
+        tokens, $11.13, 88 escalations, 6 permission denials
+      - pilot (`pilot-`): 57 traces, $2.75
+      - tracing check (`setup-check-001`): 1 trace, $0.02
+      - HW2 manual requests and checks (no scenario id): 8 traces, $0.01
+      All 250 final scenario ids have at least one trace. The final run cost
+      $11.13, more than the handout's "a few dollars" estimate.
+- [x] Part E step 2: `traces/support_traces.json` exported with the handout's
+      command on the first attempt: "Exported 350 traces for 250 of 250
+      scenarios" (21 s, 23.9 MB). `missing_scenario_ids` is empty; 250 unique
+      `cartwheel_scenario_id` values (what the video's jq command counts); only
+      `support-` ids; the number of traces per scenario equals its turn count
+      for all 250.
+- [x] Part E step 3: three traces read from `traces/support_traces.json`, each
+      with conversation, model `gpt-5.5-2026-04-23`, tool activity and
+      `cartwheel_scenario_id`:
+      - support-0220 (challenge): get_order, search_products x2,
+        escalate_to_human. Trace 8cc0c4d6ce7baff36708ea9239d3fafc.
+      - support-0189 (4 turns, 4 traces): 5, 3, 2 and 1 tool calls across
+        the turns. First trace d47b1edd42b9a3bb6185fa408c52d505.
+      - support-0144: get_order, cancel_order returning status cancelled.
+        Trace 988958506bb72a4c844c18d66f4fa51a.
+
+## HW3 status
+
+**Every file on the handout's commit list exists, and every check passes:**
+pilot validation, `validate --final`, the status count (250 completed, run in
+Python because jq is not installed), and the export (250 of 250 scenarios).
+
+Remaining, all the student's:
+- commit the Part D and E files (`final-results.jsonl`, `smoke-output.txt`,
+  `support_traces.json`)
+- install `jq` (`sudo apt install jq`) before recording
+- record the video (5 minutes or less): a failed pilot scenario with its
+  expected result and evidence (pilot_review.jsonl has five); a final scenario
+  revised in review (support-0168 or support-0134); one complete final trace
+  with its scenario id and tool activity (support-0220 suits); regenerate the
+  final scenario id count with the handout's jq command (expect 250).
 
 Before HW3 started, `origin/main` was merged into `main` so the current skill,
 validator and runner are in use, and the resulting `NameError` in
@@ -363,17 +414,17 @@ left open.
 | # | Deliverable | Part | Status |
 | --- | --- | --- | --- |
 | 1 | Dimension plan approved | A | **done**, student approved 2026-09-13 |
-| 2 | `scenarios/pilot_scenarios.jsonl`, 30 scenarios | B | **written, validator passes**; conversation review pending |
+| 2 | `scenarios/pilot_scenarios.jsonl`, 30 scenarios | B | **done**: 50 (30 + 20 challenge), validator passes, reviewed |
 | 3 | `scenarios/pilot-results.jsonl` | B | **done**, 50/50 completed (30 + 20 challenge) |
 | 4 | `scenarios/pilot_review.jsonl`, ≥10 reviewed, ≥5 confirmed failures | B | **done**: 13 reviewed, **5** confirmed failures |
-| 5 | `scenarios/support_scenarios.jsonl`, 175 coverage + 75 challenge | C | **written, `validate --final` passes**; review pending |
+| 5 | `scenarios/support_scenarios.jsonl`, 175 coverage + 75 challenge | C | **done**: `validate --final` passes, 15 reviewed |
 | 6 | `scenarios/support_review.jsonl`, 15 reviewed | C | **done**: 2 revised, 13 accepted |
 | 7 | `scenarios/monitoring_scenarios.jsonl`, 50 scenarios | C | **done** |
-| 8 | `scenarios/final-results.jsonl`, 250 completed | D | not started |
-| 9 | `reports/smoke-output.txt` | E | not started |
-| 10 | `traces/support_traces.json` | E | not started |
-| 11 | `validate --final` passes; export succeeds | checks | **validate passes**; export pending (Part E) |
-| 12 | Video, 5 minutes or less | — | **student** |
+| 8 | `scenarios/final-results.jsonl`, 250 completed | D | **done**: 250/250 |
+| 9 | `reports/smoke-output.txt` | E | **done** |
+| 10 | `traces/support_traces.json` | E | **done**: 350 traces, 250 scenarios |
+| 11 | `validate --final` passes; export succeeds | checks | **done**: both pass |
+| 12 | Video, 5 minutes or less | — | **student**, pending |
 
 ★ marks the review points where the student decides.
 
