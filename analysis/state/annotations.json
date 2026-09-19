@@ -300,15 +300,20 @@
       "seg": "step4.text",
       "start": 41,
       "quote": "the delivery date appears to be well outside the standard return window",
-      "note": "Order #90 delivered 2026-06-22 — 9 days before 2026-07-01, exactly what the user said — but the agent decided the date was 'well outside' the 30-day window (no date source), told the user the 9-day timing didn't match the record and that the order is outside the 30-day window; the real reason, Saltbox's 7-day store window, was never looked up. Opened ticket #168 for a 'possible exception'.",
+      "note": "Order #90 was delivered on **2026‑06‑22**, which is **9 days before 2026‑07‑01**—exactly as the user stated.  \nDespite this, the agent incorrectly concluded the delivery date was “well outside” the 30‑day window (without citing any source), told the user their 9‑day timing didn’t match the records, and claimed the order was outside the 30‑day window.  \n\nThe actual constraint—Saltbox’s **7‑day store window**—was never checked.  \nA ticket (**#168**) was opened for a “possible exception.”",
       "first_failure": true,
       "created_at": "2026-09-19T06:37:07.134Z",
-      "updated_at": "2026-09-19T07:06:26.744Z",
+      "updated_at": "2026-09-19T07:39:46.999Z",
       "history": [
         {
           "note": "Order #90 delivered 2026-06-22 — 9 days before 2026-07-01, exactly what the user said — but the agent decided the date was 'well outside' the 30-day window (no date source), told the user the 9-day timing didn't match the record and that the order is outside the 30-day window; the real reason, Saltbox's 7-day store window, was never looked up. Opened ticket #168 for a 'possible exception'.",
           "first_failure": false,
           "at": "2026-09-19T06:37:07.134Z"
+        },
+        {
+          "note": "Order #90 delivered 2026-06-22 — 9 days before 2026-07-01, exactly what the user said — but the agent decided the date was 'well outside' the 30-day window (no date source), told the user the 9-day timing didn't match the record and that the order is outside the 30-day window; the real reason, Saltbox's 7-day store window, was never looked up. Opened ticket #168 for a 'possible exception'.",
+          "first_failure": true,
+          "at": "2026-09-19T07:06:26.744Z"
         }
       ]
     },
@@ -478,12 +483,18 @@
       "seg": "step2.text",
       "start": null,
       "quote": "not eligible for an automatic refund in the order system and you’re asking for an exception",
-      "note": "Order 2880 was delivered 2026-04-09, 83 days before 2026-07-01 and far past the 30-day window, and get_order says refund_eligible: false — but the agent treated it as failing an 'automatic' check, never told the shopper the order is outside the return window, and opened ticket #178 to review 'an exception'; the reply adds the irrelevant >$100 review rule instead of the actual reason.",
+      "note": "Order 2880 was delivered on **2026‑04‑09**, which is **83 days before 2026‑07‑01**—well beyond the 30‑day return window. The system’s `get_order` data correctly marks it as **refund_eligible: false**.  \n\nDespite that, the agent treated it as failing an “automatic” check, never informed the shopper that the order was outside the return window, and opened ticket **#178** to review a “possible exception.” The response also introduced an unrelated **>$100 review rule**, instead of citing the actual reason for ineligibility.",
       "first_failure": true,
       "requirement": "RESP-5 (refusal not explained)",
       "created_at": "2026-09-19T07:22:07.713Z",
-      "updated_at": "2026-09-19T07:22:07.713Z",
-      "history": []
+      "updated_at": "2026-09-19T07:40:45.125Z",
+      "history": [
+        {
+          "note": "Order 2880 was delivered 2026-04-09, 83 days before 2026-07-01 and far past the 30-day window, and get_order says refund_eligible: false — but the agent treated it as failing an 'automatic' check, never told the shopper the order is outside the return window, and opened ticket #178 to review 'an exception'; the reply adds the irrelevant >$100 review rule instead of the actual reason.",
+          "first_failure": true,
+          "at": "2026-09-19T07:22:07.713Z"
+        }
+      ]
     },
     {
       "id": "amu828qn4pbnu",
@@ -551,19 +562,6 @@
       "history": []
     },
     {
-      "id": "amu82bz7jjpnw",
-      "kind": "no_failure",
-      "source": "ai_accepted",
-      "suggestion_id": "sg-0189-t4",
-      "trace_id": "8bde52f658e17334adb4efa9ca94bbd3",
-      "session_id": "70c031059e45423c982f4aefec09c52b",
-      "note": "No failure observed: search_products confirms the $8 listing matches order 2195; points to existing tickets #190/#191 without opening another (close negative for duplicate tickets). Context turns 1-2 have their own issues (turn 1 says 46 days is outside the 60-day dispute window).",
-      "first_failure": false,
-      "created_at": "2026-09-19T07:25:27.679Z",
-      "updated_at": "2026-09-19T07:25:27.679Z",
-      "history": []
-    },
-    {
       "id": "amu82k0hjjcff",
       "kind": "note",
       "source": "ai_accepted",
@@ -573,12 +571,18 @@
       "seg": "reply",
       "start": null,
       "quote": "Follow-up ticket: #198",
-      "note": "User only added detail to the same statement-charge dispute on order 505, which already had tickets #196 (turn 1) and #197 (turn 2); the agent opened a third ticket #198 instead of adding to or pointing at the existing one — three tickets for one dispute.",
+      "note": "User added more details to the same statement‑charge dispute for order 505, which already had tickets **#196** (turn 1) and **#197** (turn 2). Instead of updating or referencing those existing tickets, the agent opened a third one — **#198** — resulting in three separate tickets for a single dispute.",
       "first_failure": true,
       "requirement": "SPEC gap — pending revision #5 (duplicate tickets)",
       "created_at": "2026-09-19T07:31:42.583Z",
-      "updated_at": "2026-09-19T07:31:42.583Z",
-      "history": []
+      "updated_at": "2026-09-19T07:41:26.859Z",
+      "history": [
+        {
+          "note": "User only added detail to the same statement-charge dispute on order 505, which already had tickets #196 (turn 1) and #197 (turn 2); the agent opened a third ticket #198 instead of adding to or pointing at the existing one — three tickets for one dispute.",
+          "first_failure": true,
+          "at": "2026-09-19T07:31:42.583Z"
+        }
+      ]
     },
     {
       "id": "amu82lopjtwz6",
@@ -643,6 +647,23 @@
       "first_failure": false,
       "created_at": "2026-09-19T07:33:47.060Z",
       "updated_at": "2026-09-19T07:33:47.060Z",
+      "history": []
+    },
+    {
+      "id": "amu8320ebao5e",
+      "kind": "note",
+      "source": "ai_accepted",
+      "suggestion_id": "sg-0189-t4b",
+      "trace_id": "8bde52f658e17334adb4efa9ca94bbd3",
+      "session_id": "70c031059e45423c982f4aefec09c52b",
+      "seg": "reply",
+      "start": null,
+      "quote": "ticket #191 covers the broader charge mismatch",
+      "note": "User confirmed in turn 3 that the mismatch is the planner order, so tickets #190 and #191 are the same dispute — but the agent presents #191 as covering a 'broader charge mismatch' instead of flagging the duplicate, leaving two tickets for one issue.",
+      "first_failure": true,
+      "requirement": "SPEC gap — pending revision #5 (duplicate tickets)",
+      "created_at": "2026-09-19T07:45:42.275Z",
+      "updated_at": "2026-09-19T07:45:42.275Z",
       "history": []
     }
   ]

@@ -91,12 +91,15 @@
     "id": "sg-0189-t4",
     "kind": "no_failure",
     "source": "agent",
-    "status": "accepted",
+    "status": "rejected",
     "trace_id": "8bde52f658e17334adb4efa9ca94bbd3",
     "note": "No failure observed: search_products confirms the $8 listing matches order 2195; points to existing tickets #190/#191 without opening another (close negative for duplicate tickets). Context turns 1-2 have their own issues (turn 1 says 46 days is outside the 60-day dispute window).",
     "rationale": "Drafted by Claude from its review of this trace; accept, edit, or reject.",
-    "decided_at": "2026-09-19T07:25:27.679Z",
-    "decision_reason": null
+    "decided_at": "2026-09-19T07:45:09+00:00",
+    "decision_reason": "Turn 4 presents duplicate ticket #191 as a separate 'broader charge mismatch' although the user confirmed in turn 3 that it is the same planner charge; reviewer codes this as a failure.",
+    "previously": {
+      "status": "accepted"
+    }
   },
   {
     "id": "sg-0194-t3",
@@ -167,6 +170,23 @@
     "note": "No failure observed: get_order shows status 'refunded', so the agent refuses a duplicate refund and restates refund #612. Close negative for the Part A stale refund_eligible risk note: it relied on the status, not refund_eligible: true.",
     "rationale": "Drafted by Claude from its review of this trace; accept, edit, or reject.",
     "decided_at": "2026-09-19T07:33:47.060Z",
+    "decision_reason": null
+  },
+  {
+    "id": "sg-0189-t4b",
+    "kind": "annotation",
+    "source": "agent",
+    "status": "accepted",
+    "trace_id": "8bde52f658e17334adb4efa9ca94bbd3",
+    "seg": "reply",
+    "start": null,
+    "quote": "ticket #191 covers the broader charge mismatch",
+    "first_failure": true,
+    "requirement": "SPEC gap — pending revision #5 (duplicate tickets)",
+    "note": "User confirmed in turn 3 that the mismatch is the planner order, so tickets #190 and #191 are the same dispute — but the agent presents #191 as covering a 'broader charge mismatch' instead of flagging the duplicate, leaving two tickets for one issue.",
+    "rationale": "Replacement for rejected sg-0189-t4, drafted at the reviewer's request; accept, edit, or reject.",
+    "created_at": "2026-09-19T07:45:09+00:00",
+    "decided_at": "2026-09-19T07:45:42.275Z",
     "decision_reason": null
   }
 ]
