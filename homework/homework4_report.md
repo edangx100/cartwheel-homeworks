@@ -9,8 +9,8 @@ each term the first time it appears.
 > [progress tracker](#4-the-whole-assignment-on-one-page) shows what is done,
 > what is in progress, and what is still to do.
 >
-> *Last updated: 2026-09-19, after the first sorting pass (axial coding) on
-> batch 1.*
+> *Last updated: 2026-09-19, after open coding batch 2 (60 of 100 traces
+> reviewed).*
 
 - The assignment itself: [module-2/hw4.md](module-2/hw4.md)
 - The method it follows: the [error-discovery skill](https://github.com/ai-evals-course/evals-skills/blob/main/skills/error-discovery/SKILL.md)
@@ -128,7 +128,8 @@ Green = done. Yellow = next. White = still to do.
 | Part A: `interface_comparison.md` | 🟡 drafted | needs rewriting in your own words |
 | Batch 1: 15 random + 15 cluster traces | ✅ done | 30/30 reviewed: 10 failures, 20 no failure |
 | Axial coding, pass 1 | ✅ done | 7 candidate modes |
-| Batch 2: 30 traces across one dimension | 🟡 in progress | dimension chosen: **role** (10 shopper, 10 merchant, 10 support); see Section 8 |
+| Batch 2: 30 traces across one dimension | ✅ done | **role** (10 each): 5 failures, 25 no failure; see Section 9 |
+| Axial coding, pass 2 | ⬜ next | fit 5 new failures into the modes; `support-0186` may start a new one |
 | Part C: Workshop notes | ⬜ to do | |
 | Batch 3: 25 depth-search traces | ⬜ to do | must include at least one rejected search suggestion |
 | Part D: final 5 to 8 modes | ⬜ to do | |
@@ -364,7 +365,7 @@ the review sees different corners of the data:
 
 ```
   Batch 1   15 random  +  15 "cluster representatives"      ✅ done
-  Batch 2   30 spread evenly across ONE product dimension   🟡 role chosen
+  Batch 2   30 spread evenly across ONE product dimension   ✅ done (role)
   Batch 3   25 found by searching for candidate modes       ⬜
   Batch 4   15 random, after the taxonomy is drafted        ⬜
             ─────────────────────────────────────────────
@@ -505,6 +506,40 @@ Two things stand out, as clues rather than conclusions:
 | `support-0095` | 1 | Refused without saying why (83 days, past the window); ticket for an "exception" |
 | `support-0189` | 4 | Presented a duplicate ticket as a separate issue |
 | `support-0194` | 3 | A third ticket for the same dispute |
+
+### Batch 2 in numbers: did the "shopper" clue hold up?
+
+Batch 1 had 9 of its 10 failures in shopper conversations, but it had also
+read far more shopper traces (17) than support ones (2). Batch 2 read exactly
+10 of each role:
+
+```
+                 batch 1 (unbalanced)            batch 2 (10 per role)
+                 failures / traces read          failures / traces read
+  shopper        9 / 17   █████████              2 / 10   ██
+  merchant       1 / 11   █                      1 / 10   █
+  support        0 /  2                          2 / 10   ██
+```
+
+**With the sample balanced, failures spread across all three roles.** The
+batch-1 skew was mostly a result of *which* traces were read, not a sign that
+shoppers are special. This is exactly why the handout asks for a batch spread
+across a product dimension. (These are still sample fractions, not rates.)
+
+### The 5 failures found in batch 2
+
+| Trace | Role | What went wrong (short) | Closest mode |
+| --- | --- | --- | --- |
+| `support-0045` | shopper | User rightly doubted the seller; agent explained the doubt away and never flagged the bad record | `user_claim_not_reconciled` |
+| `support-0104` | merchant | 98 days, past the window; never says why; "whether an exception can be made" | `ineligible_refund_mishandled` |
+| `support-0186` | support | A legal question it should simply decline; opened a ticket instead | new? unneeded escalation |
+| `support-0189` t3 | shopper | Listed two tickets for the same dispute without flagging the duplicate | `duplicate_ticket` |
+| `support-0198` | support | Day 24 of a 60-day window called "about 99 days": the agent used the real-world date | `invented_date_reasoning` |
+
+`support-0198` answered a question left open since batch 1: **where do the
+invented dates come from?** The agent wrote "Current date 2026-09-14" into a
+ticket. That is the real day the recordings were made, not the database's world
+date of 2026-07-01. Nothing in the prompt or tools gave it that date.
 
 ---
 
@@ -729,7 +764,7 @@ Branch: `homework_4`, pushed to GitHub.
 - [ ] Edit the 7 draft mode definitions in the Taxonomy tab into your own words
 - [ ] Commit and push `analysis/state/patterns.json`
 - [x] Batch 2: dimension chosen before looking at outcomes (**role**)
-- [ ] **Batch 2**: draw it (`uv run python -m analysis.review_app.sample dimension --field role --n 30`) and open-code the 30 traces
+- [x] Batch 2: 30 traces drawn and open-coded (5 failures, 25 no failure)
 - [ ] Axial coding pass 2
 - [ ] **Part C**: Raindrop Workshop, 5 to 10 runs → `analysis/report/workshop_notes.md`
 - [ ] **Batch 3**: 25 traces from depth searches, including at least one rejected search result
