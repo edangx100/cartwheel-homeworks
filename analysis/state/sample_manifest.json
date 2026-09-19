@@ -1382,6 +1382,246 @@
         "user_style": "neutral_conversational"
       },
       "added_at": "2026-09-19T10:30:57+00:00"
+    },
+    {
+      "trace_id": "2d48f3a53c03253f1bc9313a5f9f1641",
+      "session_id": "1c706a5536ce417fad1bbc271ca3979b",
+      "batch": "final_uniform",
+      "reason": "uniform random (seed 7)",
+      "dims": {
+        "role": "support",
+        "intent": "return_policy_question",
+        "record_state": "policy_page",
+        "applicable_policy": "platform_rule",
+        "tools_needed": "one_lookup",
+        "difficulty": "well_specified",
+        "user_style": "requests_short_plain_answer"
+      },
+      "added_at": "2026-09-19T12:42:14+00:00"
+    },
+    {
+      "trace_id": "80f52c7ae49beab2348e4d98f329b2f7",
+      "session_id": "5090fae2e7cc489e87959812f41e398b",
+      "batch": "final_uniform",
+      "reason": "uniform random (seed 7)",
+      "dims": {
+        "role": "shopper",
+        "intent": "refund",
+        "record_state": "order_above_threshold",
+        "applicable_policy": "platform_rule",
+        "tools_needed": "several",
+        "difficulty": "well_specified",
+        "user_style": "confused_rambling"
+      },
+      "added_at": "2026-09-19T12:42:14+00:00"
+    },
+    {
+      "trace_id": "28687095f69373d6c8977fd6faeb2e59",
+      "session_id": "9569a68428944807b09171aa8b354085",
+      "batch": "final_uniform",
+      "reason": "uniform random (seed 7)",
+      "dims": {
+        "role": "shopper",
+        "intent": "account_change",
+        "record_state": "none",
+        "applicable_policy": "platform_rule",
+        "tools_needed": "one_lookup",
+        "difficulty": "well_specified",
+        "user_style": "confused_rambling"
+      },
+      "added_at": "2026-09-19T12:42:14+00:00"
+    },
+    {
+      "trace_id": "24874e84c2f573fa7303f1bfed35aeca",
+      "session_id": "d3349dd8588d4373a0be16d4f0ce630f",
+      "batch": "final_uniform",
+      "reason": "uniform random (seed 7)",
+      "dims": {
+        "role": "shopper",
+        "intent": "product_search",
+        "record_state": "product_invalid_price",
+        "applicable_policy": "none",
+        "tools_needed": "one_lookup",
+        "difficulty": "well_specified",
+        "user_style": "typo_heavy"
+      },
+      "added_at": "2026-09-19T12:42:14+00:00"
+    },
+    {
+      "trace_id": "c8d4c279a8b7c9c1fbbbb6f51f43d8c0",
+      "session_id": "a45ef4c6a53f4dabbd789e7fced7ab92",
+      "batch": "final_uniform",
+      "reason": "uniform random (seed 7)",
+      "dims": {
+        "role": "shopper",
+        "intent": "order_status",
+        "record_state": "order_past_window",
+        "applicable_policy": "none",
+        "tools_needed": "one_lookup",
+        "difficulty": "well_specified",
+        "user_style": "typo_heavy"
+      },
+      "added_at": "2026-09-19T12:42:14+00:00"
+    },
+    {
+      "trace_id": "c9e84d3340883e7eeeda2c2b3666718b",
+      "session_id": "2004c3d39ddf4db3b5b566dc1e308932",
+      "batch": "final_uniform",
+      "reason": "uniform random (seed 7)",
+      "dims": {
+        "role": "merchant",
+        "intent": "order_status",
+        "record_state": "order_past_window",
+        "applicable_policy": "none",
+        "tools_needed": "one_lookup",
+        "difficulty": "well_specified",
+        "user_style": "requests_short_plain_answer"
+      },
+      "added_at": "2026-09-19T12:42:14+00:00"
+    },
+    {
+      "trace_id": "b1078d0535d55de61a92c1e106688a8d",
+      "session_id": "86e1167466d84841a3c2093965e2951b",
+      "batch": "final_uniform",
+      "reason": "uniform random (seed 7)",
+      "dims": {
+        "role": "shopper",
+        "intent": "dispute",
+        "record_state": "order_past_window",
+        "applicable_policy": "platform_rule",
+        "tools_needed": "several",
+        "difficulty": "well_specified",
+        "user_style": "operational_shorthand"
+      },
+      "added_at": "2026-09-19T12:42:14+00:00"
+    },
+    {
+      "trace_id": "81c601f209925839650771ba5c3c2b4b",
+      "session_id": "422a7dc7364a4cadb7693220b1620c84",
+      "batch": "final_uniform",
+      "reason": "uniform random (seed 7)",
+      "dims": {
+        "role": "shopper",
+        "intent": "order_status",
+        "record_state": "order_in_window",
+        "applicable_policy": "none",
+        "tools_needed": "one_lookup",
+        "difficulty": "well_specified",
+        "user_style": "typo_heavy"
+      },
+      "added_at": "2026-09-19T12:42:14+00:00"
+    },
+    {
+      "trace_id": "b954a989149f2f72e9f821ec5046d28f",
+      "session_id": "4bca48d0c3954d2dbc794537a0842ad5",
+      "batch": "final_uniform",
+      "reason": "uniform random (seed 7)",
+      "dims": {
+        "role": "support",
+        "intent": "order_status",
+        "record_state": "order_past_window",
+        "applicable_policy": "none",
+        "tools_needed": "several",
+        "difficulty": "ambiguous",
+        "user_style": "frustrated_impatient"
+      },
+      "added_at": "2026-09-19T12:42:14+00:00"
+    },
+    {
+      "trace_id": "2aad7ae08a8d17ccaf1020f11ed4e41a",
+      "session_id": "271bd09fa944482b982af9d2b852fd02",
+      "batch": "final_uniform",
+      "reason": "uniform random (seed 7)",
+      "dims": {
+        "role": "shopper",
+        "intent": "product_search",
+        "record_state": "product",
+        "applicable_policy": "none",
+        "tools_needed": "one_lookup",
+        "difficulty": "well_specified",
+        "user_style": "typo_heavy"
+      },
+      "added_at": "2026-09-19T12:42:14+00:00"
+    },
+    {
+      "trace_id": "79a39154f847d28a514b7760bdf06e4b",
+      "session_id": "abe4e9de4b6244a582af93da51051b92",
+      "batch": "final_uniform",
+      "reason": "uniform random (seed 7)",
+      "dims": {
+        "role": "shopper",
+        "intent": "dispute",
+        "record_state": "order_past_window",
+        "applicable_policy": "platform_rule",
+        "tools_needed": "several",
+        "difficulty": "boundary",
+        "user_style": "frustrated_impatient"
+      },
+      "added_at": "2026-09-19T12:42:14+00:00"
+    },
+    {
+      "trace_id": "eff6053773452c91eba39929f657107f",
+      "session_id": "f9e4d4d602984703ac0ea6e538774b08",
+      "batch": "final_uniform",
+      "reason": "uniform random (seed 7)",
+      "dims": {
+        "role": "shopper",
+        "intent": "order_status",
+        "record_state": "order_in_window",
+        "applicable_policy": "none",
+        "tools_needed": "one_lookup",
+        "difficulty": "well_specified",
+        "user_style": "typo_heavy"
+      },
+      "added_at": "2026-09-19T12:42:14+00:00"
+    },
+    {
+      "trace_id": "c813107b14c2ce5f95fef0b2b018605a",
+      "session_id": "a88ff79a23b74d6b862be7df7cbaf159",
+      "batch": "final_uniform",
+      "reason": "uniform random (seed 7)",
+      "dims": {
+        "role": "shopper",
+        "intent": "return_policy_question",
+        "record_state": "order_reversed_dates",
+        "applicable_policy": "platform_rule",
+        "tools_needed": "several",
+        "difficulty": "ambiguous",
+        "user_style": "confused_rambling"
+      },
+      "added_at": "2026-09-19T12:42:14+00:00"
+    },
+    {
+      "trace_id": "fd3cef4611114befb96af4cc3d96256b",
+      "session_id": "cd75bbd8d1584bd3b2126190c9ceffe6",
+      "batch": "final_uniform",
+      "reason": "uniform random (seed 7)",
+      "dims": {
+        "role": "merchant",
+        "intent": "account_change",
+        "record_state": "none",
+        "applicable_policy": "platform_rule",
+        "tools_needed": "one_lookup",
+        "difficulty": "well_specified",
+        "user_style": "operational_shorthand"
+      },
+      "added_at": "2026-09-19T12:42:14+00:00"
+    },
+    {
+      "trace_id": "5869c87007a6594f7ad415c1310e0554",
+      "session_id": "7a6db3e90d41460194b7a73bb7e07105",
+      "batch": "final_uniform",
+      "reason": "uniform random (seed 7)",
+      "dims": {
+        "role": "shopper",
+        "intent": "order_status",
+        "record_state": "order_past_window",
+        "applicable_policy": "none",
+        "tools_needed": "one_lookup",
+        "difficulty": "well_specified",
+        "user_style": "typo_heavy"
+      },
+      "added_at": "2026-09-19T12:42:14+00:00"
     }
   ]
 }

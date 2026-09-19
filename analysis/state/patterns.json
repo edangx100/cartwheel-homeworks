@@ -179,7 +179,8 @@
         "amu7zdk784hkf",
         "amu87uosjic75",
         "amu8bzkazr0w4",
-        "amu8ci0sb3h0s"
+        "amu8ci0sb3h0s",
+        "amu8grxazwx04"
       ],
       "positives": [
         "ebb8a368b7a992ecffd6f853c4b16f34",
@@ -188,7 +189,8 @@
         "16a1e4bdb493077a0115caca2939dd31",
         "dd6bcb4e1bc21244d03002668ca6ec97",
         "43f73d496a5e7f8907df462178ad7a58",
-        "5119e50f947c4cbf5335bd4e87d159dc"
+        "5119e50f947c4cbf5335bd4e87d159dc",
+        "79a39154f847d28a514b7760bdf06e4b"
       ],
       "close_negatives": [
         "9f0519209cdea8bd20e3299d1909d549",
@@ -232,6 +234,15 @@
               "to": "refusal_mishandled"
             }
           }
+        },
+        {
+          "at": "2026-09-19T14:15:19+00:00",
+          "note": "Batch 4 placement: the mode named in the suggestion the reviewer accepted, 2026-09-19.",
+          "changes": {
+            "positives": [
+              "79a39154"
+            ]
+          }
         }
       ]
     },
@@ -248,18 +259,21 @@
         "amu7wji3zst4g",
         "amu82k0hjjcff",
         "amu8320ebao5e",
-        "amu885gg7j6zl"
+        "amu885gg7j6zl",
+        "amu8gx1yyfemu"
       ],
       "positives": [
         "5d54b1c41b445d804217f4ee9680c447",
         "73adaaeda332b7cdf6cc7af28c195bd2",
         "8bde52f658e17334adb4efa9ca94bbd3",
-        "c0cdc0616336e4d4cb7282f9510ee0d0"
+        "c0cdc0616336e4d4cb7282f9510ee0d0",
+        "b1078d0535d55de61a92c1e106688a8d"
       ],
       "close_negatives": [
         "7846a7e84f7cf51c5c33ccd911359038",
         "ad743bf6a6cb62847f5c00a8fa7590e5",
-        "6612f50dae31ee56ec54be562b22d8ae"
+        "6612f50dae31ee56ec54be562b22d8ae",
+        "fd3cef4611114befb96af4cc3d96256b"
       ],
       "revisions": [
         {
@@ -276,6 +290,18 @@
             ],
             "close_negatives": [
               "6612f50d"
+            ]
+          }
+        },
+        {
+          "at": "2026-09-19T14:15:19+00:00",
+          "note": "Batch 4 placement: the mode named in the suggestion the reviewer accepted, 2026-09-19.",
+          "changes": {
+            "positives": [
+              "b1078d05"
+            ],
+            "close_negatives": [
+              "fd3cef46"
             ]
           }
         }
@@ -496,14 +522,17 @@
       "evaluator": "",
       "product_change": "Rule: before using an order record, check that its dates are in order and its store matches the product; if not, state the inconsistency, do not assert a timeline, and escalate.",
       "annotation_ids": [
-        "amu8cxegxioaz"
+        "amu8cxegxioaz",
+        "amu8gvi0csg7q"
       ],
       "positives": [
-        "23c4ca83e91d06faa6ffce956b81395b"
+        "23c4ca83e91d06faa6ffce956b81395b",
+        "c813107b14c2ce5f95fef0b2b018605a"
       ],
       "close_negatives": [
         "b105a3172950e91488dddc4726c4af41",
-        "fda900090bbffb9b4e43e42c9ce7009f"
+        "fda900090bbffb9b4e43e42c9ce7009f",
+        "24874e84c2f573fa7303f1bfed35aeca"
       ],
       "revisions": [
         {
@@ -523,6 +552,18 @@
               "from": "code check (dates out of order in the tool result) + LLM judge (did the reply flag and escalate)",
               "to": ""
             }
+          }
+        },
+        {
+          "at": "2026-09-19T14:15:19+00:00",
+          "note": "Batch 4 placement: the mode named in the suggestion the reviewer accepted, 2026-09-19.",
+          "changes": {
+            "positives": [
+              "c813107b"
+            ],
+            "close_negatives": [
+              "24874e84"
+            ]
           }
         }
       ]
