@@ -9,8 +9,8 @@ each term the first time it appears.
 > [progress tracker](#4-the-whole-assignment-on-one-page) shows what is done,
 > what is in progress, and what is still to do.
 >
-> *Last updated: 2026-09-19, batch 4 drawn (100 traces in the sample; 85
-> reviewed, 15 awaiting review; 6 modes with 3+ examples, 1 candidate, 2 rejected).*
+> *Last updated: 2026-09-19, batch 4 reviewed (100 of 100 traces reviewed;
+> 6 modes with 3+ examples, 1 candidate with 2, 2 rejected).*
 
 - The assignment itself: [module-2/hw4.md](module-2/hw4.md)
 - The method it follows: the [error-discovery skill](https://github.com/ai-evals-course/evals-skills/blob/main/skills/error-discovery/SKILL.md)
@@ -117,7 +117,7 @@ flowchart TD
     style B2 fill:#bbf7d0,stroke:#15803d
     style B3 fill:#bbf7d0,stroke:#15803d
     style PC fill:#fde68a,stroke:#b45309
-    style B4 fill:#fde68a,stroke:#b45309
+    style B4 fill:#bbf7d0,stroke:#15803d
 ```
 
 Green = done. Yellow = next. White = still to do.
@@ -137,7 +137,7 @@ Green = done. Yellow = next. White = still to do.
 | Batch 3: 25 depth-search traces | ✅ done | 25/25 reviewed: 12 failures, 13 no failure (13 search hits did not hold up); see Section 9b |
 | Axial coding, pass 3 | ✅ done | `goal_not_reclarified` rejected; permission mode merged into `refusal_mishandled`; new candidate `inconsistent_record_not_flagged`; see Section 11 |
 | Part D: final 5 to 8 modes | ⬜ to do | |
-| Batch 4: final 15 random traces | 🟡 in review | drawn (seed 7), 100 distinct traces in total; Claude suggests 3 failures, all in existing modes (0 new); see Section 9c |
+| Batch 4: final 15 random traces | ✅ done | 15/15 reviewed (seed 7): 3 failures, all in existing modes; **0 new modes**; 100 distinct traces in total; see Section 9c |
 | Part E: labels for every trace x mode | ⬜ to do | Langfuse scores + `analysis/state/labels/` |
 | `review_summary.md`, `workshop_notes.md` | ⬜ to do | |
 | Video (max 5 minutes) | ⬜ to do | yours to record |
@@ -371,7 +371,7 @@ the review sees different corners of the data:
   Batch 1   15 random  +  15 "cluster representatives"      ✅ done
   Batch 2   30 spread evenly across ONE product dimension   ✅ done (role)
   Batch 3   25 found by searching for candidate modes       ✅ done
-  Batch 4   15 random, after the taxonomy is drafted        🟡 in review
+  Batch 4   15 random, after the taxonomy is drafted        ✅ done
             ─────────────────────────────────────────────
             100+ distinct traces, none counted twice
 ```
@@ -671,7 +671,21 @@ the taxonomy isn't finished yet.*
    New kinds of mistake: 0
 ```
 
-(Claude's suggestions, waiting for your review.)
+You reviewed and accepted all 15. The 3 failures were placed in the modes
+they named, and `support-0047` (flagged a bad price) and `support-0205` turn 4
+(pointed to its existing ticket) were added as close negatives.
+
+**Counts after batch 4 (all 100 traces reviewed):**
+
+```
+  refusal_mishandled               ██████████  10
+  invented_date_reasoning          ████████     8   (+ support-0039)
+  duplicate_ticket                 █████        5   (+ support-0194 t2)
+  out_of_scope_escalated           ████         4
+  user_claim_not_reconciled        ███          3
+  write_on_unconfirmed_target      ███          3
+  inconsistent_record_not_flagged  ██           2   (+ support-0214)  ⚠ Part D search
+```
 
 **What batch 4 tells us:**
 
@@ -1038,7 +1052,7 @@ Branch: `homework_4`, pushed to GitHub.
 - [x] Axial coding pass 3
 - [ ] **Part D**: final 5 to 8 modes, each with 3+ positives, close negatives, a boundary, an evaluator type and a SPEC source; compare with the AgentDebug taxonomy; write the SPEC revisions
 - [x] **Batch 4**: 15 random traces drawn (100 distinct in total)
-- [ ] **Batch 4**: review the 15 pending suggestions
+- [x] **Batch 4**: 15 suggestions reviewed (all accepted); 3 failures placed in existing modes
 - [ ] **Part E**: label every trace x mode; scores to Langfuse; `analysis/state/labels/`
 - [ ] `analysis/report/review_summary.md`
 - [ ] Rewrite `interface_comparison.md` in your own words
