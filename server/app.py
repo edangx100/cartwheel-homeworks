@@ -41,7 +41,14 @@ from agent import db
 from agent.agent import build_agent, prompt_version
 from agent.auth import ROLES, AuthContext
 from agent.config import REPO_ROOT, db_path
-from observability.instrument import load_env, setup_tracing
+from observability.instrument import (
+    begin_workshop_turn,
+    finish_workshop_turn,
+    load_env,
+    setup_tracing,
+    setup_workshop,
+    shutdown_workshop,
+)
 
 MAX_TURNS = 12  # cap runaway loops; keeps conversations bounded
 SESSIONS_DB = REPO_ROOT / ".sessions.db"
@@ -53,7 +60,9 @@ _tracer = trace.get_tracer("cartwheel.server")
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     load_env()
     setup_tracing()  # no-op with a warning if LANGFUSE_PUBLIC_KEY is unset
+    setup_workshop()  # no-op unless RAINDROP_LOCAL_DEBUGGER is set (HW4 Part C)
     yield
+    shutdown_workshop()
 
 
 app = FastAPI(title="Cartwheel support agent", lifespan=lifespan)
@@ -229,13 +238,27 @@ async def post_message(
                 "gen_ai.input.messages", _genai_message("user", body.message)
             )
 
-        result = await Runner.run(
-            agent,
-            body.message,
-            session=session,
-            context=ctx,
-            max_turns=MAX_TURNS,
+        # None unless Workshop is on; mirrors this turn to the local Workshop.
+        workshop_turn = begin_workshop_turn(
+            ctx,
+            session_id=session_id,
+            message=body.message,
+            scenario_id=body.scenario_id,
+            prompt_version=version,
+            model=body.model,
         )
+        try:
+            result = await Runner.run(
+                agent,
+                body.message,
+                session=session,
+                context=ctx,
+                max_turns=MAX_TURNS,
+            )
+        except Exception as exc:
+            finish_workshop_turn(workshop_turn, error=exc)
+            raise
+        finish_workshop_turn(workshop_turn, result=result)
         reply = str(result.final_output)
 
         # After the run, not before: the reply does not exist until the agent

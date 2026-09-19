@@ -12,6 +12,7 @@ Artifact G).
 
 from __future__ import annotations
 
+import json
 import logging
 import os
 from pathlib import Path
@@ -29,6 +30,7 @@ log = logging.getLogger("cartwheel.instrument")
 
 _genai_instrumented = False
 _openai_tracing_enabled = False
+_workshop: Any = None
 
 
 def configure_model_tracing(*, openai_model: bool) -> None:
@@ -108,6 +110,138 @@ def setup_tracing() -> bool:
         return False
     log.info("tracing enabled; spans go to %s", os.environ.get("LANGFUSE_HOST"))
     return True
+
+
+# ---------------------------------------------------------------------------
+# Raindrop Workshop mirror (HW4 Part C). Opt-in and local only: it records one
+# Raindrop interaction per turn through the SDK's begin/finish API and never
+# touches the Agents SDK's trace processors, so Langfuse is unaffected.
+# ---------------------------------------------------------------------------
+
+
+def setup_workshop() -> bool:
+    """Create the local Workshop client; a no-op unless RAINDROP_LOCAL_DEBUGGER is set.
+
+    Without RAINDROP_WRITE_KEY, events go only to the local Workshop daemon,
+    never to Raindrop Cloud. tracing_enabled stays False, so Raindrop starts
+    no OpenTelemetry pipeline next to Langfuse's.
+    """
+    global _workshop
+    if _workshop is not None:
+        return True
+    url = os.environ.get("RAINDROP_LOCAL_DEBUGGER", "").strip()
+    if not url:
+        return False
+    from raindrop import Raindrop
+
+    _workshop = Raindrop(
+        api_key=os.environ.get("RAINDROP_WRITE_KEY") or None,
+        local_workshop_url=url,
+        tracing_enabled=False,
+        app_git=False,
+    )
+    log.info("Workshop mirroring enabled; turns go to %s", url)
+    return True
+
+
+def shutdown_workshop() -> None:
+    """Flush buffered Workshop events before the process exits."""
+    global _workshop
+    if _workshop is not None:
+        _workshop.shutdown()
+        _workshop = None
+
+
+def begin_workshop_turn(
+    ctx: "AuthContext",
+    *,
+    session_id: str,
+    message: str,
+    scenario_id: str | None,
+    prompt_version: str,
+    model: str | None,
+) -> Any:
+    """Open the Workshop interaction for one turn; None when Workshop is off."""
+    if _workshop is None:
+        return None
+    properties: dict[str, Any] = {
+        "cartwheel.session_id": session_id,
+        "cartwheel.user_role": ctx.role,
+        "cartwheel.user_id": str(ctx.user_id),
+        "cartwheel.prompt_version": prompt_version,
+    }
+    if ctx.store_id is not None:
+        properties["cartwheel.store_id"] = str(ctx.store_id)
+    if scenario_id:
+        properties["cartwheel.scenario_id"] = scenario_id
+    return _workshop.begin(
+        user_id=f"{ctx.role}-{ctx.user_id}",
+        event=f"cartwheel {ctx.role} {scenario_id or 'manual'}",
+        input=message,
+        convo_id=session_id,
+        properties=properties,
+        model=model or os.environ.get("CARTWHEEL_MODEL") or None,
+    )
+
+
+def workshop_steps(new_items: list[Any]) -> list[dict[str, str]]:
+    """The turn's steps in order: agent text and each tool call with its result.
+
+    `Runner.run` returns these on `result.new_items` whether or not tracing
+    is on. Each step becomes one run property, keyed "step.NN ..." so the keys
+    sort in execution order (the local Workshop stores properties but drops
+    attachments).
+    """
+    from agents.items import ItemHelpers
+
+    outputs = {
+        item.call_id: item.output
+        for item in new_items
+        if item.type == "tool_call_output_item" and getattr(item, "call_id", None)
+    }
+    steps: list[dict[str, str]] = []
+    for item in new_items:
+        if item.type == "message_output_item":
+            text = ItemHelpers.text_message_output(item)
+            if text:
+                steps.append({"type": "text", "name": f"step.{len(steps) + 1:02d} agent text", "value": text})
+        elif item.type == "tool_call_item":
+            raw = item.raw_item
+            name = raw.get("name") if isinstance(raw, dict) else getattr(raw, "name", None)
+            args = raw.get("arguments") if isinstance(raw, dict) else getattr(raw, "arguments", None)
+            if isinstance(args, str):
+                try:
+                    args = json.loads(args)
+                except json.JSONDecodeError:
+                    pass
+            result = outputs.get(item.call_id) if getattr(item, "call_id", None) else None
+            if isinstance(result, str):
+                try:
+                    result = json.loads(result)
+                except json.JSONDecodeError:
+                    pass
+            steps.append({
+                "type": "code",
+                "name": f"step.{len(steps) + 1:02d} tool {name}",
+                "value": json.dumps({"arguments": args, "result": result}, default=str),
+            })
+    return steps
+
+
+def finish_workshop_turn(
+    interaction: Any, *, result: Any = None, error: BaseException | None = None
+) -> None:
+    """Record the turn's steps and close the interaction with the reply or error."""
+    if interaction is None:
+        return
+    if result is not None:
+        steps = workshop_steps(result.new_items)
+        properties: dict[str, Any] = {s["name"]: s["value"] for s in steps}
+        properties["cartwheel.tool_calls"] = sum(1 for s in steps if s["type"] == "code")
+        interaction.set_properties(properties)
+        interaction.finish(output=str(result.final_output))
+    else:
+        interaction.finish(output=f"Error: {error!r}")
 
 
 def record_tool_result(ctx: "AuthContext", result: dict[str, Any]) -> None:

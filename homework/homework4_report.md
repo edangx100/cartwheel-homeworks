@@ -116,7 +116,8 @@ flowchart TD
     style AX1 fill:#bbf7d0,stroke:#15803d
     style B2 fill:#bbf7d0,stroke:#15803d
     style B3 fill:#bbf7d0,stroke:#15803d
-    style PC fill:#fde68a,stroke:#b45309
+    style PC fill:#bbf7d0,stroke:#15803d
+    style PD fill:#fde68a,stroke:#b45309
     style B4 fill:#bbf7d0,stroke:#15803d
 ```
 
@@ -133,7 +134,7 @@ Green = done. Yellow = next. White = still to do.
 | Axial coding, pass 1 | ✅ done | 7 candidate modes |
 | Batch 2: 30 traces across one dimension | ✅ done | **role** (10 each): 5 failures, 25 no failure; see Section 9 |
 | Axial coding, pass 2 | ✅ done | 5 new failures placed; new candidate `out_of_scope_escalated`; 8 candidates (4 solid, 4 thin) |
-| Part C: Workshop notes | ⬜ to do | |
+| Part C: Workshop notes | 🟡 drafted | 8 replayed runs in local Workshop; 6 hypotheses (W1–W6), your decisions pending; see Section 9d |
 | Batch 3: 25 depth-search traces | ✅ done | 25/25 reviewed: 12 failures, 13 no failure (13 search hits did not hold up); see Section 9b |
 | Axial coding, pass 3 | ✅ done | `goal_not_reclarified` rejected; permission mode merged into `refusal_mishandled`; new candidate `inconsistent_record_not_flagged`; see Section 11 |
 | Part D: final 5 to 8 modes | ⬜ to do | |
@@ -713,6 +714,45 @@ definition changes.
 
 ---
 
+## 9d. Part C: a second pair of eyes (Raindrop Workshop)
+
+Everything so far came from one method: you reading HW3 recordings. Part C
+checks for blind spots with a different tool looking at **new** runs.
+
+```
+  scenario runner ──▶ Cartwheel server ──▶ live model (gpt-5.5) + tools
+  (8 HW3 scenarios,        │
+   replayed fresh)         └─▶ one Workshop "run" per turn ──▶ Workshop (localhost:5899)
+                               message, reply, every tool call        │
+                               + result, role, scenario               ▼
+                                                             Claude inspects the runs
+                                                             → workshop_notes.md
+                                                               (hypotheses, not labels)
+```
+
+**How it was wired, in plain words.** Workshop is installed locally. A small
+opt-in hook in the server records each turn: what the user said, every tool
+the agent called with its arguments and result, and the reply. It is off
+unless `RAINDROP_LOCAL_DEBUGGER` is set, sends nothing to any cloud, and
+doesn't touch the Langfuse tracing.
+
+**What 8 fresh runs showed** (details and run IDs in
+[workshop_notes.md](../analysis/report/workshop_notes.md)):
+
+| Finding | Mode it points to | New or reproduced? |
+| --- | --- | --- |
+| W1 `support-0221`: told support that Blue Heron "handles" an order whose product belongs to another store, no flag | `inconsistent_record_not_flagged` | **new**: the store-mismatch kind of bad record |
+| W2 `support-0114`: called "delivered 2 days ago" a discrepancy when it was exactly right | `invented_date_reasoning` | **new** instance |
+| W3 `support-0043`: refunded one of two same-named orders without asking | `write_on_unconfirmed_target` | reproduced |
+| W4 `support-0237`: ticket straight after `permission_denied` | `refusal_mishandled` | reproduced |
+| W5 `support-0178`: tool call on an out-of-scope request | `out_of_scope_escalated` | reproduced |
+| W6 `support-0029`: **did** flag order 8001's impossible dates | close negative | the same data failed in `-0212` and `-0214` |
+
+No behaviour outside the current taxonomy appeared. Your accept / revise /
+reject decisions on W1–W6 are recorded in Part D.
+
+---
+
 ## 10. AI suggestions: help that you had to approve
 
 For the last 13 traces, you asked Claude to do the first read. Claude posted
@@ -1008,8 +1048,11 @@ these has been written into `SPEC.md` yet. Doing that is part of Part D.
 | Review app driven in a headless browser (selection, suggestions, counter) | Playwright on a copy of your state | no |
 | App loaded 416 traces from Langfuse, hid 66, grouped 350 | live Langfuse, read-only | no model; Langfuse only |
 | Scores written to Langfuse | not yet (Part E) | — |
+| Workshop hook tests (3) + full suite: 169 passed, 1 unrelated failure | `uv run pytest` | no |
+| Part C: 8 HW3 scenarios replayed into Workshop | scenario runner → local server | **yes**: 11 turns with `gpt-5.5` |
 
-**No step of Homework 4 so far has called the language model.** Everything
+**Only Part C has called the language model** (11 turns, listed in
+[workshop_notes.md](../analysis/report/workshop_notes.md)). Everything else
 reads recordings that Homework 3 already made.
 
 ---
@@ -1046,7 +1089,8 @@ Branch: `homework_4`, pushed to GitHub.
 - [x] Batch 2: dimension chosen before looking at outcomes (**role**)
 - [x] Batch 2: 30 traces drawn and open-coded (5 failures, 25 no failure)
 - [x] Axial coding pass 2
-- [ ] **Part C**: Raindrop Workshop, 5 to 10 runs → `analysis/report/workshop_notes.md`
+- [x] **Part C**: Workshop installed, Cartwheel instrumented (opt-in), 8 runs inspected → `analysis/report/workshop_notes.md` (draft)
+- [ ] **Part C**: record your accept / revise / reject decision for W1–W6 (in Part D)
 - [x] **Batch 3**: 25 picks drawn and added to the manifest (batch `depth`)
 - [x] **Batch 3**: 25 suggestions reviewed (all 12 failures accepted)
 - [x] Axial coding pass 3
