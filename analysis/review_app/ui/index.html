@@ -63,7 +63,15 @@ details > summary { cursor: pointer; }
 #tabs button { border: none; background: none; padding: 4px 10px; border-radius: 6px; color: var(--muted); }
 #tabs button.on { background: var(--soft); color: var(--ink); font-weight: 600; }
 #tabs .count { font-size: 11px; background: var(--sugg-bg); color: var(--sugg); border-radius: 8px; padding: 0 6px; margin-left: 4px; }
-#source { margin-left: auto; font-size: 12px; }
+#counter { display: flex; gap: 10px; align-items: center; font-size: 12.5px; border-radius: 16px; padding: 3px 12px; background: var(--soft); border-color: var(--line); }
+#counter b { font-size: 13px; }
+#counter .k { display: inline-flex; gap: 4px; align-items: center; color: var(--muted); }
+#counter .bar { width: 60px; }
+#counter { gap: 8px; }
+@media (max-width: 1350px) { #counter .bar { display: none; } #top h1 { font-size: 14px; } #tabs button { padding: 4px 7px; } }
+#source { margin-left: auto; font-size: 11.5px; white-space: nowrap; max-width: 220px; overflow: hidden; text-overflow: ellipsis; }
+#top { column-gap: 12px; }
+#counter { white-space: nowrap; }
 #source.fallback { color: var(--bad); }
 
 main { flex: 1; min-height: 0; display: flex; }
@@ -226,6 +234,7 @@ tr.sel td { background: var(--user-bg); }
     <button data-view="progress">Progress</button>
     <button data-view="suggestions">AI suggestions <span class="count" id="sugg-count">0</span></button>
   </nav>
+  <button id="counter" title="Open the Progress tab"></button>
   <span id="source"></span>
 </header>
 
@@ -627,7 +636,8 @@ function layoutMargin() {
     const human = it._k === 'human';
     note.className = 'mnote ' + (human ? 'human' : 'sugg') + (it.first_failure ? ' ff' : '') + (it.kind === 'no_failure' ? ' nofail' : '');
     note.dataset.item = it.id;
-    let tag = human ? (it.kind === 'no_failure' ? 'no failure observed' : (it.first_failure ? 'first failure' : 'note')) : 'AI suggestion' + (it.mode ? ' · ' + it.mode : '');
+    let tag = human ? (it.kind === 'no_failure' ? 'no failure observed' : (it.first_failure ? 'first failure' : 'note'))
+      : 'AI suggestion' + (it.first_failure ? ' · first failure' : '') + (it.mode ? ' · ' + it.mode : '');
     if (human && it.source === 'ai_accepted') tag += ' · from accepted AI suggestion';
     if (it.batch === 'part_a') tag += ' · Part A';
     if (it.requirement) tag += ' · ' + it.requirement;
@@ -782,6 +792,7 @@ async function deleteAnnotation(id) {
 }
 async function saveAnnotations() {
   backup();
+  renderCounter();
   try { await api.post('/api/annotations', {annotations: S.annotations}); }
   catch (e) { toast('Save failed, kept in this browser: ' + e.message); }
 }
@@ -804,9 +815,11 @@ async function decideSuggestions(ids, accept) {
         await api.post('/api/labels', {mode: sg.mode, trace_id: sg.trace_id, label: sg.label, evidence: sg.evidence || sg.rationale,
           source: 'ai_accepted', suggestion_id: sg.id, session_id: sessionOf(sg.trace_id)});
       } else if (accept) {
+        const ff = !!sg.first_failure;
+        if (ff) S.annotations.forEach(a => { if (a.trace_id === sg.trace_id && a.first_failure) { a.first_failure = false; a.updated_at = nowIso(); } });
         S.annotations.push({id: newId('a'), kind: 'note', source: 'ai_accepted', suggestion_id: sg.id, trace_id: sg.trace_id,
           session_id: sessionOf(sg.trace_id), seg: sg.seg, start: sg.start, quote: sg.quote, note: sg.note || '',
-          first_failure: false, created_at: nowIso(), updated_at: nowIso(), history: []});
+          first_failure: ff, requirement: sg.requirement, created_at: nowIso(), updated_at: nowIso(), history: []});
         if (sg.mode) {
           const mode = (S.patterns.modes || []).find(m => m.name === sg.mode);
           if (mode) { mode.annotation_ids = mode.annotation_ids || []; mode.annotation_ids.push(S.annotations[S.annotations.length - 1].id); }
@@ -1105,8 +1118,8 @@ function renderSource() {
   const m = S.meta, el = $('source');
   const fallback = m.source && m.source !== 'langfuse';
   el.className = fallback ? 'fallback' : '';
-  el.textContent = `${m.session_count} sessions · ${m.trace_count} traces · source: ${m.source}`;
-  el.title = `loaded ${m.loaded_at || ''}; session ids: ${JSON.stringify(m.session_sources || {})}`;
+  el.textContent = `source: ${m.source}`;
+  el.title = `${m.session_count} sessions · ${m.trace_count} traces · source: ${m.source}\nloaded ${m.loaded_at || ''}; session ids: ${JSON.stringify(m.session_sources || {})}`;
 }
 function switchView(v) {
   S.view = v;
@@ -1121,7 +1134,41 @@ function renderView() {
   else if (S.view === 'progress') renderProgress();
   else if (S.view === 'suggestions') renderSuggestions();
 }
-function renderAll() { renderSource(); renderBatchFilter(); $('sugg-count').textContent = S.suggestions.filter(x => x.status === 'pending').length; renderView(); }
+/* Live review count for the sampled traces, shown in the top bar. */
+function reviewCounts(tids) {
+  const c = {total: tids.length, done: 0, failure: 0, nofail: 0, part: 0, open: 0};
+  tids.forEach(t => {
+    const anns = S.annotations.filter(a => a.trace_id === t);
+    if (anns.some(a => a.kind === 'no_failure')) { c.done++; c.nofail++; }
+    else if (anns.some(a => a.first_failure)) { c.done++; c.failure++; }
+    else if (anns.length) c.part++;
+    else c.open++;
+  });
+  return c;
+}
+function renderCounter() {
+  const el = $('counter');
+  const items = S.manifest.items || [];
+  const tids = [...new Set(items.map(i => i.trace_id))];
+  if (!tids.length) { el.style.display = 'none'; return; }
+  el.style.display = '';
+  const c = reviewCounts(tids);
+  const pct = Math.round(100 * c.done / c.total);
+  el.innerHTML = `<span><b>${c.done}</b>/${c.total} reviewed</span>
+    <span class="bar"><span style="width:${pct}%"></span></span>
+    <span class="k" title="first failure marked"><span class="dot" style="background:var(--bad)"></span>${c.failure} failure</span>
+    <span class="k" title="no failure observed"><span class="dot done"></span>${c.nofail} no failure</span>
+    ${c.part ? `<span class="k" title="notes written but no first-failure or no-failure mark yet"><span class="dot part"></span>${c.part} unmarked</span>` : ''}
+    <span class="k" title="not opened yet"><span class="dot"></span>${c.open} to do</span>`;
+  const batches = Object.keys(S.manifest.batches || {}).filter(b => items.some(i => i.batch === b));
+  el.title = batches.map(b => {
+    const bc = reviewCounts([...new Set(items.filter(i => i.batch === b).map(i => i.trace_id))]);
+    return `${b}: ${bc.done}/${bc.total} reviewed (${bc.failure} failure, ${bc.nofail} no failure, ${bc.part} notes only)`;
+  }).join('\n') + '\n\nClick to open the Progress tab.';
+}
+$('counter').onclick = () => switchView('progress');
+
+function renderAll() { renderCounter(); renderSource(); renderBatchFilter(); $('sugg-count').textContent = S.suggestions.filter(x => x.status === 'pending').length; renderView(); }
 document.querySelectorAll('#tabs button').forEach(b => b.onclick = () => switchView(b.dataset.view));
 ['f-search', 'f-scope', 'f-role', 'f-batch', 'f-status'].forEach(id => $(id).addEventListener('input', renderSessionList));
 document.addEventListener('keydown', e => {

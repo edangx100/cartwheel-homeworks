@@ -365,7 +365,19 @@ def build_turn(raw: dict[str, Any], host: str | None, registry: dict[str, dict])
             }
             if not steps:
                 steps.append({"text": "", "called": [], "tools": [], "orphan": True})
-            steps[-1]["tools"].append(record)
+            # Attach the result to the model call that requested it. Span start
+            # times can trail the next model call slightly, so the most recent
+            # step is not always the caller.
+            owner = next(
+                (
+                    step
+                    for step in reversed(steps)
+                    if sum(1 for n in step["called"] if n == record["name"])
+                    > sum(1 for t in step["tools"] if t["name"] == record["name"])
+                ),
+                steps[-1],
+            )
+            owner["tools"].append(record)
 
     reply = _message_text(raw.get("output"))
     final_meta = None
