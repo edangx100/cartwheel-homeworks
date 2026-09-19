@@ -23,6 +23,16 @@ The same inspection led to a second change. In Langfuse I had to read nested JSO
 
 The system prompt and tool schemas are shown once per session instead of on every model call.
 
+## Changed during review: a live count of reviewed traces
+
+Halfway through batch 1 I was counting reviewed traces by hand to know how far I had got. The reference only shows progress in a separate view, and my first version only had a small count at the foot of the session list. I added a counter to the top bar that is always visible and updates as soon as a note or mark is saved. It shows reviewed traces out of the sample, split into:
+- traces marked with a first failure;
+- traces marked "no failure observed";
+- traces with notes but no final mark yet;
+- traces not yet opened.
+
+Hovering shows the same counts per batch, and clicking opens the Progress view. It also catches traces I left unfinished: an accepted AI suggestion without the first-failure mark shows up as "unmarked" rather than as reviewed.
+
 ## Remaining limitation: session grouping depends on a local, recovered mapping
 
 Because the traces don't carry `cartwheel.session_id`, the grouping for these traces depends on the local session store (`.sessions.db`, not committed) and on text-and-time matching. The saved map makes the grouping reproducible, but a trace outside the map is shown alone as "unmatched" and isn't merged. New runs will need the server to record the session ID on the trace. My free-form notes are also stored only in the local state files; only accepted present/absent judgments are written to Langfuse as scores.
