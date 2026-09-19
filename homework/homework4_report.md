@@ -128,7 +128,7 @@ Green = done. Yellow = next. White = still to do.
 | Part A: `interface_comparison.md` | 🟡 drafted | needs rewriting in your own words |
 | Batch 1: 15 random + 15 cluster traces | ✅ done | 30/30 reviewed: 10 failures, 20 no failure |
 | Axial coding, pass 1 | ✅ done | 7 candidate modes |
-| Batch 2: 30 traces across one dimension | ⬜ next | dimension to choose *before* looking at outcomes |
+| Batch 2: 30 traces across one dimension | 🟡 in progress | dimension chosen: **role** (10 shopper, 10 merchant, 10 support); see Section 8 |
 | Part C: Workshop notes | ⬜ to do | |
 | Batch 3: 25 depth-search traces | ⬜ to do | must include at least one rejected search suggestion |
 | Part D: final 5 to 8 modes | ⬜ to do | |
@@ -364,7 +364,7 @@ the review sees different corners of the data:
 
 ```
   Batch 1   15 random  +  15 "cluster representatives"      ✅ done
-  Batch 2   30 spread evenly across ONE product dimension   ⬜ next
+  Batch 2   30 spread evenly across ONE product dimension   🟡 role chosen
   Batch 3   25 found by searching for candidate modes       ⬜
   Batch 4   15 random, after the taxonomy is drafted        ⬜
             ─────────────────────────────────────────────
@@ -393,6 +393,31 @@ the review sees different corners of the data:
 
 Your 5 Part A traces were kept out of every batch. They count as "pre-batch"
 observations, not toward the 100.
+
+### Batch 2: why "role" was chosen (decided before looking at any outcomes)
+
+The handout asks you to pick one **product dimension** and spread 30 traces
+evenly across its values, choosing the dimension *before* seeing results.
+You chose **role** on 2026-09-19:
+
+```
+            batch 1                      batch 2 (planned)
+  shopper   █████████████████  17        ██████████  10
+  merchant  ███████████        11        ██████████  10
+  support   ██                  2        ██████████  10
+```
+
+- **It fills batch 1's biggest gap.** Only 2 support traces were read, yet
+  support staff can see and act on *any* order (SPEC AUTH-1), so their
+  conversations can go wrong differently.
+- **It tests a clue fairly.** 9 of the 10 batch-1 failures were shoppers. An
+  even split shows whether that says something about shoppers or only about
+  how many shopper traces were read.
+- **It leaves enough per value.** 3 roles means 10 traces each. Dimensions
+  with many values (8 intents, 15 record states) would leave only 2 to 4.
+- **Not chosen: difficulty.** It would surface more ambiguous and boundary
+  cases, but picking it *because* it finds failures edges towards selecting on
+  predicted failure. Hunting for specific modes is batch 3's job.
 
 ---
 
@@ -703,8 +728,8 @@ Branch: `homework_4`, pushed to GitHub.
 
 - [ ] Edit the 7 draft mode definitions in the Taxonomy tab into your own words
 - [ ] Commit and push `analysis/state/patterns.json`
-- [ ] **Batch 2**: choose a product dimension *before* looking at outcomes, then
-      `uv run python -m analysis.review_app.sample dimension --field role --n 30`
+- [x] Batch 2: dimension chosen before looking at outcomes (**role**)
+- [ ] **Batch 2**: draw it (`uv run python -m analysis.review_app.sample dimension --field role --n 30`) and open-code the 30 traces
 - [ ] Axial coding pass 2
 - [ ] **Part C**: Raindrop Workshop, 5 to 10 runs → `analysis/report/workshop_notes.md`
 - [ ] **Batch 3**: 25 traces from depth searches, including at least one rejected search result
