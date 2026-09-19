@@ -160,7 +160,7 @@ main { flex: 1; min-height: 0; display: flex; }
 .mnote.human:hover .acts { visibility: visible; }
 .mnote textarea { width: 100%; min-height: 60px; }
 
-#popover { position: absolute; display: none; z-index: 20; width: 340px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.18); }
+#popover { position: fixed; display: none; z-index: 20; width: 340px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.18); }
 #popover textarea { width: 100%; min-height: 70px; }
 #popover .row { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; font-size: 12px; }
 
@@ -678,22 +678,30 @@ $('content').addEventListener('mouseup', () => {
   const sel = window.getSelection();
   if (!sel || sel.isCollapsed || pending) return;
   const range = sel.getRangeAt(0);
-  const startEl = range.startContainer.parentElement && range.startContainer.parentElement.closest('.annotatable');
-  const endEl = range.endContainer.parentElement && range.endContainer.parentElement.closest('.annotatable');
-  if (!startEl || startEl !== endEl) { if (startEl || endEl) toast('Select text within one block (a message, argument, or result).'); return; }
-  const start = textOffset(startEl, range.startContainer, range.startOffset);
-  const end = textOffset(startEl, range.endContainer, range.endOffset);
-  const quote = startEl.textContent.slice(start, end);
-  if (!quote.trim()) return;
+  const block = selectionBlock(range);
+  if (!block) return;
+  // Triple-clicks and drags that overshoot select a little past the block;
+  // clamp to the block and trim surrounding whitespace instead of refusing.
+  const text = block.textContent;
+  let start = block.contains(range.startContainer) ? textOffset(block, range.startContainer, range.startOffset) : 0;
+  let end = block.contains(range.endContainer) ? textOffset(block, range.endContainer, range.endOffset) : text.length;
+  while (start < end && /\s/.test(text[start])) start++;
+  while (end > start && /\s/.test(text[end - 1])) end--;
+  if (end <= start) return;
+  const quote = text.slice(start, end);
+  const crossed = [...document.querySelectorAll('#content .annotatable')].filter(el => el !== block && range.intersectsNode(el) && el.textContent.trim());
   // Wrap the selection before focusing the input so the reviewer keeps sight of it.
-  const spans = wrapRange(startEl, start, end, () => { const sp = document.createElement('span'); sp.className = 'hl pending'; return sp; });
+  const spans = wrapRange(block, start, end, () => { const sp = document.createElement('span'); sp.className = 'hl pending'; return sp; });
   sel.removeAllRanges();
-  pending = {spans, ctx: {trace_id: startEl.dataset.trace, seg: startEl.dataset.seg, start, quote}};
+  pending = {spans, ctx: {trace_id: block.dataset.trace, seg: block.dataset.seg, start, quote}};
+  if (crossed.length) toast('The note covers one block; the selection was trimmed to it.');
   const rect = spans[spans.length - 1].getBoundingClientRect();
   const pop = $('popover');
   pop.style.display = 'block';
-  pop.style.left = Math.min(window.scrollX + rect.left, window.innerWidth - 360) + 'px';
-  pop.style.top = (window.scrollY + rect.bottom + 6) + 'px';
+  pop.style.left = Math.max(8, Math.min(rect.left, window.innerWidth - pop.offsetWidth - 8)) + 'px';
+  // Keep the popover on screen: open above the selection when there is no room below.
+  const below = rect.bottom + 6, above = spans[0].getBoundingClientRect().top - pop.offsetHeight - 6;
+  pop.style.top = (below + pop.offsetHeight <= window.innerHeight - 8 || above < 8 ? below : above) + 'px';
   $('pop-quote').textContent = '“' + clip(quote, 120) + '”';
   $('pop-note').value = '';
   const already = S.annotations.some(a => a.trace_id === pending.ctx.trace_id && a.first_failure);
@@ -701,6 +709,16 @@ $('content').addEventListener('mouseup', () => {
   $('pop-ff').disabled = false;
   $('pop-note').focus();
 });
+/* The one annotatable block a selection belongs to: where it starts, else where
+   it ends, else the first block it covers (a drag started in the margin). */
+function selectionBlock(range) {
+  const inBlock = node => {
+    const el = node.nodeType === 3 ? node.parentElement : node;
+    return el && el.closest ? el.closest('#content .annotatable') : null;
+  };
+  return inBlock(range.startContainer) || inBlock(range.endContainer) ||
+    [...document.querySelectorAll('#content .annotatable')].find(el => range.intersectsNode(el) && el.textContent.trim()) || null;
+}
 function closePopover() {
   if (pending) unwrap(pending.spans);
   pending = null; $('popover').style.display = 'none';
