@@ -155,6 +155,22 @@ def load_traces(source: str, export_path: Path) -> tuple[list[dict[str, Any]], s
     return load_export(export_path), "export"
 
 
+def restrict_to_export(
+    raws: list[dict[str, Any]], export_path: Path
+) -> tuple[list[dict[str, Any]], int]:
+    """Keep only traces in the HW3 export (the final run under review).
+
+    Langfuse also holds earlier pilot runs and manual sessions. Homework 4
+    reviews the final run, so live traces are limited to the export's ids.
+    Returns the kept traces and how many were excluded.
+    """
+    if not Path(export_path).exists():
+        return raws, 0
+    keep = {str(r["id"]) for r in load_export(export_path)}
+    kept = [r for r in raws if str(r["id"]) in keep]
+    return kept, len(raws) - len(kept)
+
+
 # ---------------------------------------------------------------------------
 # session identifiers
 # ---------------------------------------------------------------------------

@@ -99,6 +99,16 @@ def test_sessions_group_by_session_id_in_time_order() -> None:
     assert meta["session_sources"] == {"attribute": 1, "recovered": 1, "unmatched": 1}
 
 
+def test_restrict_to_export_keeps_only_the_reviewed_run(tmp_path: Path) -> None:
+    final = [_raw("a" * 32, "2026-09-14T07:00:00Z", "hi", "yo")]
+    export = tmp_path / "support_traces.json"
+    export.write_text(json.dumps({"traces": final}))
+    live = final + [_raw("p" * 32, "2026-09-12T07:00:00Z", "pilot", "run")]
+    kept, excluded = traces.restrict_to_export(live, export)
+    assert [r["id"] for r in kept] == ["a" * 32] and excluded == 1
+    assert traces.restrict_to_export(live, tmp_path / "missing.json") == (live, 0)
+
+
 class _FakeScores:
     def __init__(self, store: dict) -> None:
         self.store = store

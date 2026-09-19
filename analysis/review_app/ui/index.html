@@ -369,17 +369,19 @@ function sessionTraces(s, scope) {
 function renderBatchFilter() {
   const sel = $('f-batch'); const cur = sel.value;
   sel.innerHTML = '<option value="">Any batch</option>' +
-    Object.keys(S.manifest.batches || {}).map(b => `<option value="${esc(b)}">${esc(b)}</option>`).join('');
+    Object.keys(S.manifest.batches || {}).map(b => `<option value="${esc(b)}">${esc(b)}</option>`).join('') +
+    (S.annotations.some(a => a.batch === 'part_a') ? '<option value="__part_a">Part A (pre-batch)</option>' : '');
   sel.value = cur;
 }
 function filteredSessions() {
   const q = $('f-search').value.trim().toLowerCase();
   const scope = $('f-scope').value, role = $('f-role').value, batch = $('f-batch').value, status = $('f-status').value;
+  const partA = new Set(S.annotations.filter(a => a.batch === 'part_a').map(a => a.trace_id));
   return S.sessions.filter(s => {
-    const traces = sessionTraces(s, scope);
+    const traces = batch === '__part_a' ? s.turns.filter(t => partA.has(t.trace_id)) : sessionTraces(s, scope);
     if (!traces.length) return false;
     if (role && s.role !== role) return false;
-    if (batch && !s.turns.some(t => (S.sampleIndex[t.trace_id] || {}).batch === batch)) return false;
+    if (batch && batch !== '__part_a' && !s.turns.some(t => (S.sampleIndex[t.trace_id] || {}).batch === batch)) return false;
     if (status) {
       const done = traces.every(t => traceStatus(t.trace_id) === 'done');
       if (status === 'done' ? !done : done) return false;
@@ -396,7 +398,8 @@ function renderSessionList() {
   const scope = $('f-scope').value;
   $('session-list').innerHTML = list.map(s => {
     const traces = sessionTraces(s, scope);
-    const dots = traces.map(t => `<span class="dot ${traceStatus(t.trace_id)}" title="${short(t.trace_id)}"></span>`).join('');
+    const shown = $('f-batch').value === '__part_a' ? s.turns.filter(t => S.annotations.some(a => a.batch === 'part_a' && a.trace_id === t.trace_id)) : traces;
+    const dots = shown.map(t => `<span class="dot ${traceStatus(t.trace_id)}" title="${short(t.trace_id)}"></span>`).join('');
     const tuple = (s.scenario && s.scenario.tuple) || {};
     return `<div class="srow ${s.session_id === S.sid ? 'on' : ''}" data-sid="${esc(s.session_id)}">
       <div class="l1"><span>${esc(s.scenario_id || short(s.session_id))} <span class="chip">${esc(s.role || '?')}</span></span><span>${dots}</span></div>
@@ -596,15 +599,18 @@ function applyHighlights() {
       sp.className = 'hl' + (it._k === 'sugg' ? ' sugg' : '') + (it.first_failure ? ' ff' : '');
       sp.dataset.item = it.id; return sp;
     });
-    if (it._k === 'human' && it.first_failure) fadeAfter(it.trace_id, Number(el.dataset.order));
+    if (it._k === 'human' && it.first_failure) fadeAfter(it.trace_id, el);
   });
 }
-/* The stopping rule: content after the first failure recedes (hover restores it). */
-function fadeAfter(tid, order) {
+/* The stopping rule: content after the first failure recedes (hover restores it).
+   Inside the tool block that holds the failure, only the later part fades. */
+function fadeAfter(tid, anchor) {
+  const order = Number(anchor.dataset.order);
   document.querySelectorAll(`.turn[data-trace="${tid}"] .annotatable`).forEach(el => {
-    if (Number(el.dataset.order) > order) {
-      (el.closest('.tool') || el.closest('.seg') || el).classList.add('after-first');
-    }
+    if (Number(el.dataset.order) <= order) return;
+    let box = el.closest('.tool') || el.closest('.seg') || el;
+    if (box.contains(anchor)) box = el.closest('details') || el;
+    box.classList.add('after-first');
   });
 }
 function layoutMargin() {
@@ -623,6 +629,8 @@ function layoutMargin() {
     note.dataset.item = it.id;
     let tag = human ? (it.kind === 'no_failure' ? 'no failure observed' : (it.first_failure ? 'first failure' : 'note')) : 'AI suggestion' + (it.mode ? ' · ' + it.mode : '');
     if (human && it.source === 'ai_accepted') tag += ' · from accepted AI suggestion';
+    if (it.batch === 'part_a') tag += ' · Part A';
+    if (it.requirement) tag += ' · ' + it.requirement;
     let body = `<div class="tag">${esc(tag)} · turn ${S.traceIndex[it.trace_id] ? S.traceIndex[it.trace_id].turn.turn : '?'}</div>`;
     if (it.quote) body += `<div class="quote">“${esc(clip(it.quote, 90))}”</div>`;
     if (S.editing === it.id) {

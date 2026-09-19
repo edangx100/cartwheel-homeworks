@@ -45,9 +45,16 @@ DIMENSIONS = (
 )
 
 
-def load_pool(source: str, export: Path, scenarios: Path) -> list[dict[str, Any]]:
-    """One row per trace with its session, dimensions, and cluster features."""
+def load_pool(
+    source: str, export: Path, scenarios: Path, all_traces: bool = False
+) -> list[dict[str, Any]]:
+    """One row per trace with its session, dimensions, and cluster features.
+
+    Limited to the HW3 export (the final run) unless ``all_traces`` is set.
+    """
     raws, _ = trace_store.load_traces(source, export)
+    if not all_traces:
+        raws, _ = trace_store.restrict_to_export(raws, export)
     sessions, _ = trace_store.build_sessions(
         raws, trace_store.load_session_map(), trace_store.load_scenarios(scenarios)
     )
@@ -149,6 +156,8 @@ def main() -> None:
     parser.add_argument("--export", type=Path, default=trace_store.DEFAULT_EXPORT)
     parser.add_argument("--scenarios", type=Path, default=trace_store.DEFAULT_SCENARIOS)
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--all-traces", action="store_true",
+                        help="include Langfuse traces outside the HW3 export")
     args = parser.parse_args()
 
     manifest = read_manifest()
@@ -166,7 +175,13 @@ def main() -> None:
 
     load_dotenv(trace_store.REPO / ".env")
     taken = {item["trace_id"] for item in manifest["items"]}
-    pool = [row for row in load_pool(args.source, args.export, args.scenarios) if row["trace_id"] not in taken]
+    # Traces already coded outside the batches (the Part A review) are not redrawn.
+    annotations = server.read_json(*server.STATE_FILES["/api/annotations"]).get("annotations", [])
+    taken |= {a["trace_id"] for a in annotations if a.get("batch") == "part_a"}
+    pool = [
+        row for row in load_pool(args.source, args.export, args.scenarios, args.all_traces)
+        if row["trace_id"] not in taken
+    ]
     n = args.n or (BATCHES[batch][0] - sum(1 for i in manifest["items"] if i["batch"] == batch))
 
     if args.command == "uniform":

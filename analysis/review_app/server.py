@@ -109,6 +109,9 @@ def write_json(path: Path, data: Any) -> None:
 
 def load_data() -> None:
     raws, source = trace_store.load_traces(_CONFIG["source"], _CONFIG["export"])
+    excluded = 0
+    if not _CONFIG.get("all_traces"):
+        raws, excluded = trace_store.restrict_to_export(raws, _CONFIG["export"])
     sessions, meta = trace_store.build_sessions(
         raws,
         trace_store.load_session_map(),
@@ -116,6 +119,7 @@ def load_data() -> None:
         trace_store.langfuse_host(),
     )
     meta["source"] = source
+    meta["excluded_outside_export"] = excluded
     meta["loaded_at"] = _now()
     with _LOCK:
         _DATA["sessions"], _DATA["meta"] = sessions, meta
@@ -333,6 +337,10 @@ def main() -> None:
         help="record labels locally and sync only when Sync is pressed",
     )
     parser.add_argument("--state-dir", type=Path, default=STATE_DIR)
+    parser.add_argument(
+        "--all-traces", action="store_true",
+        help="also show Langfuse traces outside the HW3 export (pilot runs, manual sessions)",
+    )
     args = parser.parse_args()
     load_dotenv(trace_store.REPO / ".env")
     use_state_dir(args.state_dir)
@@ -341,7 +349,8 @@ def main() -> None:
     meta = _DATA["meta"]
     print(
         f"{meta['session_count']} sessions / {meta['trace_count']} traces from {meta['source']}; "
-        f"session ids {meta['session_sources']}"
+        f"session ids {meta['session_sources']}; "
+        f"{meta['excluded_outside_export']} traces outside the HW3 export hidden"
     )
     server = ThreadingHTTPServer(("127.0.0.1", args.port), Handler)
     print(f"review app on http://127.0.0.1:{args.port}")
