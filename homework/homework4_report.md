@@ -9,8 +9,8 @@ each term the first time it appears.
 > [progress tracker](#4-the-whole-assignment-on-one-page) shows what is done,
 > what is in progress, and what is still to do.
 >
-> *Last updated: 2026-09-19, after axial coding pass 3 (85 of 100 traces
-> reviewed; 6 modes with 3+ examples, 1 candidate, 2 rejected).*
+> *Last updated: 2026-09-19, batch 4 drawn (100 traces in the sample; 85
+> reviewed, 15 awaiting review; 6 modes with 3+ examples, 1 candidate, 2 rejected).*
 
 - The assignment itself: [module-2/hw4.md](module-2/hw4.md)
 - The method it follows: the [error-discovery skill](https://github.com/ai-evals-course/evals-skills/blob/main/skills/error-discovery/SKILL.md)
@@ -117,6 +117,7 @@ flowchart TD
     style B2 fill:#bbf7d0,stroke:#15803d
     style B3 fill:#bbf7d0,stroke:#15803d
     style PC fill:#fde68a,stroke:#b45309
+    style B4 fill:#fde68a,stroke:#b45309
 ```
 
 Green = done. Yellow = next. White = still to do.
@@ -136,7 +137,7 @@ Green = done. Yellow = next. White = still to do.
 | Batch 3: 25 depth-search traces | ✅ done | 25/25 reviewed: 12 failures, 13 no failure (13 search hits did not hold up); see Section 9b |
 | Axial coding, pass 3 | ✅ done | `goal_not_reclarified` rejected; permission mode merged into `refusal_mishandled`; new candidate `inconsistent_record_not_flagged`; see Section 11 |
 | Part D: final 5 to 8 modes | ⬜ to do | |
-| Batch 4: final 15 random traces | ⬜ to do | count new modes that still appear |
+| Batch 4: final 15 random traces | 🟡 in review | drawn (seed 7), 100 distinct traces in total; Claude suggests 3 failures, all in existing modes (0 new); see Section 9c |
 | Part E: labels for every trace x mode | ⬜ to do | Langfuse scores + `analysis/state/labels/` |
 | `review_summary.md`, `workshop_notes.md` | ⬜ to do | |
 | Video (max 5 minutes) | ⬜ to do | yours to record |
@@ -370,7 +371,7 @@ the review sees different corners of the data:
   Batch 1   15 random  +  15 "cluster representatives"      ✅ done
   Batch 2   30 spread evenly across ONE product dimension   ✅ done (role)
   Batch 3   25 found by searching for candidate modes       ✅ done
-  Batch 4   15 random, after the taxonomy is drafted        ⬜
+  Batch 4   15 random, after the taxonomy is drafted        🟡 in review
             ─────────────────────────────────────────────
             100+ distinct traces, none counted twice
 ```
@@ -649,6 +650,52 @@ Two surprises need a placement decision in pass 3:
 - **support-0212**: the order record says it shipped *after* it was delivered.
   The agent did not flag the bad record or escalate. Is this a new *"bad record
   not flagged"* mode? (support-0045 in batch 2 was also a wrong record.)
+
+---
+
+## 9c. Batch 4: do new kinds of mistakes still appear?
+
+After the taxonomy was drafted (pass 3), 15 more traces were drawn **at
+random** (`final_uniform`, seed 7), skipping every trace already reviewed.
+That brings the sample to **100 distinct traces**.
+
+The question it answers: *if new, unnamed kinds of mistakes keep turning up,
+the taxonomy isn't finished yet.*
+
+```
+  15 random traces
+   ├─ 12 no failure
+   └─  3 failures ──┬─ support-0039   → invented_date_reasoning          (existing)
+                    ├─ support-0214   → inconsistent_record_not_flagged  (existing candidate)
+                    └─ support-0194 t2 → duplicate_ticket                (existing, boundary)
+   New kinds of mistake: 0
+```
+
+(Claude's suggestions, waiting for your review.)
+
+**What batch 4 tells us:**
+
+- Every failure fitted a mode that already exists. **No new mode appeared**,
+  which is the sign that the taxonomy has stabilised.
+- The new candidate `inconsistent_record_not_flagged` got a second example by
+  pure chance (`support-0214`, the same bad order 8001 as `support-0212`).
+- `support-0039` shows the agent writing **"Current date is 2026-09-14"**
+  again: the real-world date, as in `support-0198`.
+
+**An inconsistency to settle in Part D.** In Part A, `support-0246` was coded as
+a failure because the reply listed the product name the user typed as if it
+were order data (`get_order` returns only a `product_id`). Since then, about 9
+traces with the same pattern were coded **no failure**, and two more
+(`support-0059`, `support-0065`) turn up in batch 4. One of two things must
+happen:
+
+- **Narrow the rule.** Repeating the user's product name only counts when it
+  conflicts with the record or drives an action. Then `support-0246` becomes a
+  close negative.
+- **Recode the earlier traces as failures** to match `support-0246`.
+
+Either way, the handout requires rechecking earlier traces when a mode's
+definition changes.
 
 ---
 
@@ -990,7 +1037,8 @@ Branch: `homework_4`, pushed to GitHub.
 - [x] **Batch 3**: 25 suggestions reviewed (all 12 failures accepted)
 - [x] Axial coding pass 3
 - [ ] **Part D**: final 5 to 8 modes, each with 3+ positives, close negatives, a boundary, an evaluator type and a SPEC source; compare with the AgentDebug taxonomy; write the SPEC revisions
-- [ ] **Batch 4**: 15 random traces; count new modes that still appear
+- [x] **Batch 4**: 15 random traces drawn (100 distinct in total)
+- [ ] **Batch 4**: review the 15 pending suggestions
 - [ ] **Part E**: label every trace x mode; scores to Langfuse; `analysis/state/labels/`
 - [ ] `analysis/report/review_summary.md`
 - [ ] Rewrite `interface_comparison.md` in your own words
