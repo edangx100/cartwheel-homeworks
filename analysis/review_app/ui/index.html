@@ -627,7 +627,8 @@ function layoutMargin() {
     const human = it._k === 'human';
     note.className = 'mnote ' + (human ? 'human' : 'sugg') + (it.first_failure ? ' ff' : '') + (it.kind === 'no_failure' ? ' nofail' : '');
     note.dataset.item = it.id;
-    let tag = human ? (it.kind === 'no_failure' ? 'no failure observed' : (it.first_failure ? 'first failure' : 'note')) : 'AI suggestion' + (it.mode ? ' · ' + it.mode : '');
+    let tag = human ? (it.kind === 'no_failure' ? 'no failure observed' : (it.first_failure ? 'first failure' : 'note'))
+      : 'AI suggestion' + (it.first_failure ? ' · first failure' : '') + (it.mode ? ' · ' + it.mode : '');
     if (human && it.source === 'ai_accepted') tag += ' · from accepted AI suggestion';
     if (it.batch === 'part_a') tag += ' · Part A';
     if (it.requirement) tag += ' · ' + it.requirement;
@@ -804,9 +805,11 @@ async function decideSuggestions(ids, accept) {
         await api.post('/api/labels', {mode: sg.mode, trace_id: sg.trace_id, label: sg.label, evidence: sg.evidence || sg.rationale,
           source: 'ai_accepted', suggestion_id: sg.id, session_id: sessionOf(sg.trace_id)});
       } else if (accept) {
+        const ff = !!sg.first_failure;
+        if (ff) S.annotations.forEach(a => { if (a.trace_id === sg.trace_id && a.first_failure) { a.first_failure = false; a.updated_at = nowIso(); } });
         S.annotations.push({id: newId('a'), kind: 'note', source: 'ai_accepted', suggestion_id: sg.id, trace_id: sg.trace_id,
           session_id: sessionOf(sg.trace_id), seg: sg.seg, start: sg.start, quote: sg.quote, note: sg.note || '',
-          first_failure: false, created_at: nowIso(), updated_at: nowIso(), history: []});
+          first_failure: ff, requirement: sg.requirement, created_at: nowIso(), updated_at: nowIso(), history: []});
         if (sg.mode) {
           const mode = (S.patterns.modes || []).find(m => m.name === sg.mode);
           if (mode) { mode.annotation_ids = mode.annotation_ids || []; mode.annotation_ids.push(S.annotations[S.annotations.length - 1].id); }
