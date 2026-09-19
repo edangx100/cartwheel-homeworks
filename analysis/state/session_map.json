@@ -1,0 +1,1761 @@
+{
+  "built_at": "2026-09-19T02:07:37+00:00",
+  "matched": 350,
+  "method": "user message text equality with nearest stored timestamp within 10s, from the server session store",
+  "scenarios_split_across_sessions": [],
+  "sessions_spanning_scenarios": [],
+  "trace_count": 350,
+  "traces": {
+    "001cbbd10bac02b8da4c64262dc578d2": {
+      "gap_seconds": 0.953,
+      "runner_up_gap_seconds": null,
+      "session_id": "a8b675ee26c147c29f2cc4673648409b"
+    },
+    "004a0ffa9e55f44f252eb2cc5082e9b7": {
+      "gap_seconds": 0.541,
+      "runner_up_gap_seconds": null,
+      "session_id": "c15cbad67d1b4d46a3d476674e014d4a"
+    },
+    "013d5f03631cf154475c5b9cc42ddeeb": {
+      "gap_seconds": 0.475,
+      "runner_up_gap_seconds": null,
+      "session_id": "9f347bacbc6f401f83996c2c30d6e5b6"
+    },
+    "019859401468efc7d1cf187b3374cd46": {
+      "gap_seconds": 0.841,
+      "runner_up_gap_seconds": null,
+      "session_id": "3e61c57862544056bc6464e5415335e3"
+    },
+    "01a9eb08aa10ce7cb61267fad6387f08": {
+      "gap_seconds": 0.435,
+      "runner_up_gap_seconds": null,
+      "session_id": "0970f05737fd411b823de6e39cb3cf53"
+    },
+    "027fb3c725237c56167383d1da6231cb": {
+      "gap_seconds": 0.118,
+      "runner_up_gap_seconds": null,
+      "session_id": "5821587c1eb44cf9ba7ff61bd1ae05d5"
+    },
+    "04506d0109a6d0f06ba246223de3f3c9": {
+      "gap_seconds": 0.167,
+      "runner_up_gap_seconds": 55924.167,
+      "session_id": "5d4a07bd9152468ca9e068281b1129b9"
+    },
+    "065b25b9a3789d83ff7da86558aa2c55": {
+      "gap_seconds": 0.04,
+      "runner_up_gap_seconds": null,
+      "session_id": "fa10095d026f459baaee3cc47fb8fe02"
+    },
+    "065df74d26d4ee8df1000e96d5db3340": {
+      "gap_seconds": 0.835,
+      "runner_up_gap_seconds": 72581.835,
+      "session_id": "af928e0f68c541ef83ab28cab9894c6b"
+    },
+    "067eb79fd6932586f972cb7382a6dc57": {
+      "gap_seconds": 0.94,
+      "runner_up_gap_seconds": null,
+      "session_id": "6d6cd587c58043bb8171415be93c6657"
+    },
+    "06b5721230fd3967130c5389d38d92d5": {
+      "gap_seconds": 0.932,
+      "runner_up_gap_seconds": null,
+      "session_id": "783518ba0ee440e9a10547902a091a3b"
+    },
+    "06d3f38b37113b63f88acabd2179468f": {
+      "gap_seconds": 0.794,
+      "runner_up_gap_seconds": null,
+      "session_id": "34f12f86dc2a443aa99831f6ff4e73a9"
+    },
+    "0739ac8e3208025d8c770409b2b355ac": {
+      "gap_seconds": 0.545,
+      "runner_up_gap_seconds": null,
+      "session_id": "e9fd3d2fdcd54f4d9d0b9c5edda8fbde"
+    },
+    "07cdc3708596e05ad83c93c55b5af63e": {
+      "gap_seconds": 0.54,
+      "runner_up_gap_seconds": null,
+      "session_id": "ffb8e1fc07ac49889a24261c38009fbb"
+    },
+    "07fff27af0ae36393f7f314728e81887": {
+      "gap_seconds": 0.104,
+      "runner_up_gap_seconds": null,
+      "session_id": "a10c35c87f1b4697b504988955e1ad14"
+    },
+    "0917cf802e718fd697673fcb87b04d0b": {
+      "gap_seconds": 0.568,
+      "runner_up_gap_seconds": 55975.568,
+      "session_id": "122b0766f7c5423b8852c22670327b6b"
+    },
+    "091a557644113b32f69791abef1fd327": {
+      "gap_seconds": 0.241,
+      "runner_up_gap_seconds": null,
+      "session_id": "99c6e58bd9474c2894e5627d49a78fe3"
+    },
+    "09cb915b28dac8cd2df51aa3cc415992": {
+      "gap_seconds": 0.471,
+      "runner_up_gap_seconds": null,
+      "session_id": "12709cbf4bd04e5c97b158f5eb92d3e8"
+    },
+    "09d2290782cb852c8ef57bd4182dee57": {
+      "gap_seconds": 0.832,
+      "runner_up_gap_seconds": null,
+      "session_id": "1eeee7a8bdce4c5d809a94ec8b7c362c"
+    },
+    "0a3cfd17a461c9ab91c90a4b451b46de": {
+      "gap_seconds": 0.444,
+      "runner_up_gap_seconds": 55922.444,
+      "session_id": "91a6babc580c4d8aa55253d5293e968f"
+    },
+    "0a54fcbde0bd44227c8a50739be09787": {
+      "gap_seconds": 0.514,
+      "runner_up_gap_seconds": null,
+      "session_id": "82782b5d5eb644669e935761cd55d2f0"
+    },
+    "0a82069fc47ec7ec0bd815b795da8ea0": {
+      "gap_seconds": 0.06,
+      "runner_up_gap_seconds": null,
+      "session_id": "b59b6a24492f43d48bfcae251df56f81"
+    },
+    "0ad894211d927581806334811a5c3488": {
+      "gap_seconds": 0.991,
+      "runner_up_gap_seconds": null,
+      "session_id": "5ee67f511aee40a185a8776db88aceee"
+    },
+    "0b5b03f780fd018dacd00d12ce2a2fa7": {
+      "gap_seconds": 0.19,
+      "runner_up_gap_seconds": null,
+      "session_id": "eb97040b4bf84105babff70daaef4711"
+    },
+    "0ba3254ad609ca7ff4b4efe6aea67380": {
+      "gap_seconds": 0.369,
+      "runner_up_gap_seconds": null,
+      "session_id": "bea42a18582144519ed655a996bbafb7"
+    },
+    "0ba45ba3ca932f294980cd84b914fdaf": {
+      "gap_seconds": 0.918,
+      "runner_up_gap_seconds": null,
+      "session_id": "c5679b22331944a28943d2f8fbb0ff9a"
+    },
+    "0c7df610800e4a72d3e94f0fb4b95cfd": {
+      "gap_seconds": 0.543,
+      "runner_up_gap_seconds": null,
+      "session_id": "649d3b4dc99d428bbff5f789060312d8"
+    },
+    "0dc111e17c1d1666d3cdfa3519b02270": {
+      "gap_seconds": 0.91,
+      "runner_up_gap_seconds": null,
+      "session_id": "fcf1503d1d8b4c69b1087205d79ab5a4"
+    },
+    "0e514a1e53785fb7ef4729fda1a560c2": {
+      "gap_seconds": 0.704,
+      "runner_up_gap_seconds": null,
+      "session_id": "ef9a57dd6da4468a8d35e52fbf46675b"
+    },
+    "0fbac19c81d0b60f657eed0e6a302c5b": {
+      "gap_seconds": 0.838,
+      "runner_up_gap_seconds": null,
+      "session_id": "acc0a3213c93423496f5ee008e4ddc76"
+    },
+    "100df7bd0b0191e723e92dd2f66b9ee4": {
+      "gap_seconds": 0.863,
+      "runner_up_gap_seconds": 55903.863,
+      "session_id": "9a00e3a131954a2eacb91072412ceafb"
+    },
+    "10528acfc9b17351742522dd390a27be": {
+      "gap_seconds": 0.82,
+      "runner_up_gap_seconds": null,
+      "session_id": "649d3b4dc99d428bbff5f789060312d8"
+    },
+    "11649a760d375dd001a53fb51c355af4": {
+      "gap_seconds": 0.684,
+      "runner_up_gap_seconds": null,
+      "session_id": "4acece8f969c4ba081af3ce2b8c85efc"
+    },
+    "11fac64f410663136b2033c52269dd5f": {
+      "gap_seconds": 0.25,
+      "runner_up_gap_seconds": null,
+      "session_id": "a10c35c87f1b4697b504988955e1ad14"
+    },
+    "131a54bdfc8faa04137435c698efcc2c": {
+      "gap_seconds": 0.13,
+      "runner_up_gap_seconds": null,
+      "session_id": "d2c5e8ad0ac94c469386daec7a62a4ae"
+    },
+    "1334bd78078f3497a94e78d0d4a66bbb": {
+      "gap_seconds": 0.907,
+      "runner_up_gap_seconds": null,
+      "session_id": "a7196654b01b4f9b97d323e34cea0e40"
+    },
+    "1381565c5635ac6fb94301bad88135ce": {
+      "gap_seconds": 0.564,
+      "runner_up_gap_seconds": null,
+      "session_id": "82782b5d5eb644669e935761cd55d2f0"
+    },
+    "1468a97fa97c08637ac9eaff6026bd7a": {
+      "gap_seconds": 0.207,
+      "runner_up_gap_seconds": null,
+      "session_id": "b9143e3505b34278afa7c96d1068b272"
+    },
+    "146b090637b7920df2e0dd42d2da83b5": {
+      "gap_seconds": 0.13,
+      "runner_up_gap_seconds": null,
+      "session_id": "73ec244eed474ebb8a1ca6fe0a223466"
+    },
+    "14d1f3a6ccde73ea05159889287b0b1a": {
+      "gap_seconds": 0.486,
+      "runner_up_gap_seconds": null,
+      "session_id": "eda01bf4928b4a17a1b0cdbea7c4ec33"
+    },
+    "16a1e4bdb493077a0115caca2939dd31": {
+      "gap_seconds": 0.844,
+      "runner_up_gap_seconds": 55911.844,
+      "session_id": "a0b542d5dda84347ac188ff3fe45c66b"
+    },
+    "1854484257a4dc459b22e07cd4191305": {
+      "gap_seconds": 0.666,
+      "runner_up_gap_seconds": null,
+      "session_id": "060b0e353fe94052924f874a4794c514"
+    },
+    "18d7b594900e8becc264ab2c39665c4b": {
+      "gap_seconds": 0.059,
+      "runner_up_gap_seconds": null,
+      "session_id": "248a3f203e6f45458bd3f5b36b4432d9"
+    },
+    "190c9fa3cef9f5235721fe4c2a71cff1": {
+      "gap_seconds": 0.092,
+      "runner_up_gap_seconds": null,
+      "session_id": "026438d4149843da9f323a0d9512816f"
+    },
+    "19861921e507d7ba142ecd0a1fb06375": {
+      "gap_seconds": 0.602,
+      "runner_up_gap_seconds": 72571.602,
+      "session_id": "826376ad2dca43af8a19d3e259b0a874"
+    },
+    "1abb260dec5cde06419876fa54dbb0a9": {
+      "gap_seconds": 0.47,
+      "runner_up_gap_seconds": null,
+      "session_id": "e984449b7ea14897a73c8c0520397eee"
+    },
+    "1bb1195c721c773648ef3e0035eaaae4": {
+      "gap_seconds": 0.681,
+      "runner_up_gap_seconds": null,
+      "session_id": "f2b1ccfbdcc34dc6ac39d853337669d3"
+    },
+    "1bef77109b228e85c91d7c162de2cc93": {
+      "gap_seconds": 0.131,
+      "runner_up_gap_seconds": null,
+      "session_id": "4dd14d4c9f7e4478a59f66e6c48eea0f"
+    },
+    "1cf22e460ea624524e0085e4c6b08855": {
+      "gap_seconds": 0.728,
+      "runner_up_gap_seconds": null,
+      "session_id": "0beb8652b0a243a299a1985753e9d369"
+    },
+    "1ea1ee0373ba470e0c23d07d8554a15e": {
+      "gap_seconds": 0.05,
+      "runner_up_gap_seconds": null,
+      "session_id": "46477dd22e9b4d4188a06d156c7d5236"
+    },
+    "1f53be92e4953cc426d1fe9aa135d95d": {
+      "gap_seconds": 0.291,
+      "runner_up_gap_seconds": null,
+      "session_id": "9aa827b9e33a4bf592b9a89bba2db9ff"
+    },
+    "20a9824bf6998df2435ec6b44fd35df5": {
+      "gap_seconds": 0.403,
+      "runner_up_gap_seconds": null,
+      "session_id": "b4a8b08a61944981b7b459eeb81ceb5d"
+    },
+    "20c85f384e6682cb50b76194e6de5b6a": {
+      "gap_seconds": 0.453,
+      "runner_up_gap_seconds": null,
+      "session_id": "e79dcde5efa449dca99a0a8114412ba9"
+    },
+    "21f36614ef46a20ad7cb713e26272876": {
+      "gap_seconds": 0.183,
+      "runner_up_gap_seconds": null,
+      "session_id": "d1a2335d3d674e78aabdfa0188953f4c"
+    },
+    "220d468d385e2727a5ace8ca7830b5e6": {
+      "gap_seconds": 0.697,
+      "runner_up_gap_seconds": null,
+      "session_id": "c64350e1c365473e9499ff095417a6ba"
+    },
+    "23c4ca83e91d06faa6ffce956b81395b": {
+      "gap_seconds": 0.769,
+      "runner_up_gap_seconds": null,
+      "session_id": "92eb584a50f944fe89593b4b724daaf3"
+    },
+    "23ceb84cae6b7e4e31a20871440b5836": {
+      "gap_seconds": 0.885,
+      "runner_up_gap_seconds": null,
+      "session_id": "8464294fd0af4e46a173ac11ec7abe80"
+    },
+    "23e24833774b4f03f1d0afbfb78e74a3": {
+      "gap_seconds": 0.104,
+      "runner_up_gap_seconds": null,
+      "session_id": "9f140d6e5c014d16b82d841737f04efa"
+    },
+    "24874e84c2f573fa7303f1bfed35aeca": {
+      "gap_seconds": 0.029,
+      "runner_up_gap_seconds": 55923.029,
+      "session_id": "d3349dd8588d4373a0be16d4f0ce630f"
+    },
+    "24bf4de9f49bcb02b6e1f8010e9839ad": {
+      "gap_seconds": 0.214,
+      "runner_up_gap_seconds": null,
+      "session_id": "106e67bee37a48148ccaf5d7684a2869"
+    },
+    "24fa849b5df921af031fa9a4bbdcf392": {
+      "gap_seconds": 0.417,
+      "runner_up_gap_seconds": null,
+      "session_id": "c56c2bb2001d4a808447b7f7a58a05e9"
+    },
+    "26b1c001365a94fc8ae7c80caaaf948c": {
+      "gap_seconds": 0.045,
+      "runner_up_gap_seconds": 55927.045,
+      "session_id": "83893dd7b9e549129e0dd30b13bbed19"
+    },
+    "26e8ec408a6a2b161202bb441f23e3df": {
+      "gap_seconds": 0.28,
+      "runner_up_gap_seconds": 55941.28,
+      "session_id": "c165691a09b74070aa2afff128f6fd6f"
+    },
+    "2730f7a92637916ff5f6f0d58d5a6dbb": {
+      "gap_seconds": 0.643,
+      "runner_up_gap_seconds": null,
+      "session_id": "420582f528b34005a3ab85f804e15e99"
+    },
+    "27b55e876edf1eafd040fbace87bae18": {
+      "gap_seconds": 0.584,
+      "runner_up_gap_seconds": null,
+      "session_id": "bfac57918453428ca3bfe4b1aedd5b73"
+    },
+    "284f303da5ea975257cc56ad09ea1d1f": {
+      "gap_seconds": 0.571,
+      "runner_up_gap_seconds": 55922.571,
+      "session_id": "83893dd7b9e549129e0dd30b13bbed19"
+    },
+    "28687095f69373d6c8977fd6faeb2e59": {
+      "gap_seconds": 0.168,
+      "runner_up_gap_seconds": null,
+      "session_id": "9569a68428944807b09171aa8b354085"
+    },
+    "28ab2c896f4fba1c26420bde17ac02fb": {
+      "gap_seconds": 0.943,
+      "runner_up_gap_seconds": null,
+      "session_id": "be58927c0ee048c2be17c54886c4565f"
+    },
+    "28b32a8e2706ee81e5667db414244b7d": {
+      "gap_seconds": 0.698,
+      "runner_up_gap_seconds": null,
+      "session_id": "8464294fd0af4e46a173ac11ec7abe80"
+    },
+    "2aa089fa9d74e0a4ddf4773fd98fe3f7": {
+      "gap_seconds": 0.502,
+      "runner_up_gap_seconds": 55908.502,
+      "session_id": "e6fc36b0d2194907a3669b1498c88b10"
+    },
+    "2aad7ae08a8d17ccaf1020f11ed4e41a": {
+      "gap_seconds": 0.894,
+      "runner_up_gap_seconds": null,
+      "session_id": "271bd09fa944482b982af9d2b852fd02"
+    },
+    "2abd78c7446e1f9b7bd5f035d79a7bd5": {
+      "gap_seconds": 0.147,
+      "runner_up_gap_seconds": null,
+      "session_id": "d2c5e8ad0ac94c469386daec7a62a4ae"
+    },
+    "2aedfd438f909a4f1dfa41708a7dad5b": {
+      "gap_seconds": 0.552,
+      "runner_up_gap_seconds": null,
+      "session_id": "783518ba0ee440e9a10547902a091a3b"
+    },
+    "2b52d4ac514c5181831509f2730cda1b": {
+      "gap_seconds": 0.223,
+      "runner_up_gap_seconds": null,
+      "session_id": "d9e794c5c45347f3b65aa8b5c327472a"
+    },
+    "2c22f8ddddd666fd66e025dbbdd07353": {
+      "gap_seconds": 0.169,
+      "runner_up_gap_seconds": null,
+      "session_id": "e758dd39c6f644648433ffc88582535c"
+    },
+    "2d48f3a53c03253f1bc9313a5f9f1641": {
+      "gap_seconds": 0.481,
+      "runner_up_gap_seconds": null,
+      "session_id": "1c706a5536ce417fad1bbc271ca3979b"
+    },
+    "2f0d55cb0ede176b824801c5d8386e8a": {
+      "gap_seconds": 0.638,
+      "runner_up_gap_seconds": null,
+      "session_id": "1c706a5536ce417fad1bbc271ca3979b"
+    },
+    "2f5a6f1fdeef9f3986ad173fb3e9a28f": {
+      "gap_seconds": 0.183,
+      "runner_up_gap_seconds": null,
+      "session_id": "64f863b430bf4661a5e76d9e17e8d95b"
+    },
+    "2f8d8b37e0978d3d0490c1f87e811172": {
+      "gap_seconds": 0.556,
+      "runner_up_gap_seconds": null,
+      "session_id": "a9ad2731a0994ff3b14b2c926408c294"
+    },
+    "31ee19452148ec0071bc064c7a84b985": {
+      "gap_seconds": 0.905,
+      "runner_up_gap_seconds": null,
+      "session_id": "649d3b4dc99d428bbff5f789060312d8"
+    },
+    "32204f89f78660f091ca3504c3e32553": {
+      "gap_seconds": 0.873,
+      "runner_up_gap_seconds": null,
+      "session_id": "55536b259d114be9b744ea58a249b396"
+    },
+    "325df4869a8532bb5bd176d41945bf51": {
+      "gap_seconds": 0.233,
+      "runner_up_gap_seconds": null,
+      "session_id": "20f6d3ce4afe4a8699324c8f94c3a6c4"
+    },
+    "32ca6e6d13b2673ac4ee99172f30676f": {
+      "gap_seconds": 0.875,
+      "runner_up_gap_seconds": null,
+      "session_id": "c978c51c72394f6ab1f1624deaaf45d7"
+    },
+    "32f5fe2e2b08c3efa909b27ba6104103": {
+      "gap_seconds": 0.541,
+      "runner_up_gap_seconds": null,
+      "session_id": "f8253652168f4813a60d9338f40d06e2"
+    },
+    "334f16f1a8fde96a4ee827a4b0557a6a": {
+      "gap_seconds": 0.721,
+      "runner_up_gap_seconds": 72618.721,
+      "session_id": "949a35f5b87e4cd78890c6bb0cd2df7f"
+    },
+    "34260d476376e206de6ab3dc2de78709": {
+      "gap_seconds": 0.831,
+      "runner_up_gap_seconds": null,
+      "session_id": "9b6e7b1fa6ce40239cfbb2787e07bbd2"
+    },
+    "343c928e7e95ea68e2d70967b9246125": {
+      "gap_seconds": 0.768,
+      "runner_up_gap_seconds": null,
+      "session_id": "b450913ca012478c99522e6007417529"
+    },
+    "345a0895633d0555512a42a80c8e65a9": {
+      "gap_seconds": 0.127,
+      "runner_up_gap_seconds": null,
+      "session_id": "964601c811514441950f664e4cd916ef"
+    },
+    "348802b6fe83958be6a4b8e81e8b28a2": {
+      "gap_seconds": 0.192,
+      "runner_up_gap_seconds": null,
+      "session_id": "ed7372ca14ba478583f1e2c7ed4e58c7"
+    },
+    "3503abdfad27bcefc55672c68d0fb695": {
+      "gap_seconds": 0.278,
+      "runner_up_gap_seconds": null,
+      "session_id": "29e2c53ee39a4a918b913ad71e4c4118"
+    },
+    "358736a08597dca5c0c1f2e87795723d": {
+      "gap_seconds": 0.273,
+      "runner_up_gap_seconds": null,
+      "session_id": "964601c811514441950f664e4cd916ef"
+    },
+    "35b4fc5ffee5123c017f1f899ac4ded7": {
+      "gap_seconds": 0.988,
+      "runner_up_gap_seconds": null,
+      "session_id": "b14f44b6d44e48c0aeba815eebe9426d"
+    },
+    "36e08f42e89e7b3e351db69ef69162f5": {
+      "gap_seconds": 0.982,
+      "runner_up_gap_seconds": null,
+      "session_id": "fcf1503d1d8b4c69b1087205d79ab5a4"
+    },
+    "37835b093ab7de0ac059ca4c1df0c78c": {
+      "gap_seconds": 0.09,
+      "runner_up_gap_seconds": null,
+      "session_id": "c56c2bb2001d4a808447b7f7a58a05e9"
+    },
+    "388b88c781519e38ada5b8450d5cc367": {
+      "gap_seconds": 0.789,
+      "runner_up_gap_seconds": null,
+      "session_id": "538f8a1fd1be489bb50c0fe948b9ab3e"
+    },
+    "38b8171b8fd6d37fa6d5c98561781c82": {
+      "gap_seconds": 0.507,
+      "runner_up_gap_seconds": null,
+      "session_id": "85e1587c64c448d2aa7ce98c479e0c67"
+    },
+    "38b8b068d511f412135eecb28375211e": {
+      "gap_seconds": 0.861,
+      "runner_up_gap_seconds": null,
+      "session_id": "bae7c9deea9f4a41b1e6b27d020102d9"
+    },
+    "38d4e40e0a738252fed499ef0afd9b86": {
+      "gap_seconds": 0.734,
+      "runner_up_gap_seconds": null,
+      "session_id": "df58e014f6ee49888e941b112879de4f"
+    },
+    "3ad1608e2b7458d86f39163771384c1a": {
+      "gap_seconds": 0.141,
+      "runner_up_gap_seconds": 55923.141,
+      "session_id": "efce99d9cf7448f6846b01e0db76120b"
+    },
+    "3b872ef30ea89cb8eb8a0af8b9f479f9": {
+      "gap_seconds": 0.811,
+      "runner_up_gap_seconds": null,
+      "session_id": "f8466ee71f774bcf86f96d0c1eb270d3"
+    },
+    "3b8e878aec9aa65ce25641b9cda1bf74": {
+      "gap_seconds": 0.259,
+      "runner_up_gap_seconds": null,
+      "session_id": "fcf1503d1d8b4c69b1087205d79ab5a4"
+    },
+    "3be252e1f29fd5f7cef28906ee0d1e18": {
+      "gap_seconds": 0.865,
+      "runner_up_gap_seconds": null,
+      "session_id": "11f3fd4888384ff0a22e89ef916c36ca"
+    },
+    "3c1502c4e54cf05dea26f205c8d08069": {
+      "gap_seconds": 0.099,
+      "runner_up_gap_seconds": null,
+      "session_id": "f8466ee71f774bcf86f96d0c1eb270d3"
+    },
+    "3c4ba702de6f17ff16d6c4ec1331af09": {
+      "gap_seconds": 0.438,
+      "runner_up_gap_seconds": null,
+      "session_id": "1058d1d421a642cd99de2f639d35f79b"
+    },
+    "3e254f4e2169e59fc44fc4a2b7b2439b": {
+      "gap_seconds": 0.249,
+      "runner_up_gap_seconds": null,
+      "session_id": "f595ba65e6774fbb8a626e4fdfe34618"
+    },
+    "3e761198bd5f858b909998c39e803428": {
+      "gap_seconds": 0.301,
+      "runner_up_gap_seconds": null,
+      "session_id": "0e168c6c2ea348458e6b853238406cf7"
+    },
+    "4119aee833bb4631464acc581ed228f6": {
+      "gap_seconds": 0.501,
+      "runner_up_gap_seconds": null,
+      "session_id": "c11c62a5a4274e6f84a658aa36307e01"
+    },
+    "41d243e3850714b929833d1c854b4652": {
+      "gap_seconds": 0.112,
+      "runner_up_gap_seconds": null,
+      "session_id": "d2d685d4aa094fb6a0b2e590d919cbe4"
+    },
+    "42d9c0443fdfadfd010219a02193c5e8": {
+      "gap_seconds": 0.983,
+      "runner_up_gap_seconds": null,
+      "session_id": "3a63e0bcced6400db1f177b2db0e22cc"
+    },
+    "43f73d496a5e7f8907df462178ad7a58": {
+      "gap_seconds": 0.627,
+      "runner_up_gap_seconds": 72656.627,
+      "session_id": "6506def9906b46eea591bc221f3a6d3b"
+    },
+    "449e9453dd81b6ca45bd056ced7c4449": {
+      "gap_seconds": 0.311,
+      "runner_up_gap_seconds": 72630.311,
+      "session_id": "db637bf326ea42cb88ac2b4329319aa4"
+    },
+    "466e184d2fd2bc959c1b3b360bfe84c7": {
+      "gap_seconds": 0.291,
+      "runner_up_gap_seconds": null,
+      "session_id": "db17a85fbde6429f91ec5f6f7f864713"
+    },
+    "477c7e5c9d07cc114eace2c10afc2413": {
+      "gap_seconds": 0.453,
+      "runner_up_gap_seconds": null,
+      "session_id": "93077e25e66046a2bb3fbbbc0765df67"
+    },
+    "4787afb201a86db08cc09d4635467990": {
+      "gap_seconds": 0.023,
+      "runner_up_gap_seconds": null,
+      "session_id": "be58927c0ee048c2be17c54886c4565f"
+    },
+    "47b3c396d2ddad275727d0df3057868f": {
+      "gap_seconds": 0.55,
+      "runner_up_gap_seconds": null,
+      "session_id": "d206ce434ea34f0fa62765d7480fac92"
+    },
+    "482e84ec0a654693b63bb71b136987dd": {
+      "gap_seconds": 0.875,
+      "runner_up_gap_seconds": null,
+      "session_id": "02785c35ad4d46e890f3678a43a7bf92"
+    },
+    "48ab3ae40f42279c787bd246d6c412c0": {
+      "gap_seconds": 0.182,
+      "runner_up_gap_seconds": null,
+      "session_id": "b59b6a24492f43d48bfcae251df56f81"
+    },
+    "493c65a6016be9ed35a0187612326032": {
+      "gap_seconds": 0.131,
+      "runner_up_gap_seconds": null,
+      "session_id": "bef5670081f64f26bba1c793a8aabf73"
+    },
+    "4a45beaff533c4356c03599fb017b531": {
+      "gap_seconds": 0.884,
+      "runner_up_gap_seconds": null,
+      "session_id": "735c64720e33427b92620b168b1141bd"
+    },
+    "4b1e6c89e7380b736fc789e55e172e74": {
+      "gap_seconds": 0.341,
+      "runner_up_gap_seconds": null,
+      "session_id": "422a7dc7364a4cadb7693220b1620c84"
+    },
+    "4b424c6c31af94a5be6e51cb90e8c295": {
+      "gap_seconds": 0.526,
+      "runner_up_gap_seconds": null,
+      "session_id": "5678e9ffb5304935a7fce6d372d4c569"
+    },
+    "4bf127f4fba58ea788c58f010dc698e9": {
+      "gap_seconds": 0.596,
+      "runner_up_gap_seconds": null,
+      "session_id": "d66e543e4c4d4146aadbacd2f31fb7a9"
+    },
+    "4fba369a51f129335e38aeccc7cd5321": {
+      "gap_seconds": 0.731,
+      "runner_up_gap_seconds": null,
+      "session_id": "c7fc606e736342c1950e619031e44c9f"
+    },
+    "50051e888fded038456d667692148c44": {
+      "gap_seconds": 0.353,
+      "runner_up_gap_seconds": null,
+      "session_id": "41796d9dcad24d009df1cbbc4b27ef2d"
+    },
+    "501e463d35468334957859b48a4e0ad5": {
+      "gap_seconds": 0.856,
+      "runner_up_gap_seconds": null,
+      "session_id": "25080741725c48628d2f98dec78728cc"
+    },
+    "507e8bae815ab5a627c3973be55edb3c": {
+      "gap_seconds": 0.872,
+      "runner_up_gap_seconds": null,
+      "session_id": "cd75bbd8d1584bd3b2126190c9ceffe6"
+    },
+    "5085e52940f09b4ab795592b59f7b25b": {
+      "gap_seconds": 0.611,
+      "runner_up_gap_seconds": null,
+      "session_id": "4dd14d4c9f7e4478a59f66e6c48eea0f"
+    },
+    "5119e50f947c4cbf5335bd4e87d159dc": {
+      "gap_seconds": 0.886,
+      "runner_up_gap_seconds": 55961.886,
+      "session_id": "7e624bb0d8be40b7961e0d3ccb62d39f"
+    },
+    "511d8833032976c344d6be3c1f46148d": {
+      "gap_seconds": 0.103,
+      "runner_up_gap_seconds": null,
+      "session_id": "48544dca6629460c9fe2e46631a288aa"
+    },
+    "51b203a5131802cabf8c77f6cfac470e": {
+      "gap_seconds": 0.576,
+      "runner_up_gap_seconds": null,
+      "session_id": "c2b7a8352df348fd9e60ebdb51714e61"
+    },
+    "51bda63a85e0648c6bcb81b0a7dbb472": {
+      "gap_seconds": 0.116,
+      "runner_up_gap_seconds": null,
+      "session_id": "6c816732e31a451eac076c86552f2d37"
+    },
+    "51c3d054d717ec638418a1650d4ec924": {
+      "gap_seconds": 0.252,
+      "runner_up_gap_seconds": 72570.252,
+      "session_id": "1ee12e4533514f01a0367fea95629b2a"
+    },
+    "524812661b406026ba8969e655bcc7b2": {
+      "gap_seconds": 0.395,
+      "runner_up_gap_seconds": null,
+      "session_id": "a3472de9a9f24966935270163a2c4cdf"
+    },
+    "5325623cff923dc845556b4173eaab01": {
+      "gap_seconds": 0.616,
+      "runner_up_gap_seconds": null,
+      "session_id": "4acece8f969c4ba081af3ce2b8c85efc"
+    },
+    "532f94457fd1b18ecdc7a0af0d086b97": {
+      "gap_seconds": 0.504,
+      "runner_up_gap_seconds": null,
+      "session_id": "99dfbddb27f84a8daa724a2cb441954c"
+    },
+    "539f63afb877d24d7cbd00e44bf81dcf": {
+      "gap_seconds": 0.269,
+      "runner_up_gap_seconds": 55979.269,
+      "session_id": "e8a187a13f044559a94c7e2ae5394ab7"
+    },
+    "5527cd615699c44513372ead2dec1d90": {
+      "gap_seconds": 0.382,
+      "runner_up_gap_seconds": null,
+      "session_id": "0970f05737fd411b823de6e39cb3cf53"
+    },
+    "56877807981c5aeaa8848b3637340294": {
+      "gap_seconds": 0.409,
+      "runner_up_gap_seconds": null,
+      "session_id": "ce63301fd53c49beb665a644fd896973"
+    },
+    "56ff6ba4030e98040326ffd333574b3b": {
+      "gap_seconds": 0.01,
+      "runner_up_gap_seconds": null,
+      "session_id": "d1681ee81b4642529f543b8d61cc4f3c"
+    },
+    "580735e42f572f81e23c8226e9dbf0e9": {
+      "gap_seconds": 0.15,
+      "runner_up_gap_seconds": null,
+      "session_id": "a16cde989d9747c1bdc3c92d504fc122"
+    },
+    "5869c87007a6594f7ad415c1310e0554": {
+      "gap_seconds": 0.502,
+      "runner_up_gap_seconds": null,
+      "session_id": "7a6db3e90d41460194b7a73bb7e07105"
+    },
+    "5a1588a63cdc06f155132ff36409c889": {
+      "gap_seconds": 0.94,
+      "runner_up_gap_seconds": null,
+      "session_id": "fe8b2937f4d248e895a154a41a3e0a75"
+    },
+    "5a59d062285a519d76fbbadd7e2d69e7": {
+      "gap_seconds": 0.862,
+      "runner_up_gap_seconds": 72625.862,
+      "session_id": "efe56d495a6b48cda418de956398b54b"
+    },
+    "5c0b7d5990803963352601d419314c1f": {
+      "gap_seconds": 0.736,
+      "runner_up_gap_seconds": 55920.736,
+      "session_id": "4bfb46e5e476409ebb333d949cd768bc"
+    },
+    "5d2d3de17c2fe911c51af4e785584c3b": {
+      "gap_seconds": 0.729,
+      "runner_up_gap_seconds": null,
+      "session_id": "c64350e1c365473e9499ff095417a6ba"
+    },
+    "5d54b1c41b445d804217f4ee9680c447": {
+      "gap_seconds": 0.117,
+      "runner_up_gap_seconds": 72573.117,
+      "session_id": "e2b5e73c5aee40bd9adabd5aaa765fe8"
+    },
+    "605f05013c40ffa25dde8770fcbc8e04": {
+      "gap_seconds": 0.568,
+      "runner_up_gap_seconds": null,
+      "session_id": "dfb444b3a0434f5faf37b69261102f79"
+    },
+    "61e20b91649c5b0cd3d09be52df36ea3": {
+      "gap_seconds": 0.933,
+      "runner_up_gap_seconds": null,
+      "session_id": "86e1167466d84841a3c2093965e2951b"
+    },
+    "6612f50dae31ee56ec54be562b22d8ae": {
+      "gap_seconds": 0.298,
+      "runner_up_gap_seconds": null,
+      "session_id": "d1681ee81b4642529f543b8d61cc4f3c"
+    },
+    "6621fbce0e2dd65297ff0536204edad8": {
+      "gap_seconds": 0.967,
+      "runner_up_gap_seconds": null,
+      "session_id": "acc25cb759ae4066b4a9ee4ebda5dae8"
+    },
+    "68f7437f9f2c1b36fd47b34377a50207": {
+      "gap_seconds": 0.896,
+      "runner_up_gap_seconds": 72647.896,
+      "session_id": "d83cf334ee104f4ba06c527191cacf8f"
+    },
+    "690bf865d717bdd1fdf58b8e09316bbb": {
+      "gap_seconds": 0.711,
+      "runner_up_gap_seconds": null,
+      "session_id": "744cea72a88848c7ab57d6465ba4255e"
+    },
+    "6a814a7da26c81e9fd6911497483b805": {
+      "gap_seconds": 0.76,
+      "runner_up_gap_seconds": null,
+      "session_id": "949bed63c43c4604af224e496166387e"
+    },
+    "6b39f9c068b409d65f67340d1013646c": {
+      "gap_seconds": 0.055,
+      "runner_up_gap_seconds": null,
+      "session_id": "eb97040b4bf84105babff70daaef4711"
+    },
+    "6ce2d7628b77a5e07344e090044d5e7d": {
+      "gap_seconds": 0.759,
+      "runner_up_gap_seconds": null,
+      "session_id": "34412c58636d46cc95191089fa05263a"
+    },
+    "6e014ac077b45158c834732b8070069b": {
+      "gap_seconds": 0.133,
+      "runner_up_gap_seconds": 72649.133,
+      "session_id": "ef9c4e38239f41428848b5e59e70d039"
+    },
+    "6e7cd58fc955b1f42e0b4f8b634242d6": {
+      "gap_seconds": 0.036,
+      "runner_up_gap_seconds": null,
+      "session_id": "d58b5d24189648fd8afadf9bd6962691"
+    },
+    "6ec82ef33ac71dd430c79cb2f068abfe": {
+      "gap_seconds": 0.832,
+      "runner_up_gap_seconds": 55927.832,
+      "session_id": "f3555b54ab764d41881b03d02d55422d"
+    },
+    "6ff110b1cb7adac8efd9eb3f3fdd340d": {
+      "gap_seconds": 0.699,
+      "runner_up_gap_seconds": null,
+      "session_id": "d4862124fbea4f22b9ffbbe08edfe41b"
+    },
+    "71e6b7b54894f0dcb0f6a9c29bb96d31": {
+      "gap_seconds": 0.988,
+      "runner_up_gap_seconds": null,
+      "session_id": "a947fc10151f40fcb1bf45c0dc72fbd1"
+    },
+    "7395dc2e36e0facebd12e8055ecd41e9": {
+      "gap_seconds": 0.704,
+      "runner_up_gap_seconds": null,
+      "session_id": "48544dca6629460c9fe2e46631a288aa"
+    },
+    "73adaaeda332b7cdf6cc7af28c195bd2": {
+      "gap_seconds": 0.98,
+      "runner_up_gap_seconds": null,
+      "session_id": "86e1167466d84841a3c2093965e2951b"
+    },
+    "746d79ef59855c298ad2956789eed468": {
+      "gap_seconds": 0.896,
+      "runner_up_gap_seconds": null,
+      "session_id": "a9ad2731a0994ff3b14b2c926408c294"
+    },
+    "756389f0cc7cebb0ebd19af2ea2726d4": {
+      "gap_seconds": 0.847,
+      "runner_up_gap_seconds": null,
+      "session_id": "d208c5a1c1e6470c9dcb4fd1b18508b4"
+    },
+    "7778d85858451a0e0a3d40b71661699a": {
+      "gap_seconds": 0.499,
+      "runner_up_gap_seconds": null,
+      "session_id": "45793568cf394664b8a63d65497326c7"
+    },
+    "77bbaae1994f28205804957a5e8cc6e9": {
+      "gap_seconds": 0.679,
+      "runner_up_gap_seconds": null,
+      "session_id": "6c816732e31a451eac076c86552f2d37"
+    },
+    "7846a7e84f7cf51c5c33ccd911359038": {
+      "gap_seconds": 0.487,
+      "runner_up_gap_seconds": null,
+      "session_id": "9569a68428944807b09171aa8b354085"
+    },
+    "79520ad134242bc11f15774a2d7ad073": {
+      "gap_seconds": 0.317,
+      "runner_up_gap_seconds": null,
+      "session_id": "4e01c50295b447229aa059b5bb9a2a1a"
+    },
+    "7956e8e2bdcb3fd034a95307daefb163": {
+      "gap_seconds": 0.11,
+      "runner_up_gap_seconds": null,
+      "session_id": "029c522792564254b75dcfc374bfc0c0"
+    },
+    "79a39154f847d28a514b7760bdf06e4b": {
+      "gap_seconds": 0.674,
+      "runner_up_gap_seconds": 55904.674,
+      "session_id": "abe4e9de4b6244a582af93da51051b92"
+    },
+    "7a000a2d01f5819310c9cd815d1b300f": {
+      "gap_seconds": 0.452,
+      "runner_up_gap_seconds": null,
+      "session_id": "86e1167466d84841a3c2093965e2951b"
+    },
+    "7a6da8e252d8c68ae2b42eae3ee85080": {
+      "gap_seconds": 0.679,
+      "runner_up_gap_seconds": 72556.679,
+      "session_id": "f3704708ea8946ff88f394c621560e3e"
+    },
+    "7bb10e0025f778c7a7eb17bb53dd13e3": {
+      "gap_seconds": 0.072,
+      "runner_up_gap_seconds": 72639.072,
+      "session_id": "5d24c9e3a35c4a0eab68140ede0e429b"
+    },
+    "7c3e92d46608602a50163f8eb89d48b8": {
+      "gap_seconds": 0.469,
+      "runner_up_gap_seconds": null,
+      "session_id": "9569a68428944807b09171aa8b354085"
+    },
+    "7cc32c48db43770dabe2e121cea3f3da": {
+      "gap_seconds": 0.906,
+      "runner_up_gap_seconds": null,
+      "session_id": "38b516277f6a44ea8895e2c9f30c7a52"
+    },
+    "7d4c415eb419d73a1120fee7aa478dc4": {
+      "gap_seconds": 0.216,
+      "runner_up_gap_seconds": null,
+      "session_id": "86e1167466d84841a3c2093965e2951b"
+    },
+    "7d7273ff72277836edce60debe51053a": {
+      "gap_seconds": 0.165,
+      "runner_up_gap_seconds": null,
+      "session_id": "6c816732e31a451eac076c86552f2d37"
+    },
+    "7f27317eb10a132b04774b13630f5107": {
+      "gap_seconds": 0.948,
+      "runner_up_gap_seconds": null,
+      "session_id": "c79bfe4426ce4116b8db406bffacda62"
+    },
+    "80f52c7ae49beab2348e4d98f329b2f7": {
+      "gap_seconds": 0.676,
+      "runner_up_gap_seconds": null,
+      "session_id": "5090fae2e7cc489e87959812f41e398b"
+    },
+    "81c601f209925839650771ba5c3c2b4b": {
+      "gap_seconds": 0.964,
+      "runner_up_gap_seconds": null,
+      "session_id": "422a7dc7364a4cadb7693220b1620c84"
+    },
+    "82358f51e07b087e0bcc4da148dc3246": {
+      "gap_seconds": 0.093,
+      "runner_up_gap_seconds": null,
+      "session_id": "8464294fd0af4e46a173ac11ec7abe80"
+    },
+    "82801ba9668e806102c1d78335a26eb2": {
+      "gap_seconds": 0.553,
+      "runner_up_gap_seconds": null,
+      "session_id": "2ff374408a5e42c49184590d70626e3b"
+    },
+    "834ac38d5eac0633454714a98f3c2f72": {
+      "gap_seconds": 0.596,
+      "runner_up_gap_seconds": null,
+      "session_id": "c2fe426da6ea4c30b8cc596567878114"
+    },
+    "8437c41300987e7131522ff09841185f": {
+      "gap_seconds": 0.15,
+      "runner_up_gap_seconds": null,
+      "session_id": "38b516277f6a44ea8895e2c9f30c7a52"
+    },
+    "854cbaa3f7ec1ef7b3e7c29ec047217d": {
+      "gap_seconds": 0.744,
+      "runner_up_gap_seconds": 55965.744,
+      "session_id": "d93eb13a2a094410a682a070ab6678f0"
+    },
+    "858840a29a398b8a63cddf847bc29f8a": {
+      "gap_seconds": 0.494,
+      "runner_up_gap_seconds": null,
+      "session_id": "ba048aa10dd048c2b95c2b123e7f9d6b"
+    },
+    "85de2c1351f1d3591c7dbd2287f32f32": {
+      "gap_seconds": 0.457,
+      "runner_up_gap_seconds": null,
+      "session_id": "4eb80b740bd744aab555375abe93efbd"
+    },
+    "873ee53a7df50d628cf10035643172e9": {
+      "gap_seconds": 0.141,
+      "runner_up_gap_seconds": 55923.141,
+      "session_id": "4bfb46e5e476409ebb333d949cd768bc"
+    },
+    "888fe4d3705525f3a2bf9bf8bddfea78": {
+      "gap_seconds": 0.859,
+      "runner_up_gap_seconds": null,
+      "session_id": "e474ccd6fb214a0d99976dcaef56e8cf"
+    },
+    "89913d336cf0509a0295f0c1062353b0": {
+      "gap_seconds": 0.442,
+      "runner_up_gap_seconds": 72647.442,
+      "session_id": "d8ede22d0f2d4bafaa8eed98f9aad4c7"
+    },
+    "8a57d59f608a69bbec15d8969aa15336": {
+      "gap_seconds": 0.113,
+      "runner_up_gap_seconds": 72620.113,
+      "session_id": "25bb2235d757455fb5bfdf030c11fef2"
+    },
+    "8a6e6fec2d4736ec89083949f1d3573a": {
+      "gap_seconds": 0.451,
+      "runner_up_gap_seconds": null,
+      "session_id": "4dd14d4c9f7e4478a59f66e6c48eea0f"
+    },
+    "8a79789519eb06d013af2b4fea415b14": {
+      "gap_seconds": 0.572,
+      "runner_up_gap_seconds": null,
+      "session_id": "f595ba65e6774fbb8a626e4fdfe34618"
+    },
+    "8bde52f658e17334adb4efa9ca94bbd3": {
+      "gap_seconds": 0.703,
+      "runner_up_gap_seconds": null,
+      "session_id": "70c031059e45423c982f4aefec09c52b"
+    },
+    "8bf83bca4008e439223d8e7a721b3ee2": {
+      "gap_seconds": 0.981,
+      "runner_up_gap_seconds": null,
+      "session_id": "0222a6c44ac4437d89fc62e697259659"
+    },
+    "8cc0c4d6ce7baff36708ea9239d3fafc": {
+      "gap_seconds": 0.039,
+      "runner_up_gap_seconds": null,
+      "session_id": "bbaf506c5bc1414baba34827041d4ac7"
+    },
+    "9028ab3b057a943478029d349a4a689b": {
+      "gap_seconds": 0.411,
+      "runner_up_gap_seconds": null,
+      "session_id": "d4b1ecbbb56147058b7fb1c807a109ac"
+    },
+    "932e430f8abbaec2ab302a7fec1c6805": {
+      "gap_seconds": 0.651,
+      "runner_up_gap_seconds": null,
+      "session_id": "e984449b7ea14897a73c8c0520397eee"
+    },
+    "93ff5b349b6286bfa2adbc9ec6d2f189": {
+      "gap_seconds": 0.894,
+      "runner_up_gap_seconds": null,
+      "session_id": "51d1e726a354404d858d2a7e2a574d92"
+    },
+    "94185b578832bf16f6298b3b20d7cde5": {
+      "gap_seconds": 0.251,
+      "runner_up_gap_seconds": null,
+      "session_id": "38b516277f6a44ea8895e2c9f30c7a52"
+    },
+    "94d97fbf9b29a0fe39887e725fc210ab": {
+      "gap_seconds": 0.694,
+      "runner_up_gap_seconds": null,
+      "session_id": "dfb444b3a0434f5faf37b69261102f79"
+    },
+    "95349efa26394ccb9914f439db2f5afc": {
+      "gap_seconds": 0.397,
+      "runner_up_gap_seconds": null,
+      "session_id": "4c6c7b4452e94379921e592f73ea84b9"
+    },
+    "96592cc204f900f85457eb1b59ccd965": {
+      "gap_seconds": 0.041,
+      "runner_up_gap_seconds": null,
+      "session_id": "964601c811514441950f664e4cd916ef"
+    },
+    "97e26a0a8a7a8adff9e317c5904a66e5": {
+      "gap_seconds": 0.934,
+      "runner_up_gap_seconds": 72656.934,
+      "session_id": "ab82905ce5ef459b998367c52cea3e2e"
+    },
+    "984fb6e44cbc1552457f7806ee54414f": {
+      "gap_seconds": 0.297,
+      "runner_up_gap_seconds": null,
+      "session_id": "a2cd71b0b6ed489b8afebd2ccc052018"
+    },
+    "988958506bb72a4c844c18d66f4fa51a": {
+      "gap_seconds": 0.889,
+      "runner_up_gap_seconds": null,
+      "session_id": "7031f51b0d15461692267e9c5a0afaf3"
+    },
+    "9a09643f6e06ff81214824d2dc613ca2": {
+      "gap_seconds": 0.136,
+      "runner_up_gap_seconds": null,
+      "session_id": "bfac57918453428ca3bfe4b1aedd5b73"
+    },
+    "9a2940b7f4b8fe41d4c5a9137bf7009d": {
+      "gap_seconds": 0.694,
+      "runner_up_gap_seconds": null,
+      "session_id": "db60d7069df441a4baeb1ceee0dfec2b"
+    },
+    "9a9e9243255b31e1ecd71c9394f57754": {
+      "gap_seconds": 0.712,
+      "runner_up_gap_seconds": null,
+      "session_id": "042b75b8016a459f9f44bbc16e061579"
+    },
+    "9ab8824c78cafd7fa5a6ac77c17e56f9": {
+      "gap_seconds": 0.327,
+      "runner_up_gap_seconds": null,
+      "session_id": "a2f4a4d9481a41a09990c6ee0b7394c3"
+    },
+    "9bf0c90d26b5a6267eb68bb0ca0f606a": {
+      "gap_seconds": 0.361,
+      "runner_up_gap_seconds": null,
+      "session_id": "8464294fd0af4e46a173ac11ec7abe80"
+    },
+    "9c8486031546f9c75b5353f2927d7266": {
+      "gap_seconds": 0.139,
+      "runner_up_gap_seconds": null,
+      "session_id": "054892248ea5489d808d288313854ef3"
+    },
+    "9c9902ded5b72f52ad3592432e6f6156": {
+      "gap_seconds": 0.178,
+      "runner_up_gap_seconds": null,
+      "session_id": "f1b6778f10354d2894abcc48aea73360"
+    },
+    "9da69268474644130ba14d5b7ce20d6b": {
+      "gap_seconds": 0.034,
+      "runner_up_gap_seconds": null,
+      "session_id": "4e01c50295b447229aa059b5bb9a2a1a"
+    },
+    "9f0519209cdea8bd20e3299d1909d549": {
+      "gap_seconds": 0.561,
+      "runner_up_gap_seconds": 55957.561,
+      "session_id": "7b85100f021f4be7a24f99bb7088a3e9"
+    },
+    "a00c302ef186a8b5fff565ed09b62848": {
+      "gap_seconds": 0.029,
+      "runner_up_gap_seconds": null,
+      "session_id": "aac9ae8b456e4b6ea2387de822c8c22d"
+    },
+    "a06cd1e0cdd545e1c647afe96a9260a8": {
+      "gap_seconds": 0.884,
+      "runner_up_gap_seconds": null,
+      "session_id": "64f863b430bf4661a5e76d9e17e8d95b"
+    },
+    "a290c18b7677467d3d7ba368675ae7f4": {
+      "gap_seconds": 0.179,
+      "runner_up_gap_seconds": null,
+      "session_id": "fa20e7f3aeb34d6eb0048f68a0089943"
+    },
+    "a2c4db5edca797368cf3d93517fe194c": {
+      "gap_seconds": 0.161,
+      "runner_up_gap_seconds": 72581.161,
+      "session_id": "a993dfc0c7b04d7f87893f407bd0d379"
+    },
+    "a33a9de13e03bde269ae99cd77296d04": {
+      "gap_seconds": 0.882,
+      "runner_up_gap_seconds": null,
+      "session_id": "d3502d7e965c42869390f4571d4930d5"
+    },
+    "a35fa005a4950c7e05ad8475a429a2c3": {
+      "gap_seconds": 0.366,
+      "runner_up_gap_seconds": null,
+      "session_id": "25ac3a84df6e4ead87d5563bb3f4f4da"
+    },
+    "a426659c7c4945fdd332af4fede18371": {
+      "gap_seconds": 0.419,
+      "runner_up_gap_seconds": 72642.419,
+      "session_id": "a58f207245a9449ca5938d9e41b9386b"
+    },
+    "a54a1cd9a9453f918b6d1fcaa8c73fba": {
+      "gap_seconds": 0.488,
+      "runner_up_gap_seconds": null,
+      "session_id": "8464294fd0af4e46a173ac11ec7abe80"
+    },
+    "a5b72a7704d9266c7e1ea29e85456019": {
+      "gap_seconds": 0.162,
+      "runner_up_gap_seconds": null,
+      "session_id": "4bca48d0c3954d2dbc794537a0842ad5"
+    },
+    "a7afc0d322b5da78cf1f1839713c53e7": {
+      "gap_seconds": 0.645,
+      "runner_up_gap_seconds": null,
+      "session_id": "60a02f364d81497bbe578c46916e0605"
+    },
+    "a7cc091ba12f1271b4a03ce63b28bfd2": {
+      "gap_seconds": 0.01,
+      "runner_up_gap_seconds": null,
+      "session_id": "1c706a5536ce417fad1bbc271ca3979b"
+    },
+    "a898bc26210d9d83e4d04351c9c59816": {
+      "gap_seconds": 0.173,
+      "runner_up_gap_seconds": 72579.173,
+      "session_id": "7bf774880ece47d3b81538c66a2fe0b9"
+    },
+    "a900f414989d0121c2150ab330f0c7cc": {
+      "gap_seconds": 0.468,
+      "runner_up_gap_seconds": null,
+      "session_id": "3896c9f6992d4347a5c793d82f521936"
+    },
+    "a9015333e2172c87423b9a154e9dd71f": {
+      "gap_seconds": 0.743,
+      "runner_up_gap_seconds": null,
+      "session_id": "042b75b8016a459f9f44bbc16e061579"
+    },
+    "ab8f250f64bd58864e016f23b1c09096": {
+      "gap_seconds": 0.637,
+      "runner_up_gap_seconds": null,
+      "session_id": "cd75bbd8d1584bd3b2126190c9ceffe6"
+    },
+    "abf16729ec5e66e0c79715cba19633b2": {
+      "gap_seconds": 0.635,
+      "runner_up_gap_seconds": null,
+      "session_id": "cd75bbd8d1584bd3b2126190c9ceffe6"
+    },
+    "ac52f224d8a0e8415cf0782bfb80b7fe": {
+      "gap_seconds": 0.253,
+      "runner_up_gap_seconds": null,
+      "session_id": "366ec4b8d7e34ef2802a145255429d9c"
+    },
+    "ac81310564ab5a853d1443cab3878784": {
+      "gap_seconds": 0.289,
+      "runner_up_gap_seconds": null,
+      "session_id": "f1b6778f10354d2894abcc48aea73360"
+    },
+    "ac96dc1d08cb6bef76c6faaba4ce40dd": {
+      "gap_seconds": 0.369,
+      "runner_up_gap_seconds": null,
+      "session_id": "267fdc788b9349538eda851bbd9d1eed"
+    },
+    "ad743bf6a6cb62847f5c00a8fa7590e5": {
+      "gap_seconds": 0.028,
+      "runner_up_gap_seconds": null,
+      "session_id": "cd75bbd8d1584bd3b2126190c9ceffe6"
+    },
+    "adac67c3410547e4e1a2554223a9bbf0": {
+      "gap_seconds": 0.701,
+      "runner_up_gap_seconds": null,
+      "session_id": "21911e6cf1dd4f0daa6f06b69091bde6"
+    },
+    "aed16bdf996ecb10064df98ec4f34b38": {
+      "gap_seconds": 0.584,
+      "runner_up_gap_seconds": null,
+      "session_id": "9f347bacbc6f401f83996c2c30d6e5b6"
+    },
+    "aefc350aaf7a2432f52f23f4d0ec23c6": {
+      "gap_seconds": 0.831,
+      "runner_up_gap_seconds": null,
+      "session_id": "6d6cd587c58043bb8171415be93c6657"
+    },
+    "aefd79c4f41a3a979b577a2817fec3af": {
+      "gap_seconds": 0.883,
+      "runner_up_gap_seconds": null,
+      "session_id": "4c6c7b4452e94379921e592f73ea84b9"
+    },
+    "af0cbb3d338d5e95337b916e9a12c4dc": {
+      "gap_seconds": 0.4,
+      "runner_up_gap_seconds": null,
+      "session_id": "595a24ab19474aa288246f7f0ac142a3"
+    },
+    "afe1280ca04d0fb875e9cb74595822dd": {
+      "gap_seconds": 0.765,
+      "runner_up_gap_seconds": null,
+      "session_id": "d45d9c3a71814feaba6411e142f54280"
+    },
+    "b02fa7496713af57c10c278de9869882": {
+      "gap_seconds": 0.917,
+      "runner_up_gap_seconds": null,
+      "session_id": "a10c35c87f1b4697b504988955e1ad14"
+    },
+    "b105a3172950e91488dddc4726c4af41": {
+      "gap_seconds": 0.759,
+      "runner_up_gap_seconds": 72563.759,
+      "session_id": "6305e064dbde4eb085f7f05185d997fd"
+    },
+    "b1078d0535d55de61a92c1e106688a8d": {
+      "gap_seconds": 0.092,
+      "runner_up_gap_seconds": null,
+      "session_id": "86e1167466d84841a3c2093965e2951b"
+    },
+    "b1f841ee67bb7e1d2b74c4fc46c6dfcd": {
+      "gap_seconds": 0.215,
+      "runner_up_gap_seconds": null,
+      "session_id": "866b0fe1a0c5437893ea4064b09c05cd"
+    },
+    "b2cfc9566f1160f48605456f8ccda564": {
+      "gap_seconds": 0.115,
+      "runner_up_gap_seconds": null,
+      "session_id": "64f8486d6a7844efa4ff1b76a1696ddf"
+    },
+    "b40794e599158cf5e897ad81016fc9ed": {
+      "gap_seconds": 0.53,
+      "runner_up_gap_seconds": null,
+      "session_id": "93fbcec3a19846faad674bb18a8060d9"
+    },
+    "b5b3acc975635e352eeeae4939d18337": {
+      "gap_seconds": 0.521,
+      "runner_up_gap_seconds": null,
+      "session_id": "8824405c52794df08bd5e9d5a90b7fd2"
+    },
+    "b777d08a688cff9e1e5080d99947d9b3": {
+      "gap_seconds": 0.562,
+      "runner_up_gap_seconds": null,
+      "session_id": "5b4ddbc2b00041c8af4e6a4612d43424"
+    },
+    "b7a2f9e0956633762e393b5e798fbcff": {
+      "gap_seconds": 0.536,
+      "runner_up_gap_seconds": null,
+      "session_id": "9f347bacbc6f401f83996c2c30d6e5b6"
+    },
+    "b945038ff69fdff78d305eebd98ad22d": {
+      "gap_seconds": 0.9,
+      "runner_up_gap_seconds": null,
+      "session_id": "d45d9c3a71814feaba6411e142f54280"
+    },
+    "b954a989149f2f72e9f821ec5046d28f": {
+      "gap_seconds": 0.863,
+      "runner_up_gap_seconds": null,
+      "session_id": "4bca48d0c3954d2dbc794537a0842ad5"
+    },
+    "b95f6147ff7ba16d1d608264c091e468": {
+      "gap_seconds": 0.205,
+      "runner_up_gap_seconds": null,
+      "session_id": "1cd88f02f69940dc8ee73de9c6ddb105"
+    },
+    "b96b225191923c46d2453b0d7c844e9d": {
+      "gap_seconds": 0.078,
+      "runner_up_gap_seconds": 72561.078,
+      "session_id": "1ee12e4533514f01a0367fea95629b2a"
+    },
+    "bb23caa5d8258c28c4b632037b8ec632": {
+      "gap_seconds": 0.222,
+      "runner_up_gap_seconds": null,
+      "session_id": "cd75bbd8d1584bd3b2126190c9ceffe6"
+    },
+    "bc40cd4a701a4c59b4dcafec5b6746d5": {
+      "gap_seconds": 0.312,
+      "runner_up_gap_seconds": null,
+      "session_id": "ea5b79c8e8e9403c9cc1b80479f548fe"
+    },
+    "bebc4a63aca14d8a5af7303be0cb28a7": {
+      "gap_seconds": 0.133,
+      "runner_up_gap_seconds": null,
+      "session_id": "e984449b7ea14897a73c8c0520397eee"
+    },
+    "bf97142dcf16a6e647a3b5cdd833cd6f": {
+      "gap_seconds": 0.337,
+      "runner_up_gap_seconds": null,
+      "session_id": "4613380c9d8d47279c208d7fe4f465ce"
+    },
+    "c08907bb271657645f3a2fb0761f508d": {
+      "gap_seconds": 0.473,
+      "runner_up_gap_seconds": null,
+      "session_id": "d9e794c5c45347f3b65aa8b5c327472a"
+    },
+    "c0cdc0616336e4d4cb7282f9510ee0d0": {
+      "gap_seconds": 0.764,
+      "runner_up_gap_seconds": null,
+      "session_id": "70c031059e45423c982f4aefec09c52b"
+    },
+    "c0e24cfa097c83c41cdb6d91a0ede095": {
+      "gap_seconds": 0.927,
+      "runner_up_gap_seconds": 72662.927,
+      "session_id": "87f959ac0d384506b940d84c24238ec5"
+    },
+    "c13616ff9571ac36d33d739bbd3424cc": {
+      "gap_seconds": 0.661,
+      "runner_up_gap_seconds": 72656.661,
+      "session_id": "c82a062491ad4d569e49ef91cbe31b93"
+    },
+    "c2a2ad346a70bf95e5db7f31c6f5d334": {
+      "gap_seconds": 0.664,
+      "runner_up_gap_seconds": 55921.664,
+      "session_id": "91a6babc580c4d8aa55253d5293e968f"
+    },
+    "c2e06ef6ff1aca61c77ecf3571e461e3": {
+      "gap_seconds": 0.434,
+      "runner_up_gap_seconds": null,
+      "session_id": "8b4ba80d93d642479a8ec52cf3346124"
+    },
+    "c35a763cc2d070e7a6df68437a19adae": {
+      "gap_seconds": 0.015,
+      "runner_up_gap_seconds": 72663.015,
+      "session_id": "6aca950709304f099fa2d8d62d3f3e2a"
+    },
+    "c3f8fd8601503863e469ce4d154d2d27": {
+      "gap_seconds": 0.866,
+      "runner_up_gap_seconds": null,
+      "session_id": "b54585e30f5c434e856eb10c133dbaed"
+    },
+    "c4b2070e6f8360432042ec06e1d08306": {
+      "gap_seconds": 0.026,
+      "runner_up_gap_seconds": null,
+      "session_id": "ed7372ca14ba478583f1e2c7ed4e58c7"
+    },
+    "c50d0372f0d2de6484943976c26f0d1a": {
+      "gap_seconds": 0.281,
+      "runner_up_gap_seconds": null,
+      "session_id": "ead2a2f0ff354aaea8288143e743b0b1"
+    },
+    "c5ca23d39eb981644d04b169fb9ec0ee": {
+      "gap_seconds": 0.656,
+      "runner_up_gap_seconds": null,
+      "session_id": "788e08630f6041b7a9ea0fc4b7139634"
+    },
+    "c813107b14c2ce5f95fef0b2b018605a": {
+      "gap_seconds": 0.251,
+      "runner_up_gap_seconds": null,
+      "session_id": "a88ff79a23b74d6b862be7df7cbaf159"
+    },
+    "c8d4c279a8b7c9c1fbbbb6f51f43d8c0": {
+      "gap_seconds": 0.543,
+      "runner_up_gap_seconds": null,
+      "session_id": "a45ef4c6a53f4dabbd789e7fced7ab92"
+    },
+    "c9db07b86864c89f3b794f6171befcc8": {
+      "gap_seconds": 0.292,
+      "runner_up_gap_seconds": null,
+      "session_id": "2b051d40a8904c94af2ee12a7a6e4b73"
+    },
+    "c9e84d3340883e7eeeda2c2b3666718b": {
+      "gap_seconds": 0.477,
+      "runner_up_gap_seconds": null,
+      "session_id": "2004c3d39ddf4db3b5b566dc1e308932"
+    },
+    "cc93a580370b4336aacd5b81607aaa3b": {
+      "gap_seconds": 0.225,
+      "runner_up_gap_seconds": null,
+      "session_id": "c5679b22331944a28943d2f8fbb0ff9a"
+    },
+    "cd3672fd05cab6f0390a98fc0b9a2cfe": {
+      "gap_seconds": 0.677,
+      "runner_up_gap_seconds": null,
+      "session_id": "cb7ff01d4f71435da5040c875ad16024"
+    },
+    "cd997e2fc0e8d1e79a804617602e965a": {
+      "gap_seconds": 0.942,
+      "runner_up_gap_seconds": 72626.942,
+      "session_id": "a2a72ed9cbc5453ba23fafde23195d22"
+    },
+    "ce9e9be7f060faa00ad1c4361bf51d67": {
+      "gap_seconds": 0.297,
+      "runner_up_gap_seconds": null,
+      "session_id": "1cf40ed7224b42e09e8ebe4ba5865328"
+    },
+    "cf56e4e2d20101db3b2f09c7a5699414": {
+      "gap_seconds": 0.263,
+      "runner_up_gap_seconds": 72582.263,
+      "session_id": "e2b5e73c5aee40bd9adabd5aaa765fe8"
+    },
+    "d01e2918ad9de54deaf083e180b7aa77": {
+      "gap_seconds": 0.717,
+      "runner_up_gap_seconds": null,
+      "session_id": "de317b88178a4359b39a0a97cb5f84ab"
+    },
+    "d0323a82b6e3803e7a48a821ab8cc33d": {
+      "gap_seconds": 0.849,
+      "runner_up_gap_seconds": 55959.849,
+      "session_id": "5b86d4c95f84415ab039e63da238e515"
+    },
+    "d16c0e9e191bd34ce5e267cb8dade4b2": {
+      "gap_seconds": 0.024,
+      "runner_up_gap_seconds": null,
+      "session_id": "20f6d3ce4afe4a8699324c8f94c3a6c4"
+    },
+    "d1eb7205be61170a5354b51d7f5f2e41": {
+      "gap_seconds": 0.238,
+      "runner_up_gap_seconds": null,
+      "session_id": "fa10095d026f459baaee3cc47fb8fe02"
+    },
+    "d27819799ef3167ff44d7938ac6c4cdf": {
+      "gap_seconds": 0.762,
+      "runner_up_gap_seconds": null,
+      "session_id": "9569a68428944807b09171aa8b354085"
+    },
+    "d3f81eae6523c72ada8e5226bc699b49": {
+      "gap_seconds": 0.251,
+      "runner_up_gap_seconds": 72583.251,
+      "session_id": "b59c6d3f2e284626b53b6ada13e95569"
+    },
+    "d46b537c6692e2fffd0e18a14f610920": {
+      "gap_seconds": 0.206,
+      "runner_up_gap_seconds": null,
+      "session_id": "38b516277f6a44ea8895e2c9f30c7a52"
+    },
+    "d47b1edd42b9a3bb6185fa408c52d505": {
+      "gap_seconds": 0.769,
+      "runner_up_gap_seconds": null,
+      "session_id": "70c031059e45423c982f4aefec09c52b"
+    },
+    "d4b70f763ac0ddd848daf3b4b59ca744": {
+      "gap_seconds": 0.874,
+      "runner_up_gap_seconds": null,
+      "session_id": "f1b6778f10354d2894abcc48aea73360"
+    },
+    "d4bd9485143e2393399e6218e03cfbf3": {
+      "gap_seconds": 0.317,
+      "runner_up_gap_seconds": null,
+      "session_id": "ff643fe8d71a4da382cce344bde8f87f"
+    },
+    "d5dd5779c0d98f2639a42679e8b24637": {
+      "gap_seconds": 0.169,
+      "runner_up_gap_seconds": null,
+      "session_id": "d4b1ecbbb56147058b7fb1c807a109ac"
+    },
+    "d63000bf4f669d09be885c1f10edb5bf": {
+      "gap_seconds": 0.605,
+      "runner_up_gap_seconds": 72642.605,
+      "session_id": "7e7fd3f0f90245c2bfbc80991e536f86"
+    },
+    "d66b8bef8bb26543e4dc608e2703c28d": {
+      "gap_seconds": 0.688,
+      "runner_up_gap_seconds": null,
+      "session_id": "2004c3d39ddf4db3b5b566dc1e308932"
+    },
+    "d7a974e73ca8fc7501e40ca1241f18b7": {
+      "gap_seconds": 0.793,
+      "runner_up_gap_seconds": null,
+      "session_id": "8cbd3fcfef6a4417a753bdb97643fc11"
+    },
+    "d8022422756c8a4b50df5a7e149bff86": {
+      "gap_seconds": 0.069,
+      "runner_up_gap_seconds": null,
+      "session_id": "20f6d3ce4afe4a8699324c8f94c3a6c4"
+    },
+    "d85a408e1fc542a36b6f11b0a399e50e": {
+      "gap_seconds": 0.668,
+      "runner_up_gap_seconds": null,
+      "session_id": "41796d9dcad24d009df1cbbc4b27ef2d"
+    },
+    "d8621735e0ea9940880509a5505c2908": {
+      "gap_seconds": 0.293,
+      "runner_up_gap_seconds": null,
+      "session_id": "45484f06262242129f1b2c07ebf7d98f"
+    },
+    "d87323ccd41b09afd72daa0b693efe85": {
+      "gap_seconds": 0.28,
+      "runner_up_gap_seconds": null,
+      "session_id": "56f8c9341dff49e9b7e777ba806df52b"
+    },
+    "d913684724e9904052d03aa4dfba4a4f": {
+      "gap_seconds": 0.573,
+      "runner_up_gap_seconds": null,
+      "session_id": "7a6db3e90d41460194b7a73bb7e07105"
+    },
+    "d982381be2cbe4a842e3cbc6bdf30e86": {
+      "gap_seconds": 0.583,
+      "runner_up_gap_seconds": null,
+      "session_id": "73c7a29d8a9544b98c938df001e462d8"
+    },
+    "daca8584c849769e394edb14dc415873": {
+      "gap_seconds": 0.022,
+      "runner_up_gap_seconds": 72581.022,
+      "session_id": "d7556ac2ee2e4a9a8040be66c3de1751"
+    },
+    "daecd157301a807ea74a421f942c4058": {
+      "gap_seconds": 0.649,
+      "runner_up_gap_seconds": null,
+      "session_id": "c79bfe4426ce4116b8db406bffacda62"
+    },
+    "dca3b0facf63e835b96ee7f31352b19a": {
+      "gap_seconds": 0.504,
+      "runner_up_gap_seconds": null,
+      "session_id": "70e879174d1e4bfa9da86163f9144636"
+    },
+    "dd6bcb4e1bc21244d03002668ca6ec97": {
+      "gap_seconds": 0.53,
+      "runner_up_gap_seconds": null,
+      "session_id": "6c816732e31a451eac076c86552f2d37"
+    },
+    "de0d78e7f84cf79fd7973e5322174da3": {
+      "gap_seconds": 0.089,
+      "runner_up_gap_seconds": null,
+      "session_id": "acc25cb759ae4066b4a9ee4ebda5dae8"
+    },
+    "dec314589e7cc123391b78017e8d2dc4": {
+      "gap_seconds": 0.782,
+      "runner_up_gap_seconds": null,
+      "session_id": "a8b675ee26c147c29f2cc4673648409b"
+    },
+    "df0c701e2d04e330068c1beec5bb899d": {
+      "gap_seconds": 0.864,
+      "runner_up_gap_seconds": null,
+      "session_id": "d19aba1bf97d4236a4e0ba472e647457"
+    },
+    "dff7d4fba064211ff90339094cfb48a1": {
+      "gap_seconds": 0.906,
+      "runner_up_gap_seconds": null,
+      "session_id": "d9dd581c06de4912a067c1642fbc6efa"
+    },
+    "e010ccd97571ef525606421ecc3d6fd3": {
+      "gap_seconds": 0.324,
+      "runner_up_gap_seconds": null,
+      "session_id": "ab55220666d440d5a85f70fe7b2f2353"
+    },
+    "e10037060ec3749e11f53972f4c722f4": {
+      "gap_seconds": 0.453,
+      "runner_up_gap_seconds": null,
+      "session_id": "48d879cfa8a4409db4f90d6c29b67619"
+    },
+    "e1f69a5416640ee867b6b4efd38d3576": {
+      "gap_seconds": 0.213,
+      "runner_up_gap_seconds": null,
+      "session_id": "a97d04ed66de4a1bb110271f972f7f58"
+    },
+    "e285217849c2958968491d5e9c10ddb5": {
+      "gap_seconds": 0.483,
+      "runner_up_gap_seconds": null,
+      "session_id": "d58b5d24189648fd8afadf9bd6962691"
+    },
+    "e2c3ce5ad1ebae848471857154b52161": {
+      "gap_seconds": 0.239,
+      "runner_up_gap_seconds": 72575.239,
+      "session_id": "d10a97a2f5954817b0ce24dccaeb9706"
+    },
+    "e3b51619cdb2b28e3c8b3de0f6646c1d": {
+      "gap_seconds": 0.186,
+      "runner_up_gap_seconds": null,
+      "session_id": "4e6241735d2d4e7f8952dc368b5b967b"
+    },
+    "e3e50c99d45a4c55606697ffb7ede110": {
+      "gap_seconds": 0.882,
+      "runner_up_gap_seconds": null,
+      "session_id": "783518ba0ee440e9a10547902a091a3b"
+    },
+    "e59862d1581a036cdc54faec35e40886": {
+      "gap_seconds": 0.445,
+      "runner_up_gap_seconds": null,
+      "session_id": "f33ed39c86f94655a969a3319dcfcfaf"
+    },
+    "e6373178d73cbde5e991641e05b8074d": {
+      "gap_seconds": 0.82,
+      "runner_up_gap_seconds": null,
+      "session_id": "6c816732e31a451eac076c86552f2d37"
+    },
+    "e6e8112b3a96b3220fe21a9703156b7b": {
+      "gap_seconds": 0.48,
+      "runner_up_gap_seconds": null,
+      "session_id": "38b516277f6a44ea8895e2c9f30c7a52"
+    },
+    "e8205dc6670f48760e26f3313b911523": {
+      "gap_seconds": 0.192,
+      "runner_up_gap_seconds": null,
+      "session_id": "fc874f69189a4e90ac45c6df6b51d411"
+    },
+    "e9999bdccbaf3c461caa6048efc5d9a2": {
+      "gap_seconds": 0.844,
+      "runner_up_gap_seconds": null,
+      "session_id": "0f391967374947329635097b91ad6dee"
+    },
+    "ea234165a0b14a0dbc0f5d1b31d6ba48": {
+      "gap_seconds": 0.003,
+      "runner_up_gap_seconds": null,
+      "session_id": "b018ee013ae1432b8259d320efa6c757"
+    },
+    "eb77e7f1c9a8e81472cb7a7d01814ed0": {
+      "gap_seconds": 0.728,
+      "runner_up_gap_seconds": null,
+      "session_id": "025909cfa2d14b18889913d1ca813392"
+    },
+    "ebb8a368b7a992ecffd6f853c4b16f34": {
+      "gap_seconds": 0.729,
+      "runner_up_gap_seconds": 72575.729,
+      "session_id": "949a35f5b87e4cd78890c6bb0cd2df7f"
+    },
+    "ec089fcf134562afb00d913a5e06fd11": {
+      "gap_seconds": 0.896,
+      "runner_up_gap_seconds": null,
+      "session_id": "86e1167466d84841a3c2093965e2951b"
+    },
+    "ec2cd56ab5ade124733cd8635b631521": {
+      "gap_seconds": 0.534,
+      "runner_up_gap_seconds": null,
+      "session_id": "ffbf65e79c044ef29292989107323318"
+    },
+    "ee6140ec6e7bc12aa5517809f6128a84": {
+      "gap_seconds": 0.757,
+      "runner_up_gap_seconds": 55920.757,
+      "session_id": "d76a97baa0844a20aae049071a2ecd32"
+    },
+    "eff6053773452c91eba39929f657107f": {
+      "gap_seconds": 0.096,
+      "runner_up_gap_seconds": null,
+      "session_id": "f9e4d4d602984703ac0ea6e538774b08"
+    },
+    "f02be12e1280884f92d79c9e19a48db7": {
+      "gap_seconds": 0.704,
+      "runner_up_gap_seconds": 72655.704,
+      "session_id": "c45c65116af142969023d1eeb659299f"
+    },
+    "f0b306356a6e37308661cf4cdad51394": {
+      "gap_seconds": 0.615,
+      "runner_up_gap_seconds": null,
+      "session_id": "b59b6a24492f43d48bfcae251df56f81"
+    },
+    "f12eca80c12c21d45088206927398e4b": {
+      "gap_seconds": 0.594,
+      "runner_up_gap_seconds": null,
+      "session_id": "649d3b4dc99d428bbff5f789060312d8"
+    },
+    "f187c38f42899d439eef13e3e482454b": {
+      "gap_seconds": 0.375,
+      "runner_up_gap_seconds": null,
+      "session_id": "70c031059e45423c982f4aefec09c52b"
+    },
+    "f1ad47794256b97503515b01028b29c2": {
+      "gap_seconds": 0.156,
+      "runner_up_gap_seconds": null,
+      "session_id": "8eee1582ab73447c93337558c04d970e"
+    },
+    "f2c6524fef3a41636c7e0348213c51ab": {
+      "gap_seconds": 0.166,
+      "runner_up_gap_seconds": null,
+      "session_id": "acc25cb759ae4066b4a9ee4ebda5dae8"
+    },
+    "f341f9f94b3705b9c9fa7337f95678e8": {
+      "gap_seconds": 0.812,
+      "runner_up_gap_seconds": 72648.812,
+      "session_id": "41c17c2848e34b6286d547f0ae2ef501"
+    },
+    "f41b86b061914d92eb27d8010f1f1393": {
+      "gap_seconds": 0.352,
+      "runner_up_gap_seconds": null,
+      "session_id": "b39ba340521b4b31a404ce9ead7c6693"
+    },
+    "f59ab4153622a46134774a8998d85693": {
+      "gap_seconds": 0.913,
+      "runner_up_gap_seconds": null,
+      "session_id": "5a24e03484df41afb31de673dae1a229"
+    },
+    "f700e442c85acd1ad3d79d97da84184c": {
+      "gap_seconds": 0.785,
+      "runner_up_gap_seconds": null,
+      "session_id": "0bb9cd75965b4667a79aa6eea758d340"
+    },
+    "f769a234f45986cedca436845fc7458e": {
+      "gap_seconds": 0.849,
+      "runner_up_gap_seconds": null,
+      "session_id": "7396b0796ab5496caa6e61b7cda40c5e"
+    },
+    "f8f0d4bede5ec4053f992bc5449fb253": {
+      "gap_seconds": 0.947,
+      "runner_up_gap_seconds": 72582.947,
+      "session_id": "1ee12e4533514f01a0367fea95629b2a"
+    },
+    "f941bff05ece83b601420c902a3d05c5": {
+      "gap_seconds": 0.332,
+      "runner_up_gap_seconds": 55909.332,
+      "session_id": "d49d37b426f749e7b3b7c623ef7bb0c2"
+    },
+    "fa3539c3c2877ceb6f9d2ea07e92642c": {
+      "gap_seconds": 0.922,
+      "runner_up_gap_seconds": null,
+      "session_id": "524b4c71637d4c6a8d9eef74620dda37"
+    },
+    "fa89aaa12a782d5a8144dd52532d9955": {
+      "gap_seconds": 0.225,
+      "runner_up_gap_seconds": null,
+      "session_id": "c79bfe4426ce4116b8db406bffacda62"
+    },
+    "faf76d4b36f086dc740a0a87ee27982b": {
+      "gap_seconds": 0.796,
+      "runner_up_gap_seconds": null,
+      "session_id": "a8b675ee26c147c29f2cc4673648409b"
+    },
+    "fb0fafe4e9d76b2a2dbd74b82b9ba6f4": {
+      "gap_seconds": 0.694,
+      "runner_up_gap_seconds": null,
+      "session_id": "09349eca43b2415b8a555b1103d642d3"
+    },
+    "fcb0e8024679d82b47b95a3fec3720a0": {
+      "gap_seconds": 0.07,
+      "runner_up_gap_seconds": null,
+      "session_id": "b6f65cf87ebe4195abe4e0ad7d7ec35b"
+    },
+    "fd3cef4611114befb96af4cc3d96256b": {
+      "gap_seconds": 0.777,
+      "runner_up_gap_seconds": null,
+      "session_id": "cd75bbd8d1584bd3b2126190c9ceffe6"
+    },
+    "fda900090bbffb9b4e43e42c9ce7009f": {
+      "gap_seconds": 0.829,
+      "runner_up_gap_seconds": null,
+      "session_id": "10bcd84031fd4f4cad77df9204d2a519"
+    },
+    "fe6a2b59f283a6e95cf796b685eff3ab": {
+      "gap_seconds": 0.831,
+      "runner_up_gap_seconds": null,
+      "session_id": "ce68f2dbe19440a6886b6e54b725eb73"
+    },
+    "fe9280888a8eb49ee959ac8f9b25263f": {
+      "gap_seconds": 0.285,
+      "runner_up_gap_seconds": null,
+      "session_id": "4bca48d0c3954d2dbc794537a0842ad5"
+    },
+    "ff3bfb9c2de9bf1d6408cc97a86da04d": {
+      "gap_seconds": 0.027,
+      "runner_up_gap_seconds": null,
+      "session_id": "ec55c3cd0e5946698432837484e8cc50"
+    },
+    "ff439693ff8e300aca8bc5b76517f7ea": {
+      "gap_seconds": 0.97,
+      "runner_up_gap_seconds": null,
+      "session_id": "611c8002b89f44d093e22c76153faea1"
+    },
+    "ffd51ffa1ec87fded7732bfdb3c6bbd7": {
+      "gap_seconds": 0.117,
+      "runner_up_gap_seconds": null,
+      "session_id": "d1681ee81b4642529f543b8d61cc4f3c"
+    }
+  },
+  "unmatched": []
+}
