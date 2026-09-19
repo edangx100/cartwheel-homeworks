@@ -543,6 +543,67 @@ date of 2026-07-01. Nothing in the prompt or tools gave it that date.
 
 ---
 
+## 9b. Batch 3: depth searches
+
+### What a "depth search" is
+
+Batches 1 and 2 were **breadth**: traces spread across the data (random,
+cluster, role-balanced) to discover *what kinds* of mistakes exist. Batch 3 is
+**depth**: you now have suspects (the candidate modes), so you deliberately
+**dig for more examples of each one**, and for look-alikes that may turn out
+fine.
+
+```
+  BREADTH (batches 1, 2)                    DEPTH (batch 3)
+  ──────────────────────                    ───────────────
+  "what goes wrong?"                         "is THIS mistake real, and where is its edge?"
+  random / spread-out picks                  targeted searches for one suspected mode
+  finds new kinds of mistakes                finds more examples + close negatives
+                                             of mistakes you already suspect
+```
+
+A **search** is a simple rule over the recordings, for example *"every trace
+where a tool returned `permission_denied`"* or *"out-of-scope requests where the
+agent called a tool anyway"*. Its results are **hints, not verdicts**:
+
+```
+   search rule ──▶ candidate traces ──▶ YOU read each one ──┬─▶ confirmed positive
+   (a filter)      (retrieval signal)                       ├─▶ close negative (looked similar, was fine)
+                                                            └─▶ false alarm (search hit, not the mode) → rejected
+```
+
+The handout insists on this: *"Treat a similarity score, model prediction, or
+deterministic filter as a retrieval signal rather than a label. Review every
+returned trace yourself."* False alarms are expected, and rejecting them is part
+of the record.
+
+**Why depth is needed.** A final mode needs at least 3 confirmed positives. After
+batch 2, four candidates had only 1. A random sample might need hundreds of
+traces to find two more. A targeted search finds them quickly, or shows that
+they are not there, in which case the mode is dropped and recorded as a rejected
+group.
+
+### The searches run
+
+All searches ran over the 285 traces not yet reviewed (Part A and batches 1–2
+excluded):
+
+| Search rule | Hits | Aimed at |
+| --- | --- | --- |
+| a tool returned `permission_denied` | 4 | `permission_denied_escalated_without_confirming` |
+| refund or cancel after `find_order` returned several orders, with no order number from the user | 6 | `write_on_unconfirmed_target` |
+| the same situation but no write | 4 | close negatives for it |
+| `out_of_scope` requests (did it call tools?) | 14 | `out_of_scope_escalated` |
+| ambiguous or missing-information requests | 41 | `goal_not_reclarified` |
+| date claims in the text ("days ago", "window has passed"…) | 49 | `invented_date_reasoning` |
+| refund refused as not eligible (exception ticket or not) | 20 | `ineligible_refund_mishandled` |
+
+The 25 picks mix **likely positives and likely look-alikes** from each search, so
+the batch is not chosen only because something predicts a failure (another
+handout rule).
+
+---
+
 ## 10. AI suggestions: help that you had to approve
 
 For the last 13 traces, you asked Claude to do the first read. Claude posted
