@@ -1,0 +1,506 @@
+{
+  "batches": {
+    "initial_uniform": {
+      "target": 15,
+      "method": "uniform random sample"
+    },
+    "initial_cluster": {
+      "target": 15,
+      "method": "k-means cluster representatives"
+    },
+    "dimension": {
+      "target": 30,
+      "method": "stratified across one product dimension"
+    },
+    "depth": {
+      "target": 25,
+      "method": "depth searches for candidate modes and close negatives"
+    },
+    "final_uniform": {
+      "target": 15,
+      "method": "uniform random stability check"
+    }
+  },
+  "items": [
+    {
+      "trace_id": "ff3bfb9c2de9bf1d6408cc97a86da04d",
+      "session_id": "ec55c3cd0e5946698432837484e8cc50",
+      "batch": "initial_uniform",
+      "reason": "uniform random (seed 7)",
+      "dims": {
+        "role": "shopper",
+        "intent": "product_search",
+        "record_state": "product",
+        "applicable_policy": "none",
+        "tools_needed": "one_lookup",
+        "difficulty": "well_specified",
+        "user_style": "repetitive_pressuring"
+      },
+      "added_at": "2026-09-19T03:27:55+00:00"
+    },
+    {
+      "trace_id": "95349efa26394ccb9914f439db2f5afc",
+      "session_id": "4c6c7b4452e94379921e592f73ea84b9",
+      "batch": "initial_uniform",
+      "reason": "uniform random (seed 7)",
+      "dims": {
+        "role": "shopper",
+        "intent": "order_status",
+        "record_state": "order_shipped",
+        "applicable_policy": "none",
+        "tools_needed": "one_lookup",
+        "difficulty": "well_specified",
+        "user_style": "repetitive_pressuring"
+      },
+      "added_at": "2026-09-19T03:27:55+00:00"
+    },
+    {
+      "trace_id": "d16c0e9e191bd34ce5e267cb8dade4b2",
+      "session_id": "20f6d3ce4afe4a8699324c8f94c3a6c4",
+      "batch": "initial_uniform",
+      "reason": "uniform random (seed 7)",
+      "dims": {
+        "role": "shopper",
+        "intent": "return_policy_question",
+        "record_state": "policy_page",
+        "applicable_policy": "store_return_window",
+        "tools_needed": "one_lookup",
+        "difficulty": "well_specified",
+        "user_style": "neutral_conversational"
+      },
+      "added_at": "2026-09-19T03:27:55+00:00"
+    },
+    {
+      "trace_id": "0ba45ba3ca932f294980cd84b914fdaf",
+      "session_id": "c5679b22331944a28943d2f8fbb0ff9a",
+      "batch": "initial_uniform",
+      "reason": "uniform random (seed 7)",
+      "dims": {
+        "role": "merchant",
+        "intent": "refund",
+        "record_state": "order_in_window",
+        "applicable_policy": "platform_rule",
+        "tools_needed": "several",
+        "difficulty": "missing_information",
+        "user_style": "operational_shorthand"
+      },
+      "added_at": "2026-09-19T03:27:55+00:00"
+    },
+    {
+      "trace_id": "5d54b1c41b445d804217f4ee9680c447",
+      "session_id": "e2b5e73c5aee40bd9adabd5aaa765fe8",
+      "batch": "initial_uniform",
+      "reason": "uniform random (seed 7)",
+      "dims": {
+        "role": "shopper",
+        "intent": "refund",
+        "record_state": "order_refunded",
+        "applicable_policy": "platform_rule",
+        "tools_needed": "several",
+        "difficulty": "well_specified",
+        "user_style": "repetitive_pressuring"
+      },
+      "added_at": "2026-09-19T03:27:55+00:00"
+    },
+    {
+      "trace_id": "9f0519209cdea8bd20e3299d1909d549",
+      "session_id": "7b85100f021f4be7a24f99bb7088a3e9",
+      "batch": "initial_uniform",
+      "reason": "uniform random (seed 7)",
+      "dims": {
+        "role": "shopper",
+        "intent": "refund",
+        "record_state": "order_past_window",
+        "applicable_policy": "store_return_window",
+        "tools_needed": "several",
+        "difficulty": "well_specified",
+        "user_style": "neutral_conversational"
+      },
+      "added_at": "2026-09-19T03:27:55+00:00"
+    },
+    {
+      "trace_id": "343c928e7e95ea68e2d70967b9246125",
+      "session_id": "b450913ca012478c99522e6007417529",
+      "batch": "initial_uniform",
+      "reason": "uniform random (seed 7)",
+      "dims": {
+        "role": "shopper",
+        "intent": "account_change",
+        "record_state": "none",
+        "applicable_policy": "platform_rule",
+        "tools_needed": "one_lookup",
+        "difficulty": "well_specified",
+        "user_style": "terse_fragmentary"
+      },
+      "added_at": "2026-09-19T03:27:55+00:00"
+    },
+    {
+      "trace_id": "284f303da5ea975257cc56ad09ea1d1f",
+      "session_id": "83893dd7b9e549129e0dd30b13bbed19",
+      "batch": "initial_uniform",
+      "reason": "uniform random (seed 7)",
+      "dims": {
+        "role": "shopper",
+        "intent": "refund",
+        "record_state": "order_past_window",
+        "applicable_policy": "store_return_window",
+        "tools_needed": "several",
+        "difficulty": "ambiguous",
+        "user_style": "neutral_conversational"
+      },
+      "added_at": "2026-09-19T03:27:55+00:00"
+    },
+    {
+      "trace_id": "ec2cd56ab5ade124733cd8635b631521",
+      "session_id": "ffbf65e79c044ef29292989107323318",
+      "batch": "initial_uniform",
+      "reason": "uniform random (seed 7)",
+      "dims": {
+        "role": "merchant",
+        "intent": "cancellation",
+        "record_state": "order_placed",
+        "applicable_policy": "platform_rule",
+        "tools_needed": "several",
+        "difficulty": "well_specified",
+        "user_style": "terse_fragmentary"
+      },
+      "added_at": "2026-09-19T03:27:55+00:00"
+    },
+    {
+      "trace_id": "ce9e9be7f060faa00ad1c4361bf51d67",
+      "session_id": "1cf40ed7224b42e09e8ebe4ba5865328",
+      "batch": "initial_uniform",
+      "reason": "uniform random (seed 7)",
+      "dims": {
+        "role": "merchant",
+        "intent": "return_policy_question",
+        "record_state": "order_missing_delivery_date",
+        "applicable_policy": "platform_rule",
+        "tools_needed": "several",
+        "difficulty": "missing_information",
+        "user_style": "terse_fragmentary"
+      },
+      "added_at": "2026-09-19T03:27:55+00:00"
+    },
+    {
+      "trace_id": "51c3d054d717ec638418a1650d4ec924",
+      "session_id": "1ee12e4533514f01a0367fea95629b2a",
+      "batch": "initial_uniform",
+      "reason": "uniform random (seed 7)",
+      "dims": {
+        "role": "shopper",
+        "intent": "order_status",
+        "record_state": "order_in_window",
+        "applicable_policy": "none",
+        "tools_needed": "several",
+        "difficulty": "ambiguous",
+        "user_style": "confused_rambling"
+      },
+      "added_at": "2026-09-19T03:27:55+00:00"
+    },
+    {
+      "trace_id": "73adaaeda332b7cdf6cc7af28c195bd2",
+      "session_id": "86e1167466d84841a3c2093965e2951b",
+      "batch": "initial_uniform",
+      "reason": "uniform random (seed 7)",
+      "dims": {
+        "role": "shopper",
+        "intent": "dispute",
+        "record_state": "order_past_window",
+        "applicable_policy": "platform_rule",
+        "tools_needed": "several",
+        "difficulty": "well_specified",
+        "user_style": "operational_shorthand"
+      },
+      "added_at": "2026-09-19T03:27:55+00:00"
+    },
+    {
+      "trace_id": "c2e06ef6ff1aca61c77ecf3571e461e3",
+      "session_id": "8b4ba80d93d642479a8ec52cf3346124",
+      "batch": "initial_uniform",
+      "reason": "uniform random (seed 7)",
+      "dims": {
+        "role": "shopper",
+        "intent": "refund",
+        "record_state": "order_in_window",
+        "applicable_policy": "platform_rule",
+        "tools_needed": "several",
+        "difficulty": "well_specified",
+        "user_style": "repetitive_pressuring"
+      },
+      "added_at": "2026-09-19T03:27:55+00:00"
+    },
+    {
+      "trace_id": "ebb8a368b7a992ecffd6f853c4b16f34",
+      "session_id": "949a35f5b87e4cd78890c6bb0cd2df7f",
+      "batch": "initial_uniform",
+      "reason": "uniform random (seed 7)",
+      "dims": {
+        "role": "shopper",
+        "intent": "refund",
+        "record_state": "order_in_window",
+        "applicable_policy": "store_return_window",
+        "tools_needed": "several",
+        "difficulty": "well_specified",
+        "user_style": "confused_rambling"
+      },
+      "added_at": "2026-09-19T03:27:55+00:00"
+    },
+    {
+      "trace_id": "16a1e4bdb493077a0115caca2939dd31",
+      "session_id": "a0b542d5dda84347ac188ff3fe45c66b",
+      "batch": "initial_uniform",
+      "reason": "uniform random (seed 7)",
+      "dims": {
+        "role": "merchant",
+        "intent": "refund",
+        "record_state": "order_past_window",
+        "applicable_policy": "store_return_window",
+        "tools_needed": "several",
+        "difficulty": "well_specified",
+        "user_style": "operational_shorthand"
+      },
+      "added_at": "2026-09-19T03:27:55+00:00"
+    },
+    {
+      "trace_id": "d3f81eae6523c72ada8e5226bc699b49",
+      "session_id": "b59c6d3f2e284626b53b6ada13e95569",
+      "batch": "initial_cluster",
+      "reason": "cluster 2 of 8 (109 traces), rank 1",
+      "dims": {
+        "role": "shopper",
+        "intent": "product_search",
+        "record_state": "product_duplicate_title",
+        "applicable_policy": "none",
+        "tools_needed": "one_lookup",
+        "difficulty": "ambiguous",
+        "user_style": "typo_heavy"
+      },
+      "added_at": "2026-09-19T03:28:15+00:00"
+    },
+    {
+      "trace_id": "94d97fbf9b29a0fe39887e725fc210ab",
+      "session_id": "dfb444b3a0434f5faf37b69261102f79",
+      "batch": "initial_cluster",
+      "reason": "cluster 4 of 8 (61 traces), rank 1",
+      "dims": {
+        "role": "shopper",
+        "intent": "refund",
+        "record_state": "order_past_window",
+        "applicable_policy": "platform_rule",
+        "tools_needed": "several",
+        "difficulty": "well_specified",
+        "user_style": "confused_rambling"
+      },
+      "added_at": "2026-09-19T03:28:15+00:00"
+    },
+    {
+      "trace_id": "746d79ef59855c298ad2956789eed468",
+      "session_id": "a9ad2731a0994ff3b14b2c926408c294",
+      "batch": "initial_cluster",
+      "reason": "cluster 0 of 8 (56 traces), rank 1",
+      "dims": {
+        "role": "support",
+        "intent": "order_status",
+        "record_state": "order_in_window",
+        "applicable_policy": "none",
+        "tools_needed": "one_lookup",
+        "difficulty": "well_specified",
+        "user_style": "terse_fragmentary"
+      },
+      "added_at": "2026-09-19T03:28:15+00:00"
+    },
+    {
+      "trace_id": "6e014ac077b45158c834732b8070069b",
+      "session_id": "ef9c4e38239f41428848b5e59e70d039",
+      "batch": "initial_cluster",
+      "reason": "cluster 3 of 8 (40 traces), rank 1",
+      "dims": {
+        "role": "merchant",
+        "intent": "product_search",
+        "record_state": "product",
+        "applicable_policy": "none",
+        "tools_needed": "one_lookup",
+        "difficulty": "well_specified",
+        "user_style": "requests_short_plain_answer"
+      },
+      "added_at": "2026-09-19T03:28:15+00:00"
+    },
+    {
+      "trace_id": "8bde52f658e17334adb4efa9ca94bbd3",
+      "session_id": "70c031059e45423c982f4aefec09c52b",
+      "batch": "initial_cluster",
+      "reason": "cluster 7 of 8 (32 traces), rank 1",
+      "dims": {
+        "role": "shopper",
+        "intent": "dispute",
+        "record_state": "order_past_window",
+        "applicable_policy": "platform_rule",
+        "tools_needed": "several",
+        "difficulty": "well_specified",
+        "user_style": "terse_fragmentary"
+      },
+      "added_at": "2026-09-19T03:28:15+00:00"
+    },
+    {
+      "trace_id": "f0b306356a6e37308661cf4cdad51394",
+      "session_id": "b59b6a24492f43d48bfcae251df56f81",
+      "batch": "initial_cluster",
+      "reason": "cluster 5 of 8 (12 traces), rank 1",
+      "dims": {
+        "role": "merchant",
+        "intent": "refund",
+        "record_state": "order_in_window",
+        "applicable_policy": "platform_rule",
+        "tools_needed": "several",
+        "difficulty": "well_specified",
+        "user_style": "neutral_conversational"
+      },
+      "added_at": "2026-09-19T03:28:15+00:00"
+    },
+    {
+      "trace_id": "97e26a0a8a7a8adff9e317c5904a66e5",
+      "session_id": "ab82905ce5ef459b998367c52cea3e2e",
+      "batch": "initial_cluster",
+      "reason": "cluster 1 of 8 (11 traces), rank 1",
+      "dims": {
+        "role": "merchant",
+        "intent": "return_policy_question",
+        "record_state": "policy_page",
+        "applicable_policy": "store_restocking_fee",
+        "tools_needed": "one_lookup",
+        "difficulty": "well_specified",
+        "user_style": "neutral_conversational"
+      },
+      "added_at": "2026-09-19T03:28:15+00:00"
+    },
+    {
+      "trace_id": "c2a2ad346a70bf95e5db7f31c6f5d334",
+      "session_id": "91a6babc580c4d8aa55253d5293e968f",
+      "batch": "initial_cluster",
+      "reason": "cluster 6 of 8 (9 traces), rank 1",
+      "dims": {
+        "role": "merchant",
+        "intent": "order_status",
+        "record_state": "order_store_mismatch",
+        "applicable_policy": "none",
+        "tools_needed": "several",
+        "difficulty": "ambiguous",
+        "user_style": "frustrated_impatient"
+      },
+      "added_at": "2026-09-19T03:28:15+00:00"
+    },
+    {
+      "trace_id": "20a9824bf6998df2435ec6b44fd35df5",
+      "session_id": "b4a8b08a61944981b7b459eeb81ceb5d",
+      "batch": "initial_cluster",
+      "reason": "cluster 2 of 8 (109 traces), rank 2",
+      "dims": {
+        "role": "shopper",
+        "intent": "order_status",
+        "record_state": "order_in_window",
+        "applicable_policy": "none",
+        "tools_needed": "one_lookup",
+        "difficulty": "well_specified",
+        "user_style": "confused_rambling"
+      },
+      "added_at": "2026-09-19T03:28:15+00:00"
+    },
+    {
+      "trace_id": "f941bff05ece83b601420c902a3d05c5",
+      "session_id": "d49d37b426f749e7b3b7c623ef7bb0c2",
+      "batch": "initial_cluster",
+      "reason": "cluster 4 of 8 (61 traces), rank 2",
+      "dims": {
+        "role": "shopper",
+        "intent": "refund",
+        "record_state": "order_past_window",
+        "applicable_policy": "store_return_window",
+        "tools_needed": "several",
+        "difficulty": "boundary",
+        "user_style": "operational_shorthand"
+      },
+      "added_at": "2026-09-19T03:28:15+00:00"
+    },
+    {
+      "trace_id": "38b8171b8fd6d37fa6d5c98561781c82",
+      "session_id": "85e1587c64c448d2aa7ce98c479e0c67",
+      "batch": "initial_cluster",
+      "reason": "cluster 0 of 8 (56 traces), rank 2",
+      "dims": {
+        "role": "support",
+        "intent": "order_status",
+        "record_state": "order_past_window",
+        "applicable_policy": "none",
+        "tools_needed": "one_lookup",
+        "difficulty": "well_specified",
+        "user_style": "neutral_conversational"
+      },
+      "added_at": "2026-09-19T03:28:15+00:00"
+    },
+    {
+      "trace_id": "daca8584c849769e394edb14dc415873",
+      "session_id": "d7556ac2ee2e4a9a8040be66c3de1751",
+      "batch": "initial_cluster",
+      "reason": "cluster 3 of 8 (40 traces), rank 2",
+      "dims": {
+        "role": "merchant",
+        "intent": "refund",
+        "record_state": "order_past_window",
+        "applicable_policy": "store_return_window",
+        "tools_needed": "several",
+        "difficulty": "well_specified",
+        "user_style": "requests_short_plain_answer"
+      },
+      "added_at": "2026-09-19T03:28:15+00:00"
+    },
+    {
+      "trace_id": "7846a7e84f7cf51c5c33ccd911359038",
+      "session_id": "9569a68428944807b09171aa8b354085",
+      "batch": "initial_cluster",
+      "reason": "cluster 7 of 8 (32 traces), rank 2",
+      "dims": {
+        "role": "shopper",
+        "intent": "account_change",
+        "record_state": "none",
+        "applicable_policy": "platform_rule",
+        "tools_needed": "one_lookup",
+        "difficulty": "well_specified",
+        "user_style": "confused_rambling"
+      },
+      "added_at": "2026-09-19T03:28:15+00:00"
+    },
+    {
+      "trace_id": "ad743bf6a6cb62847f5c00a8fa7590e5",
+      "session_id": "cd75bbd8d1584bd3b2126190c9ceffe6",
+      "batch": "initial_cluster",
+      "reason": "cluster 5 of 8 (12 traces), rank 2",
+      "dims": {
+        "role": "merchant",
+        "intent": "account_change",
+        "record_state": "none",
+        "applicable_policy": "platform_rule",
+        "tools_needed": "one_lookup",
+        "difficulty": "well_specified",
+        "user_style": "operational_shorthand"
+      },
+      "added_at": "2026-09-19T03:28:15+00:00"
+    },
+    {
+      "trace_id": "004a0ffa9e55f44f252eb2cc5082e9b7",
+      "session_id": "c15cbad67d1b4d46a3d476674e014d4a",
+      "batch": "initial_cluster",
+      "reason": "cluster 1 of 8 (11 traces), rank 2",
+      "dims": {
+        "role": "merchant",
+        "intent": "cancellation",
+        "record_state": "order_shipped",
+        "applicable_policy": "platform_rule",
+        "tools_needed": "several",
+        "difficulty": "well_specified",
+        "user_style": "neutral_conversational"
+      },
+      "added_at": "2026-09-19T03:28:15+00:00"
+    }
+  ]
+}
