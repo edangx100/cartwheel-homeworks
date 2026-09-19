@@ -9,8 +9,8 @@ each term the first time it appears.
 > [progress tracker](#4-the-whole-assignment-on-one-page) shows what is done,
 > what is in progress, and what is still to do.
 >
-> *Last updated: 2026-09-19, batch 3 drawn and suggestions posted (60 of 100 traces
-> reviewed, 8 candidate modes).*
+> *Last updated: 2026-09-19, after axial coding pass 3 (85 of 100 traces
+> reviewed; 6 modes with 3+ examples, 1 candidate, 2 rejected).*
 
 - The assignment itself: [module-2/hw4.md](module-2/hw4.md)
 - The method it follows: the [error-discovery skill](https://github.com/ai-evals-course/evals-skills/blob/main/skills/error-discovery/SKILL.md)
@@ -115,7 +115,8 @@ flowchart TD
     style B1 fill:#bbf7d0,stroke:#15803d
     style AX1 fill:#bbf7d0,stroke:#15803d
     style B2 fill:#bbf7d0,stroke:#15803d
-    style B3 fill:#fde68a,stroke:#b45309
+    style B3 fill:#bbf7d0,stroke:#15803d
+    style PC fill:#fde68a,stroke:#b45309
 ```
 
 Green = done. Yellow = next. White = still to do.
@@ -132,7 +133,8 @@ Green = done. Yellow = next. White = still to do.
 | Batch 2: 30 traces across one dimension | ✅ done | **role** (10 each): 5 failures, 25 no failure; see Section 9 |
 | Axial coding, pass 2 | ✅ done | 5 new failures placed; new candidate `out_of_scope_escalated`; 8 candidates (4 solid, 4 thin) |
 | Part C: Workshop notes | ⬜ to do | |
-| Batch 3: 25 depth-search traces | 🟡 in review | 25 picks in the manifest; Claude suggests 12 failures, 13 no failure (13 search hits did not hold up); waiting for your review |
+| Batch 3: 25 depth-search traces | ✅ done | 25/25 reviewed: 12 failures, 13 no failure (13 search hits did not hold up); see Section 9b |
+| Axial coding, pass 3 | ✅ done | `goal_not_reclarified` rejected; permission mode merged into `refusal_mishandled`; new candidate `inconsistent_record_not_flagged`; see Section 11 |
 | Part D: final 5 to 8 modes | ⬜ to do | |
 | Batch 4: final 15 random traces | ⬜ to do | count new modes that still appear |
 | Part E: labels for every trace x mode | ⬜ to do | Langfuse scores + `analysis/state/labels/` |
@@ -367,7 +369,7 @@ the review sees different corners of the data:
 ```
   Batch 1   15 random  +  15 "cluster representatives"      ✅ done
   Batch 2   30 spread evenly across ONE product dimension   ✅ done (role)
-  Batch 3   25 found by searching for candidate modes       🟡
+  Batch 3   25 found by searching for candidate modes       ✅ done
   Batch 4   15 random, after the taxonomy is drafted        ⬜
             ─────────────────────────────────────────────
             100+ distinct traces, none counted twice
@@ -603,7 +605,7 @@ The 25 picks mix **likely positives and likely look-alikes** from each search, s
 the batch is not chosen only because something predicts a failure (another
 handout rule).
 
-### Did the hits hold up? (Claude's suggestions, waiting for your review)
+### Did the hits hold up? (Claude suggested; you reviewed and accepted all 12 failures)
 
 Claude read all 25 and posted a **pending suggestion** for each one. None of
 these count until you accept, edit, or reject them in the app.
@@ -815,6 +817,76 @@ Each final mode needs at least 3 positives. **Batch 3's depth searches target
 the four thin ones.** Any that stay below 3 are dropped and recorded as
 *rejected groups*.
 
+### Axial coding pass 3 (after batch 3)
+
+You accepted all 12 failure suggestions from batch 3, then all four parts of
+this proposal.
+
+**1. Placements.** Each fit an existing definition as written.
+
+| New notes | Placed in |
+| --- | --- |
+| `support-0010`, `support-0036` | `invented_date_reasoning` |
+| `support-0008`, `support-0178`, `support-0187` | `out_of_scope_escalated` |
+| `support-0043`, `support-0240` | `write_on_unconfirmed_target` |
+| `support-0112`, `support-0091`, `support-0237`, `support-0005` | `refusal_mishandled` (see 3) |
+
+**2. A rejected group: `goal_not_reclarified`.** It had one example after
+batch 1, and its own boundary note said *drop it if batches 2–3 find no more*.
+They found none: all 5 depth picks for unclear requests were fine or a
+different failure. It is kept in the Taxonomy with status **rejected**, so the
+decision stays on record.
+
+**3. A taxonomy revision: two groups become one.**
+
+```
+  BEFORE                                          AFTER
+  ──────                                          ─────
+  ineligible_refund_mishandled   (7) ─┐
+  permission_denied_…            (2) ─┼──▶  refusal_mishandled  (10)
+  support-0005 (shipped order)   (1) ─┘     "the rules say no, and the agent
+                                             doesn't say no clearly, or opens
+                                             a ticket no policy provides"
+```
+
+Why merge:
+
+- The permission group could never reach 3 examples. Only **4** traces in all
+  350 had a `permission_denied`, and 2 were fine.
+- One product change fixes all three: a **refusal rule**. *When a tool or record
+  says no, say so, give the rule and the next step, and open a ticket only when
+  an escalation rule lists the case.*
+
+The old permission group is kept with status **rejected** and a note saying
+"merged into `refusal_mishandled`".
+
+**4. A new candidate: `inconsistent_record_not_flagged`.** In `support-0212`
+the order record says it **shipped after it was delivered**. The agent treated
+the record as normal. It should have said the dates don't make sense and
+escalated (RESP-3). No existing group's fix covers this, so it is a new
+candidate with **1** example. Eight data-quality scenarios have not been reviewed yet:
+
+- 4 with reversed dates (`support-0029`, `-0213`, `-0214`, `-0215`);
+- 4 with a store mismatch (`support-0046`, `-0220`, `-0221`, `-0222`).
+
+Part D's search will test the candidate on those.
+
+**Where the modes stand now:**
+
+```
+  refusal_mishandled               ██████████  10  ✅
+  invented_date_reasoning          ███████      7  ✅
+  duplicate_ticket                 ████         4  ✅
+  out_of_scope_escalated           ████         4  ✅
+  user_claim_not_reconciled        ███          3  ✅
+  write_on_unconfirmed_target      ███          3  ✅
+  inconsistent_record_not_flagged  █            1  ⚠ Part D search
+  ─ rejected: goal_not_reclarified; permission_denied_… (merged)
+```
+
+That is 6 modes with at least 3 examples each, plus 1 to test. The handout
+asks for 5 to 8.
+
 ## 12. Rules the SPEC was missing (pending revisions)
 
 Sometimes a mistake broke no written rule, because the rule didn't exist yet.
@@ -828,8 +900,11 @@ The handout says: write the rule down **before** counting the mistake.
 | 4 | After `permission_denied`: say so and ask to confirm the order number before escalating | `support-0249` |
 | 5 | If a ticket for the same issue is open, refer to it; open a new one only for a new issue | `support-0023` |
 
-Two more are likely, depending on how the modes settle: **give the agent
-today's date**, and **a rule for when `refund_eligible` is false**. None of
+After pass 3, three more are likely:
+
+- **give the agent today's date**;
+- **the refusal rule** from `refusal_mishandled`, which now includes #4;
+- **flag and escalate inconsistent records**. None of
 these has been written into `SPEC.md` yet. Doing that is part of Part D.
 
 ---
@@ -905,15 +980,15 @@ Branch: `homework_4`, pushed to GitHub.
 
 ## 17. What is left
 
-- [ ] Edit the 7 draft mode definitions in the Taxonomy tab into your own words
+- [ ] Edit the mode definitions in the Taxonomy tab into your own words (6 modes + 1 candidate)
 - [ ] Commit and push `analysis/state/patterns.json`
 - [x] Batch 2: dimension chosen before looking at outcomes (**role**)
 - [x] Batch 2: 30 traces drawn and open-coded (5 failures, 25 no failure)
 - [x] Axial coding pass 2
 - [ ] **Part C**: Raindrop Workshop, 5 to 10 runs → `analysis/report/workshop_notes.md`
 - [x] **Batch 3**: 25 picks drawn and added to the manifest (batch `depth`)
-- [ ] **Batch 3**: review the 25 pending suggestions in the app (accept, edit, or reject)
-- [ ] Axial coding pass 3 (drop `goal_not_reclarified`? place support-0005 and support-0212)
+- [x] **Batch 3**: 25 suggestions reviewed (all 12 failures accepted)
+- [x] Axial coding pass 3
 - [ ] **Part D**: final 5 to 8 modes, each with 3+ positives, close negatives, a boundary, an evaluator type and a SPEC source; compare with the AgentDebug taxonomy; write the SPEC revisions
 - [ ] **Batch 4**: 15 random traces; count new modes that still appear
 - [ ] **Part E**: label every trace x mode; scores to Langfuse; `analysis/state/labels/`
