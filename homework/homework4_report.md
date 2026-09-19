@@ -9,8 +9,8 @@ each term the first time it appears.
 > [progress tracker](#4-the-whole-assignment-on-one-page) shows what is done,
 > what is in progress, and what is still to do.
 >
-> *Last updated: 2026-09-19, after open coding batch 2 (60 of 100 traces
-> reviewed).*
+> *Last updated: 2026-09-19, after axial coding pass 2 (60 of 100 traces
+> reviewed, 8 candidate modes).*
 
 - The assignment itself: [module-2/hw4.md](module-2/hw4.md)
 - The method it follows: the [error-discovery skill](https://github.com/ai-evals-course/evals-skills/blob/main/skills/error-discovery/SKILL.md)
@@ -129,7 +129,7 @@ Green = done. Yellow = next. White = still to do.
 | Batch 1: 15 random + 15 cluster traces | ✅ done | 30/30 reviewed: 10 failures, 20 no failure |
 | Axial coding, pass 1 | ✅ done | 7 candidate modes |
 | Batch 2: 30 traces across one dimension | ✅ done | **role** (10 each): 5 failures, 25 no failure; see Section 9 |
-| Axial coding, pass 2 | ⬜ next | fit 5 new failures into the modes; `support-0186` may start a new one |
+| Axial coding, pass 2 | ✅ done | 5 new failures placed; new candidate `out_of_scope_escalated`; 8 candidates (4 solid, 4 thin) |
 | Part C: Workshop notes | ⬜ to do | |
 | Batch 3: 25 depth-search traces | ⬜ to do | must include at least one rejected search suggestion |
 | Part D: final 5 to 8 modes | ⬜ to do | |
@@ -670,6 +670,43 @@ traces, but they need **different fixes**:
 Fixing one does not fix the other, so they stay split.
 
 ---
+
+### Axial coding pass 2 (after batch 2)
+
+The 5 new failures were placed with the same test: *would one product change
+fix it together with the notes already in the group?*
+
+| New note | Placed in | Why |
+| --- | --- | --- |
+| `support-0104` t2 | `ineligible_refund_mishandled` | same fix: explain the reason, no exception ticket |
+| `support-0189` t3 | `duplicate_ticket` | same fix: reuse the open ticket |
+| `support-0198` | `invented_date_reasoning` | same fix, and the evidence that the agent uses the **real-world** date |
+| `support-0045` | `user_claim_not_reconciled` | same fix: verify a disputed detail and state the conflict. The definition now also covers *dismissing a user's doubt without checking* |
+| `support-0186` | **new**: `out_of_scope_escalated` | a different fix (SCOPE-2: decline out-of-scope requests, no tools), so a separate group |
+
+**Why `support-0186` was not merged with the "exception" tickets.** Both open
+a ticket they shouldn't. But the refund mode's fix is a rule for *refunds that
+aren't eligible* (explain why, no exception ticket), and this one's fix is a rule
+for *out-of-scope requests*. A single "escalate less" change would stop both
+tickets but would not fix the refund mode's misleading "automatic check"
+wording, so the groups stay split.
+
+**Where the 8 candidates stand:**
+
+```
+  invented_date_reasoning        █████  5   ✅ enough positives
+  ineligible_refund_mishandled   █████  5   ✅
+  duplicate_ticket               ████   4   ✅
+  user_claim_not_reconciled      ███    3   ✅ (just)
+  write_on_unconfirmed_target    █      1   ⚠ batch 3 must search for more
+  permission_denied_…            █      1   ⚠
+  goal_not_reclarified           █      1   ⚠
+  out_of_scope_escalated         █      1   ⚠
+```
+
+Each final mode needs at least 3 positives. **Batch 3's depth searches target
+the four thin ones.** Any that stay below 3 are dropped and recorded as
+*rejected groups*.
 
 ## 12. Rules the SPEC was missing (pending revisions)
 
