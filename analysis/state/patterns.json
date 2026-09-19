@@ -1,3 +1,210 @@
 {
-  "modes": []
+  "modes": [
+    {
+      "name": "user_claim_not_reconciled",
+      "status": "candidate",
+      "definition": "The reply presents a user-supplied detail (product, store, date) as a verified order fact without a tool confirming it, or proceeds without stating a conflict between the user's claim and the tool record.",
+      "boundary": "Not this mode when the detail came from a tool result (e.g. product name confirmed by search_products). Differs from write_on_unconfirmed_target: there the user gave no identifying detail and the agent guessed.",
+      "nearest_mode": "write_on_unconfirmed_target",
+      "spec_ref": "RESP-3 (inconsistent) + pending revision #2",
+      "evaluator": "LLM judge",
+      "product_change": "Rule: reconcile user claims with tool data; label unverified details as user-reported; state conflicts before acting.",
+      "annotation_ids": [
+        "partA-2",
+        "partA-4"
+      ],
+      "positives": [
+        "3503abdfad27bcefc55672c68d0fb695",
+        "5a1588a63cdc06f155132ff36409c889"
+      ],
+      "close_negatives": [
+        "9f0519209cdea8bd20e3299d1909d549",
+        "d3f81eae6523c72ada8e5226bc699b49"
+      ],
+      "revisions": [
+        {
+          "at": "2026-09-19T00:00:00Z",
+          "changes": {},
+          "note": "Created in batch-1 axial coding: grouping and draft wording proposed by Claude from the reviewer's open codes; accepted by the reviewer 2026-09-19. Definitions are drafts."
+        }
+      ]
+    },
+    {
+      "name": "write_on_unconfirmed_target",
+      "status": "candidate",
+      "definition": "The agent performs a write action (refund, cancel) on an order or amount it chose itself when the user did not identify it and the lookups did not narrow it to exactly one candidate.",
+      "boundary": "Not this mode when the user named the order (support-0087) or the agent listed candidates and asked (support-0030). Differs from user_claim_not_reconciled: here nothing the user said conflicted with the record.",
+      "nearest_mode": "user_claim_not_reconciled",
+      "spec_ref": "pending revision #3 (clarifies RESP-3 for writes)",
+      "evaluator": "LLM judge",
+      "product_change": "Rule: before a write, ask if the target order or amount is not pinned to one candidate; do not add unstated details.",
+      "annotation_ids": [
+        "partA-3"
+      ],
+      "positives": [
+        "cc93a580370b4336aacd5b81607aaa3b"
+      ],
+      "close_negatives": [
+        "d3f81eae6523c72ada8e5226bc699b49",
+        "c2e06ef6ff1aca61c77ecf3571e461e3"
+      ],
+      "revisions": [
+        {
+          "at": "2026-09-19T00:00:00Z",
+          "changes": {},
+          "note": "Created in batch-1 axial coding: grouping and draft wording proposed by Claude from the reviewer's open codes; accepted by the reviewer 2026-09-19. Definitions are drafts."
+        }
+      ]
+    },
+    {
+      "name": "permission_denied_escalated_without_confirming",
+      "status": "candidate",
+      "definition": "After a tool returns permission_denied for an order the user named, the agent opens a ticket requesting action on that order without first telling the user and asking them to confirm the order number.",
+      "boundary": "Not this mode when the agent refuses without revealing details and escalates only after the user confirms or insists (support-0046). Differs from duplicate_ticket: the problem is the first ticket, not a repeat.",
+      "nearest_mode": "duplicate_ticket",
+      "spec_ref": "pending revision #4 (clarifies ESC-3, AUTH-1)",
+      "evaluator": "code check + LLM judge",
+      "product_change": "Rule: after permission_denied, say the order can't be accessed and ask to confirm the number before escalating.",
+      "annotation_ids": [
+        "partA-5"
+      ],
+      "positives": [
+        "065b25b9a3789d83ff7da86558aa2c55"
+      ],
+      "close_negatives": [
+        "c2a2ad346a70bf95e5db7f31c6f5d334"
+      ],
+      "revisions": [
+        {
+          "at": "2026-09-19T00:00:00Z",
+          "changes": {},
+          "note": "Created in batch-1 axial coding: grouping and draft wording proposed by Claude from the reviewer's open codes; accepted by the reviewer 2026-09-19. Definitions are drafts."
+        }
+      ]
+    },
+    {
+      "name": "invented_date_reasoning",
+      "status": "candidate",
+      "definition": "The agent states or relies on how much time has passed (window passed, overdue, outside window) without a dated source for today, and the claim is false or drives a decision.",
+      "boundary": "Not this mode when the agent relies on refund_eligible without a date claim (support-0034); an unsourced but correct, inconsequential date remark (support-0066) is a boundary case to decide. Differs from ineligible_refund_mishandled: that mode is about the refusal and escalation, this one about date claims.",
+      "nearest_mode": "ineligible_refund_mishandled",
+      "spec_ref": "RESP-3 (+ possible revision: current date in session context)",
+      "evaluator": "LLM judge",
+      "product_change": "Give the agent today's date in the session context; rule: no elapsed-time claims without a dated source.",
+      "annotation_ids": [
+        "amu7vyar43l8e",
+        "amu80yv8r3s5h",
+        "amu80lt4uu8dl",
+        "amu7zdk784hkf"
+      ],
+      "positives": [
+        "ebb8a368b7a992ecffd6f853c4b16f34",
+        "95349efa26394ccb9914f439db2f5afc",
+        "284f303da5ea975257cc56ad09ea1d1f",
+        "16a1e4bdb493077a0115caca2939dd31"
+      ],
+      "close_negatives": [
+        "9f0519209cdea8bd20e3299d1909d549",
+        "20a9824bf6998df2435ec6b44fd35df5"
+      ],
+      "revisions": [
+        {
+          "at": "2026-09-19T00:00:00Z",
+          "changes": {},
+          "note": "Created in batch-1 axial coding: grouping and draft wording proposed by Claude from the reviewer's open codes; accepted by the reviewer 2026-09-19. Definitions are drafts."
+        }
+      ]
+    },
+    {
+      "name": "ineligible_refund_mishandled",
+      "status": "candidate",
+      "definition": "When get_order returns refund_eligible: false, the agent does not tell the user it is not eligible and why (governing store/platform window and delivery date), or presents it as a failed 'automatic' check / opens an exception ticket without a policy allowing exceptions.",
+      "boundary": "Not this mode when the agent refuses and explains the governing window with a citation (support-0034), or when an accurate refusal omits the reason, especially if the user asked for brevity (support-0025); misrepresenting the refusal or escalating it as an exception is. Differs from invented_date_reasoning: a correct refusal can still invent a date, and vice versa.",
+      "nearest_mode": "invented_date_reasoning",
+      "spec_ref": "RESP-5 (+ possible revision for refund_eligible false)",
+      "evaluator": "LLM judge",
+      "product_change": "Rule for refund_eligible false: fetch the store policy, state not eligible + governing window + delivery date; no exception tickets.",
+      "annotation_ids": [
+        "amu7z2qna1fxc",
+        "amu827owxjuxu",
+        "amu7zdk784hkf",
+        "amu80lt4uu8dl"
+      ],
+      "positives": [
+        "f941bff05ece83b601420c902a3d05c5",
+        "94d97fbf9b29a0fe39887e725fc210ab",
+        "16a1e4bdb493077a0115caca2939dd31",
+        "284f303da5ea975257cc56ad09ea1d1f"
+      ],
+      "close_negatives": [
+        "9f0519209cdea8bd20e3299d1909d549",
+        "004a0ffa9e55f44f252eb2cc5082e9b7",
+        "daca8584c849769e394edb14dc415873"
+      ],
+      "revisions": [
+        {
+          "at": "2026-09-19T00:00:00Z",
+          "changes": {},
+          "note": "Created in batch-1 axial coding: grouping and draft wording proposed by Claude from the reviewer's open codes; accepted by the reviewer 2026-09-19. Definitions are drafts."
+        }
+      ]
+    },
+    {
+      "name": "duplicate_ticket",
+      "status": "candidate",
+      "definition": "The agent opens a new support ticket, or presents an existing one as a separate issue, when a ticket for the same issue is already open in the conversation and the user added no new issue.",
+      "boundary": "Not this mode when the agent refers to the existing ticket (support-0201, support-0205 turn 3). Differs from permission_denied_escalated_without_confirming: that is about whether the first ticket should exist.",
+      "nearest_mode": "permission_denied_escalated_without_confirming",
+      "spec_ref": "pending revision #5",
+      "evaluator": "code check",
+      "product_change": "Rule: reuse or reference an open ticket for the same issue; open a new one only for a new issue.",
+      "annotation_ids": [
+        "amu7wji3zst4g",
+        "amu82k0hjjcff",
+        "amu8320ebao5e"
+      ],
+      "positives": [
+        "5d54b1c41b445d804217f4ee9680c447",
+        "73adaaeda332b7cdf6cc7af28c195bd2",
+        "8bde52f658e17334adb4efa9ca94bbd3"
+      ],
+      "close_negatives": [
+        "7846a7e84f7cf51c5c33ccd911359038",
+        "ad743bf6a6cb62847f5c00a8fa7590e5"
+      ],
+      "revisions": [
+        {
+          "at": "2026-09-19T00:00:00Z",
+          "changes": {},
+          "note": "Created in batch-1 axial coding: grouping and draft wording proposed by Claude from the reviewer's open codes; accepted by the reviewer 2026-09-19. Definitions are drafts."
+        }
+      ]
+    },
+    {
+      "name": "goal_not_reclarified",
+      "status": "candidate",
+      "definition": "The user's actual request stays unclear and the agent does not ask what they need.",
+      "boundary": "Singleton after batch 1: drop (and record as a rejected group) if no further cases appear in batches 2-3.",
+      "nearest_mode": "write_on_unconfirmed_target",
+      "spec_ref": "—",
+      "evaluator": "LLM judge",
+      "product_change": "Rule: when the request is unclear, ask what the user needs.",
+      "annotation_ids": [
+        "amu7wxn0en9by"
+      ],
+      "positives": [
+        "51c3d054d717ec638418a1650d4ec924"
+      ],
+      "close_negatives": [
+        "d3f81eae6523c72ada8e5226bc699b49"
+      ],
+      "revisions": [
+        {
+          "at": "2026-09-19T00:00:00Z",
+          "changes": {},
+          "note": "Created in batch-1 axial coding: grouping and draft wording proposed by Claude from the reviewer's open codes; accepted by the reviewer 2026-09-19. Definitions are drafts."
+        }
+      ]
+    }
+  ]
 }
