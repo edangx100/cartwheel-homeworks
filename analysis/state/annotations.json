@@ -164,10 +164,10 @@
       "seg": "reply",
       "start": 218,
       "quote": "Under Cartwheel’s refund policy, approved refunds go back to the original payment method and normally arrive in 5–10 business days (cw-refunds). Since you’re saying it has been months and you still don’t see the money, this needs a human refund trace rather than me trying to issue another refund from here.",
-      "note": "Likely first failure: it opened a duplicate ticket\n- Turn 1 opened ticket #155 for this exact missing refund, with a 24-hour follow-up.\n- In turn 2 the user only repeated themselves (\"I'm saying the same thing again…\"). Nothing new happened, and #155 was still well inside its 24 hours.\n- The agent opened ticket #156 for the same issue anyway, and even wrote \"Previous ticket #155 was created for this same missing-refund trace\" in the ticket context.\n- Better behaviour: tell the user #155 is already open and still within its 24-hour window, and add to it or explain what happens next instead of opening a second ticket.\n\n\\n\n\\n\n\nSPEC GAP:  ESC-1 to ESC-4 say when to escalate, but nothing covers an issue that already has an open ticket.  in Part A, record the requirement first:\n\n▎ Draft pending revision #5: \"If a ticket for the same issue was opened earlier in the conversation and is still within its SLA, refer the user to that ticket instead of opening a new one; open a new ticket only when there is new information.\"",
+      "note": "The first failure was opening a duplicate ticket.  \n- In Turn 1, the agent already opened ticket **#155** for this missing‑refund issue and set a 24‑hour follow‑up.  \n- In Turn 2, the user simply repeated themselves without adding any new information, and **#155** was still well within its SLA.  \n- Despite that, the agent opened **#156** for the same problem and even noted in the ticket context that **#155** already existed.  \n- The correct action would have been to tell the user that **#155** is active and within its 24‑hour window, then update that ticket or explain next steps instead of creating a second one.\n\n**SPEC GAP**  \nESC‑1 to ESC‑4 describe when to escalate, but they don’t address situations where an issue already has an open ticket.  \n\n**Draft pending revision #5:**  \n*“If a ticket for the same issue was opened earlier in the conversation and is still within its SLA, refer the user to that ticket instead of opening a new one. Open a new ticket only when new information is provided.”*",
       "first_failure": true,
       "created_at": "2026-09-19T04:43:21.071Z",
-      "updated_at": "2026-09-19T04:46:22.689Z",
+      "updated_at": "2026-09-19T07:50:03.531Z",
       "history": [
         {
           "note": "Likely first failure: it opened a duplicate ticket\n- Turn 1 opened ticket #155 for this exact missing refund, with a 24-hour follow-up.\n- In turn 2 the user only repeated themselves (\"I'm saying the same thing again…\"). Nothing new happened, and #155 was still well inside its 24 hours.\n- The agent opened ticket #156 for the same issue anyway, and even wrote \"Previous ticket #155 was created for this same missing-refund trace\" in the ticket context.\n- Better behaviour: tell the user #155 is already open and still within its 24-hour window, and add to it or explain what happens next instead of opening a second ticket.",
@@ -188,6 +188,16 @@
           "note": "Likely first failure: it opened a duplicate ticket\n- Turn 1 opened ticket #155 for this exact missing refund, with a 24-hour follow-up.\n- In turn 2 the user only repeated themselves (\"I'm saying the same thing again…\"). Nothing new happened, and #155 was still well inside its 24 hours.\n- The agent opened ticket #156 for the same issue anyway, and even wrote \"Previous ticket #155 was created for this same missing-refund trace\" in the ticket context.\n- Better behaviour: tell the user #155 is already open and still within its 24-hour window, and add to it or explain what happens next instead of opening a second ticket.\n\n\\n\n\nESC-1 to ESC-4 say when to escalate, but nothing covers an issue that already has an open ticket.  in Part A, record the requirement first:\n\\n\n▎Spec Gap -  Draft pending revision #5: \"If a ticket for the same issue was opened earlier in the conversation and is still within its SLA, refer the user to that ticket instead of opening a new one; open a new ticket only when there is new information.\"",
           "first_failure": true,
           "at": "2026-09-19T04:45:21.522Z"
+        },
+        {
+          "note": "Likely first failure: it opened a duplicate ticket\n- Turn 1 opened ticket #155 for this exact missing refund, with a 24-hour follow-up.\n- In turn 2 the user only repeated themselves (\"I'm saying the same thing again…\"). Nothing new happened, and #155 was still well inside its 24 hours.\n- The agent opened ticket #156 for the same issue anyway, and even wrote \"Previous ticket #155 was created for this same missing-refund trace\" in the ticket context.\n- Better behaviour: tell the user #155 is already open and still within its 24-hour window, and add to it or explain what happens next instead of opening a second ticket.\n\n\\n\n\\n\n\nSPEC GAP:  ESC-1 to ESC-4 say when to escalate, but nothing covers an issue that already has an open ticket.  in Part A, record the requirement first:\n\n▎ Draft pending revision #5: \"If a ticket for the same issue was opened earlier in the conversation and is still within its SLA, refer the user to that ticket instead of opening a new one; open a new ticket only when there is new information.\"",
+          "first_failure": true,
+          "at": "2026-09-19T04:46:22.689Z"
+        },
+        {
+          "note": "Here’s a clean, tighter rephrasing that keeps the logic crisp and easy to follow:\n\n**Rephrased version**  \nThe first failure was opening a duplicate ticket.  \n- In Turn 1, the agent already opened ticket **#155** for this missing‑refund issue and set a 24‑hour follow‑up.  \n- In Turn 2, the user simply repeated themselves without adding any new information, and **#155** was still well within its SLA.  \n- Despite that, the agent opened **#156** for the same problem and even noted in the ticket context that **#155** already existed.  \n- The correct action would have been to tell the user that **#155** is active and within its 24‑hour window, then update that ticket or explain next steps instead of creating a second one.\n\n**SPEC GAP**  \nESC‑1 to ESC‑4 describe when to escalate, but they don’t address situations where an issue already has an open ticket.  \n\n**Draft pending revision #5:**  \n*“If a ticket for the same issue was opened earlier in the conversation and is still within its SLA, refer the user to that ticket instead of opening a new one. Open a new ticket only when new information is provided.”*",
+          "first_failure": true,
+          "at": "2026-09-19T07:49:39.632Z"
         }
       ]
     },
@@ -200,11 +210,17 @@
       "seg": "reply",
       "start": 0,
       "quote": "No — order 569 is marked not refund-eligible, so I can’t process the refund directly. If you want an exception, I can escalate it to a human.",
-      "note": "Borderline: it refuses without saying why\n- The reply only says order 569 is \"marked not refund-eligible\". That restates the tool's flag without giving the reason: it's past your store's 14-day return window.\n- RESP-5 asks for language \"that explains the relevant decision\". A merchant refusing their own customer needs the reason to pass on. One short clause would have met both the \"short\" request and RESP-5: \"No, it's past Juniper's 14-day return window (delivered June 6).\"\n- There was no policy lookup, so there's no citation. Strictly, RESP-1 only applies to claims taken from a policy document, and the reply didn't make one.\n- Arguments against calling it a failure: the user explicitly asked for a short answer, and the decision itself is correct.",
+      "note": "This case is borderline because the agent refused the refund without explaining the reason. The reply only stated that order **569** is “marked not refund‑eligible,” which just repeats the tool output. It should have added the actual reason: the order is **past Juniper’s 14‑day return window**.  \n\nUnder **RESP‑5**, the agent must explain the decision, and a merchant refusing their own customer needs to pass along the policy basis. A single short clause would have satisfied both the user’s request for brevity and RESP‑5:  \n*“No — it’s past Juniper’s 14‑day return window (delivered June 6).”*\n\nThere was no policy lookup, so there’s nothing to cite. Strictly speaking, **RESP‑1** only applies when a reply makes a claim drawn from a policy document, and this reply didn’t.  \n\n**Arguments against calling it a failure:** the user explicitly asked for a short answer, and the decision itself was correct.",
       "first_failure": false,
       "created_at": "2026-09-19T04:49:46.021Z",
-      "updated_at": "2026-09-19T04:49:46.021Z",
-      "history": []
+      "updated_at": "2026-09-19T07:51:50.999Z",
+      "history": [
+        {
+          "note": "Borderline: it refuses without saying why\n- The reply only says order 569 is \"marked not refund-eligible\". That restates the tool's flag without giving the reason: it's past your store's 14-day return window.\n- RESP-5 asks for language \"that explains the relevant decision\". A merchant refusing their own customer needs the reason to pass on. One short clause would have met both the \"short\" request and RESP-5: \"No, it's past Juniper's 14-day return window (delivered June 6).\"\n- There was no policy lookup, so there's no citation. Strictly, RESP-1 only applies to claims taken from a policy document, and the reply didn't make one.\n- Arguments against calling it a failure: the user explicitly asked for a short answer, and the decision itself is correct.",
+          "first_failure": false,
+          "at": "2026-09-19T04:49:46.021Z"
+        }
+      ]
     },
     {
       "id": "amu7wxn0en9by",
@@ -269,11 +285,17 @@
       "seg": "step3.text",
       "start": 18,
       "quote": "did not pass the automatic refund eligibility check, I’m opening a human support ticket to review whether an exception or other option is available.",
-      "note": "▎ \"Order 554 delivered 2026-06-09, 22 days ago, past Meridian's 21-day window, and get_order says refund_eligible: false — but the agent never looked up the store window, read the flag as a failed 'automatic' check, and opened ticket #163 for an 'exception'; the reply says the refund isn't 'auto-eligible' and implies a human may approve it, never stating it's outside the return window.\"\n- Requirement: RESP-5 (the decision isn't explained). The misleading \"automatic / exception\" framing is also close to RESP-3, since nothing in the tools or policies supports an exception path. A possible pending revision: \"When refund_eligible is false, state that the order is not eligible and why, with the governing policy; don't present it as awaiting human approval unless a policy says so.\"",
+      "note": "Order **554** was delivered on **2026‑06‑09**, which is **22 days ago**—outside Meridian’s **21‑day** return window. The `get_order` tool correctly reports `refund_eligible: false`. Instead of checking the store window, the agent treated the flag as a failed “automatic” check and opened **ticket #163** for an “exception.” The reply framed the issue as “not auto‑eligible” and implied a human might approve it, without ever stating that the order is simply **outside the return window**.\n\n**Requirement impact**  \nThis violates **RESP‑5** because the decision isn’t explained. The “automatic vs. exception” framing also edges into **RESP‑3**, since there is no policy or tool path that supports an exception workflow here.\n\n**Possible pending revision**  \n*“When `refund_eligible` is false, state that the order is not eligible and explain why, citing the governing policy. Do not imply human approval or an exception path unless such a policy explicitly exists.”*",
       "first_failure": true,
       "created_at": "2026-09-19T05:54:17.831Z",
-      "updated_at": "2026-09-19T05:54:17.831Z",
-      "history": []
+      "updated_at": "2026-09-19T07:51:02.585Z",
+      "history": [
+        {
+          "note": "▎ \"Order 554 delivered 2026-06-09, 22 days ago, past Meridian's 21-day window, and get_order says refund_eligible: false — but the agent never looked up the store window, read the flag as a failed 'automatic' check, and opened ticket #163 for an 'exception'; the reply says the refund isn't 'auto-eligible' and implies a human may approve it, never stating it's outside the return window.\"\n- Requirement: RESP-5 (the decision isn't explained). The misleading \"automatic / exception\" framing is also close to RESP-3, since nothing in the tools or policies supports an exception path. A possible pending revision: \"When refund_eligible is false, state that the order is not eligible and why, with the governing policy; don't present it as awaiting human approval unless a policy says so.\"",
+          "first_failure": true,
+          "at": "2026-09-19T05:54:17.831Z"
+        }
+      ]
     },
     {
       "id": "amu7zdk784hkf",
@@ -300,10 +322,10 @@
       "seg": "step4.text",
       "start": 41,
       "quote": "the delivery date appears to be well outside the standard return window",
-      "note": "Order #90 was delivered on **2026‑06‑22**, which is **9 days before 2026‑07‑01**—exactly as the user stated.  \nDespite this, the agent incorrectly concluded the delivery date was “well outside” the 30‑day window (without citing any source), told the user their 9‑day timing didn’t match the records, and claimed the order was outside the 30‑day window.  \n\nThe actual constraint—Saltbox’s **7‑day store window**—was never checked.  \nA ticket (**#168**) was opened for a “possible exception.”",
+      "note": "Order **#90** was delivered on **2026‑06‑22**, which is **9 days before 2026‑07‑01**—exactly as the user stated. Despite this, the agent incorrectly claimed the delivery date was “well outside” the 30‑day window, without citing any source. The agent also told the user their 9‑day timing didn’t match the records and asserted the order was outside the 30‑day window. The real constraint—Saltbox’s **7‑day store window**—was never checked. The agent then opened **ticket #168** for a “possible exception.”",
       "first_failure": true,
       "created_at": "2026-09-19T06:37:07.134Z",
-      "updated_at": "2026-09-19T07:39:46.999Z",
+      "updated_at": "2026-09-19T07:53:19.798Z",
       "history": [
         {
           "note": "Order #90 delivered 2026-06-22 — 9 days before 2026-07-01, exactly what the user said — but the agent decided the date was 'well outside' the 30-day window (no date source), told the user the 9-day timing didn't match the record and that the order is outside the 30-day window; the real reason, Saltbox's 7-day store window, was never looked up. Opened ticket #168 for a 'possible exception'.",
@@ -314,6 +336,11 @@
           "note": "Order #90 delivered 2026-06-22 — 9 days before 2026-07-01, exactly what the user said — but the agent decided the date was 'well outside' the 30-day window (no date source), told the user the 9-day timing didn't match the record and that the order is outside the 30-day window; the real reason, Saltbox's 7-day store window, was never looked up. Opened ticket #168 for a 'possible exception'.",
           "first_failure": true,
           "at": "2026-09-19T07:06:26.744Z"
+        },
+        {
+          "note": "Order #90 was delivered on **2026‑06‑22**, which is **9 days before 2026‑07‑01**—exactly as the user stated.  \nDespite this, the agent incorrectly concluded the delivery date was “well outside” the 30‑day window (without citing any source), told the user their 9‑day timing didn’t match the records, and claimed the order was outside the 30‑day window.  \n\nThe actual constraint—Saltbox’s **7‑day store window**—was never checked.  \nA ticket (**#168**) was opened for a “possible exception.”",
+          "first_failure": true,
+          "at": "2026-09-19T07:39:46.999Z"
         }
       ]
     },
@@ -483,16 +510,21 @@
       "seg": "step2.text",
       "start": null,
       "quote": "not eligible for an automatic refund in the order system and you’re asking for an exception",
-      "note": "Order 2880 was delivered on **2026‑04‑09**, which is **83 days before 2026‑07‑01**—well beyond the 30‑day return window. The system’s `get_order` data correctly marks it as **refund_eligible: false**.  \n\nDespite that, the agent treated it as failing an “automatic” check, never informed the shopper that the order was outside the return window, and opened ticket **#178** to review a “possible exception.” The response also introduced an unrelated **>$100 review rule**, instead of citing the actual reason for ineligibility.",
+      "note": "Order **2880** was delivered on **2026‑04‑09**, which is **83 days before 2026‑07‑01**—far beyond the 30‑day return window. The `get_order` data correctly shows **refund_eligible: false**. Instead of explaining that the order was outside the return window, the agent treated the flag as a failed “automatic” check and opened **ticket #178** for a “possible exception.” The reply also introduced an unrelated **>$100 review rule**, rather than citing the actual reason for ineligibility.",
       "first_failure": true,
       "requirement": "RESP-5 (refusal not explained)",
       "created_at": "2026-09-19T07:22:07.713Z",
-      "updated_at": "2026-09-19T07:40:45.125Z",
+      "updated_at": "2026-09-19T07:54:24.843Z",
       "history": [
         {
           "note": "Order 2880 was delivered 2026-04-09, 83 days before 2026-07-01 and far past the 30-day window, and get_order says refund_eligible: false — but the agent treated it as failing an 'automatic' check, never told the shopper the order is outside the return window, and opened ticket #178 to review 'an exception'; the reply adds the irrelevant >$100 review rule instead of the actual reason.",
           "first_failure": true,
           "at": "2026-09-19T07:22:07.713Z"
+        },
+        {
+          "note": "Order 2880 was delivered on **2026‑04‑09**, which is **83 days before 2026‑07‑01**—well beyond the 30‑day return window. The system’s `get_order` data correctly marks it as **refund_eligible: false**.  \n\nDespite that, the agent treated it as failing an “automatic” check, never informed the shopper that the order was outside the return window, and opened ticket **#178** to review a “possible exception.” The response also introduced an unrelated **>$100 review rule**, instead of citing the actual reason for ineligibility.",
+          "first_failure": true,
+          "at": "2026-09-19T07:40:45.125Z"
         }
       ]
     },
@@ -571,16 +603,21 @@
       "seg": "reply",
       "start": null,
       "quote": "Follow-up ticket: #198",
-      "note": "User added more details to the same statement‑charge dispute for order 505, which already had tickets **#196** (turn 1) and **#197** (turn 2). Instead of updating or referencing those existing tickets, the agent opened a third one — **#198** — resulting in three separate tickets for a single dispute.",
+      "note": "The user added more details to the same statement‑charge dispute for order **505**, which already had tickets **#196** (turn 1) and **#197** (turn 2). Instead of updating or referencing those existing tickets, the agent opened a third one — **#198** — creating three separate tickets for a single dispute.",
       "first_failure": true,
       "requirement": "SPEC gap — pending revision #5 (duplicate tickets)",
       "created_at": "2026-09-19T07:31:42.583Z",
-      "updated_at": "2026-09-19T07:41:26.859Z",
+      "updated_at": "2026-09-19T07:55:15.233Z",
       "history": [
         {
           "note": "User only added detail to the same statement-charge dispute on order 505, which already had tickets #196 (turn 1) and #197 (turn 2); the agent opened a third ticket #198 instead of adding to or pointing at the existing one — three tickets for one dispute.",
           "first_failure": true,
           "at": "2026-09-19T07:31:42.583Z"
+        },
+        {
+          "note": "User added more details to the same statement‑charge dispute for order 505, which already had tickets **#196** (turn 1) and **#197** (turn 2). Instead of updating or referencing those existing tickets, the agent opened a third one — **#198** — resulting in three separate tickets for a single dispute.",
+          "first_failure": true,
+          "at": "2026-09-19T07:41:26.859Z"
         }
       ]
     },
@@ -659,12 +696,18 @@
       "seg": "reply",
       "start": null,
       "quote": "ticket #191 covers the broader charge mismatch",
-      "note": "User confirmed in turn 3 that the mismatch is the planner order, so tickets #190 and #191 are the same dispute — but the agent presents #191 as covering a 'broader charge mismatch' instead of flagging the duplicate, leaving two tickets for one issue.",
+      "note": "In turn 3, the user confirmed that the mismatch was the **planner order**, meaning tickets **#190** and **#191** were for the same dispute. Instead of flagging the duplicate, the agent framed **#191** as covering a “broader charge mismatch,” leaving two tickets open for a single issue.",
       "first_failure": true,
       "requirement": "SPEC gap — pending revision #5 (duplicate tickets)",
       "created_at": "2026-09-19T07:45:42.275Z",
-      "updated_at": "2026-09-19T07:45:42.275Z",
-      "history": []
+      "updated_at": "2026-09-19T07:56:02.567Z",
+      "history": [
+        {
+          "note": "User confirmed in turn 3 that the mismatch is the planner order, so tickets #190 and #191 are the same dispute — but the agent presents #191 as covering a 'broader charge mismatch' instead of flagging the duplicate, leaving two tickets for one issue.",
+          "first_failure": true,
+          "at": "2026-09-19T07:45:42.275Z"
+        }
+      ]
     }
   ]
 }
