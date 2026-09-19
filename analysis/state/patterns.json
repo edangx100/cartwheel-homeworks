@@ -22,7 +22,8 @@
       "close_negatives": [
         "9f0519209cdea8bd20e3299d1909d549",
         "d3f81eae6523c72ada8e5226bc699b49",
-        "a290c18b7677467d3d7ba368675ae7f4"
+        "a290c18b7677467d3d7ba368675ae7f4",
+        "3ad1608e2b7458d86f39163771384c1a"
       ],
       "revisions": [
         {
@@ -45,6 +46,15 @@
               "to": "The reply presents a user-supplied detail (product, store, date) as a verified order fact without a tool confirming it, or proceeds without stating a conflict between the user's claim and the tool record. This includes dismissing a user's doubt about a record without checking it (support-0045, where the record itself was wrong)."
             }
           }
+        },
+        {
+          "at": "2026-09-19T12:31:57+00:00",
+          "note": "Axial coding pass 3 (after batch 3): placement proposed by Claude, accepted by the reviewer 2026-09-19.",
+          "changes": {
+            "close_negatives": [
+              "3ad1608e"
+            ]
+          }
         }
       ]
     },
@@ -58,15 +68,23 @@
       "evaluator": "LLM judge",
       "product_change": "Rule: before a write, ask if the target order or amount is not pinned to one candidate; do not add unstated details.",
       "annotation_ids": [
-        "partA-3"
+        "partA-3",
+        "amu8ck5yiwfa6",
+        "amu8d1qlzcxr2"
       ],
       "positives": [
-        "cc93a580370b4336aacd5b81607aaa3b"
+        "cc93a580370b4336aacd5b81607aaa3b",
+        "5c0b7d5990803963352601d419314c1f",
+        "5527cd615699c44513372ead2dec1d90"
       ],
       "close_negatives": [
         "d3f81eae6523c72ada8e5226bc699b49",
         "c2e06ef6ff1aca61c77ecf3571e461e3",
-        "51b203a5131802cabf8c77f6cfac470e"
+        "51b203a5131802cabf8c77f6cfac470e",
+        "cd997e2fc0e8d1e79a804617602e965a",
+        "a898bc26210d9d83e4d04351c9c59816",
+        "37835b093ab7de0ac059ca4c1df0c78c",
+        "065df74d26d4ee8df1000e96d5db3340"
       ],
       "revisions": [
         {
@@ -90,12 +108,28 @@
               ]
             }
           }
+        },
+        {
+          "at": "2026-09-19T12:31:57+00:00",
+          "note": "Axial coding pass 3 (after batch 3): placement proposed by Claude, accepted by the reviewer 2026-09-19.",
+          "changes": {
+            "positives": [
+              "5c0b7d59",
+              "5527cd61"
+            ],
+            "close_negatives": [
+              "cd997e2f",
+              "a898bc26",
+              "37835b09",
+              "065df74d"
+            ]
+          }
         }
       ]
     },
     {
       "name": "permission_denied_escalated_without_confirming",
-      "status": "candidate",
+      "status": "rejected",
       "definition": "After a tool returns permission_denied for an order the user named, the agent opens a ticket requesting action on that order without first telling the user and asking them to confirm the order number.",
       "boundary": "Not this mode when the agent refuses without revealing details and escalates only after the user confirms or insists (support-0046). Differs from duplicate_ticket: the problem is the first ticket, not a repeat.",
       "nearest_mode": "duplicate_ticket",
@@ -116,6 +150,16 @@
           "at": "2026-09-19T00:00:00Z",
           "changes": {},
           "note": "Created in batch-1 axial coding: grouping and draft wording proposed by Claude from the reviewer's open codes; accepted by the reviewer 2026-09-19. Definitions are drafts."
+        },
+        {
+          "at": "2026-09-19T12:31:57+00:00",
+          "note": "Axial coding pass 3 (after batch 3): placement proposed by Claude, accepted by the reviewer 2026-09-19. Merged into refusal_mishandled: only 4 permission_denied traces exist in the whole dataset (2 positives), and the same refusal rule fixes it. Positives and close negatives moved there.",
+          "changes": {
+            "status": {
+              "from": "candidate",
+              "to": "rejected"
+            }
+          }
         }
       ]
     },
@@ -124,7 +168,7 @@
       "status": "candidate",
       "definition": "The agent states or relies on how much time has passed (window passed, overdue, outside window) without a dated source for today, and the claim is false or drives a decision.",
       "boundary": "Not this mode when the agent relies on refund_eligible without a date claim (support-0034); an unsourced but correct, inconsequential date remark (support-0066) is a boundary case to decide. Differs from ineligible_refund_mishandled: that mode is about the refusal and escalation, this one about date claims.",
-      "nearest_mode": "ineligible_refund_mishandled",
+      "nearest_mode": "refusal_mishandled",
       "spec_ref": "RESP-3 (+ possible revision: current date in session context)",
       "evaluator": "LLM judge",
       "product_change": "Give the agent today's date in the session context; rule: no elapsed-time claims without a dated source. Evidence: in support-0198 the agent substituted the real-world date ('Current date 2026-09-14'), so the fix must supply the world date explicitly.",
@@ -133,14 +177,18 @@
         "amu80yv8r3s5h",
         "amu80lt4uu8dl",
         "amu7zdk784hkf",
-        "amu87uosjic75"
+        "amu87uosjic75",
+        "amu8bzkazr0w4",
+        "amu8ci0sb3h0s"
       ],
       "positives": [
         "ebb8a368b7a992ecffd6f853c4b16f34",
         "95349efa26394ccb9914f439db2f5afc",
         "284f303da5ea975257cc56ad09ea1d1f",
         "16a1e4bdb493077a0115caca2939dd31",
-        "dd6bcb4e1bc21244d03002668ca6ec97"
+        "dd6bcb4e1bc21244d03002668ca6ec97",
+        "43f73d496a5e7f8907df462178ad7a58",
+        "5119e50f947c4cbf5335bd4e87d159dc"
       ],
       "close_negatives": [
         "9f0519209cdea8bd20e3299d1909d549",
@@ -170,50 +218,19 @@
               "to": "Give the agent today's date in the session context; rule: no elapsed-time claims without a dated source. Evidence: in support-0198 the agent substituted the real-world date ('Current date 2026-09-14'), so the fix must supply the world date explicitly."
             }
           }
-        }
-      ]
-    },
-    {
-      "name": "ineligible_refund_mishandled",
-      "status": "candidate",
-      "definition": "When get_order returns refund_eligible: false, the agent does not tell the user it is not eligible and why (governing store/platform window and delivery date), or presents it as a failed 'automatic' check / opens an exception ticket without a policy allowing exceptions.",
-      "boundary": "Not this mode when the agent refuses and explains the governing window with a citation (support-0034), or when an accurate refusal omits the reason, especially if the user asked for brevity (support-0025); misrepresenting the refusal or escalating it as an exception is. Differs from invented_date_reasoning: a correct refusal can still invent a date, and vice versa.",
-      "nearest_mode": "invented_date_reasoning",
-      "spec_ref": "RESP-5 (+ possible revision for refund_eligible false)",
-      "evaluator": "LLM judge",
-      "product_change": "Rule for refund_eligible false: fetch the store policy, state not eligible + governing window + delivery date; no exception tickets.",
-      "annotation_ids": [
-        "amu7z2qna1fxc",
-        "amu827owxjuxu",
-        "amu7zdk784hkf",
-        "amu80lt4uu8dl",
-        "amu87njam3pl5"
-      ],
-      "positives": [
-        "f941bff05ece83b601420c902a3d05c5",
-        "94d97fbf9b29a0fe39887e725fc210ab",
-        "16a1e4bdb493077a0115caca2939dd31",
-        "284f303da5ea975257cc56ad09ea1d1f",
-        "7f27317eb10a132b04774b13630f5107"
-      ],
-      "close_negatives": [
-        "9f0519209cdea8bd20e3299d1909d549",
-        "004a0ffa9e55f44f252eb2cc5082e9b7",
-        "daca8584c849769e394edb14dc415873"
-      ],
-      "revisions": [
-        {
-          "at": "2026-09-19T00:00:00Z",
-          "changes": {},
-          "note": "Created in batch-1 axial coding: grouping and draft wording proposed by Claude from the reviewer's open codes; accepted by the reviewer 2026-09-19. Definitions are drafts."
         },
         {
-          "at": "2026-09-19T10:21:17+00:00",
-          "note": "Axial coding pass 2 (after batch 2): placement proposed by Claude, accepted by the reviewer 2026-09-19.",
+          "at": "2026-09-19T12:31:57+00:00",
+          "note": "Axial coding pass 3 (after batch 3): placement proposed by Claude, accepted by the reviewer 2026-09-19.",
           "changes": {
             "positives": [
-              "7f27317e"
-            ]
+              "43f73d49",
+              "5119e50f"
+            ],
+            "nearest_mode": {
+              "from": "ineligible_refund_mishandled",
+              "to": "refusal_mishandled"
+            }
           }
         }
       ]
@@ -222,8 +239,8 @@
       "name": "duplicate_ticket",
       "status": "candidate",
       "definition": "The agent opens a new support ticket, or presents an existing one as a separate issue, when a ticket for the same issue is already open in the conversation and the user added no new issue.",
-      "boundary": "Not this mode when the agent refers to the existing ticket (support-0201, support-0205 turn 3). Differs from permission_denied_escalated_without_confirming: that is about whether the first ticket should exist.",
-      "nearest_mode": "permission_denied_escalated_without_confirming",
+      "boundary": "Not this mode when the agent refers to the existing ticket (support-0201, support-0205 turn 3). Differs from refusal_mishandled: that is about whether the first ticket should exist.",
+      "nearest_mode": "refusal_mishandled",
       "spec_ref": "pending revision #5",
       "evaluator": "code check",
       "product_change": "Rule: reuse or reference an open ticket for the same issue; open a new one only for a new issue.",
@@ -266,7 +283,7 @@
     },
     {
       "name": "goal_not_reclarified",
-      "status": "candidate",
+      "status": "rejected",
       "definition": "The user's actual request stays unclear and the agent does not ask what they need.",
       "boundary": "Singleton after batch 1: drop (and record as a rejected group) if no further cases appear in batches 2-3.",
       "nearest_mode": "write_on_unconfirmed_target",
@@ -287,6 +304,16 @@
           "at": "2026-09-19T00:00:00Z",
           "changes": {},
           "note": "Created in batch-1 axial coding: grouping and draft wording proposed by Claude from the reviewer's open codes; accepted by the reviewer 2026-09-19. Definitions are drafts."
+        },
+        {
+          "at": "2026-09-19T12:31:57+00:00",
+          "note": "Axial coding pass 3 (after batch 3): placement proposed by Claude, accepted by the reviewer 2026-09-19. Rejected group: no further cases in batches 2-3; the 5 ambiguous / missing-information depth picks (support-0026, -0028, -0049, -0209, -0212) were all fine or a different failure.",
+          "changes": {
+            "status": {
+              "from": "candidate",
+              "to": "rejected"
+            }
+          }
         }
       ]
     },
@@ -294,25 +321,209 @@
       "name": "out_of_scope_escalated",
       "status": "candidate",
       "definition": "For a request outside Cartwheel support (e.g. legal advice), the agent opens a support ticket or calls tools instead of declining in one or two sentences and saying what it can help with.",
-      "boundary": "Not this mode when the agent declines without tools (support-0018). Differs from ineligible_refund_mishandled: that fix is a rule for refunds that are not eligible; this one is the SCOPE-2 rule for out-of-scope requests. Tighter escalation alone would not fix the refund mode's misleading 'automatic check' framing, so they stay split.",
-      "nearest_mode": "ineligible_refund_mishandled",
+      "boundary": "Not this mode when the agent declines without tools (support-0018, support-0174, support-0183). Differs from refusal_mishandled: that covers requests Cartwheel handles but the rules forbid (not eligible, shipped, no permission); this one is the SCOPE-2 rule for requests outside Cartwheel support.",
+      "nearest_mode": "refusal_mishandled",
       "spec_ref": "SCOPE-2",
       "evaluator": "code check",
       "product_change": "Rule: out-of-scope requests are declined in one or two sentences with no tool calls.",
       "annotation_ids": [
-        "amu87t4us9vjc"
+        "amu87t4us9vjc",
+        "amu8bxcqhhui0",
+        "amu8cubhy9zs9",
+        "amu8cw10v7ij5"
       ],
       "positives": [
-        "fa3539c3c2877ceb6f9d2ea07e92642c"
+        "fa3539c3c2877ceb6f9d2ea07e92642c",
+        "89913d336cf0509a0295f0c1062353b0",
+        "a35fa005a4950c7e05ad8475a429a2c3",
+        "2730f7a92637916ff5f6f0d58d5a6dbb"
       ],
       "close_negatives": [
-        "8a57d59f608a69bbec15d8969aa15336"
+        "8a57d59f608a69bbec15d8969aa15336",
+        "a00c302ef186a8b5fff565ed09b62848",
+        "0e514a1e53785fb7ef4729fda1a560c2"
       ],
       "revisions": [
         {
           "at": "2026-09-19T10:21:17+00:00",
           "note": "Axial coding pass 2 (after batch 2): placement proposed by Claude, accepted by the reviewer 2026-09-19. New candidate created from support-0186.",
           "changes": {}
+        },
+        {
+          "at": "2026-09-19T12:31:57+00:00",
+          "note": "Axial coding pass 3 (after batch 3): placement proposed by Claude, accepted by the reviewer 2026-09-19.",
+          "changes": {
+            "positives": [
+              "89913d33",
+              "a35fa005",
+              "2730f7a9"
+            ],
+            "close_negatives": [
+              "a00c302e",
+              "0e514a1e"
+            ],
+            "nearest_mode": {
+              "from": "ineligible_refund_mishandled",
+              "to": "refusal_mishandled"
+            },
+            "boundary": {
+              "from": "Not this mode when the agent declines without tools (support-0018). Differs from ineligible_refund_mishandled: that fix is a rule for refunds that are not eligible; this one is the SCOPE-2 rule for out-of-scope requests. Tighter escalation alone would not fix the refund mode's misleading 'automatic check' framing, so they stay split.",
+              "to": "Not this mode when the agent declines without tools (support-0018, support-0174, support-0183). Differs from refusal_mishandled: that covers requests Cartwheel handles but the rules forbid (not eligible, shipped, no permission); this one is the SCOPE-2 rule for requests outside Cartwheel support."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "refusal_mishandled",
+      "status": "candidate",
+      "definition": "The rules prohibit what the user was asking for — the refund wasn’t eligible, the order had already shipped, or the system didn’t have permission to access it. \nBut the agent didn’t give a clear refusal with the correct governing rule and the next step.\n Instead, it sometimes opened a ticket or suggested an “exception” that no policy supports.\n This includes treating refund_eligible: false as an “automatic” failure, citing the wrong return window (as in support‑0091), and escalating after a permission_denied result without first asking the user to confirm the order number.",
+      "boundary": "Not this mode when the agent refuses and explains the governing rule with a citation (support-0034), or refuses after permission_denied and asks to double-check the number (support-0236, support-0238). A ticket is fine when an ESC rule lists the case, the user reports something to investigate (support-0024, misrouting) or confirms after being asked (support-0046). An accurate refusal that omits the reason, especially when the user asked for brevity, is a boundary case (support-0025). Differs from invented_date_reasoning: a correct refusal can still invent a date, and vice versa. Differs from out_of_scope_escalated: that is about requests outside Cartwheel support.",
+      "nearest_mode": "invented_date_reasoning",
+      "spec_ref": "RESP-5, ESC rules, AUTH-1, cw-cancellations + pending revision #4 and the refund_eligible false revision",
+      "evaluator": "",
+      "product_change": "Refusal rule: when a tool or record says no, say so, give the governing rule (store or platform window, shipped status, no access) and the next step; open a ticket only when an ESC rule lists the case; after permission_denied, ask the user to confirm the order number first.",
+      "annotation_ids": [
+        "amu7z2qna1fxc",
+        "amu827owxjuxu",
+        "amu7zdk784hkf",
+        "amu80lt4uu8dl",
+        "amu87njam3pl5",
+        "partA-5",
+        "amu8cz678lez8",
+        "amu8buytix69b",
+        "amu8csgvxhuk6",
+        "amu8cpx8fzxhn"
+      ],
+      "positives": [
+        "f941bff05ece83b601420c902a3d05c5",
+        "94d97fbf9b29a0fe39887e725fc210ab",
+        "16a1e4bdb493077a0115caca2939dd31",
+        "284f303da5ea975257cc56ad09ea1d1f",
+        "7f27317eb10a132b04774b13630f5107",
+        "065b25b9a3789d83ff7da86558aa2c55",
+        "2c22f8ddddd666fd66e025dbbdd07353",
+        "d63000bf4f669d09be885c1f10edb5bf",
+        "858840a29a398b8a63cddf847bc29f8a",
+        "fb0fafe4e9d76b2a2dbd74b82b9ba6f4"
+      ],
+      "close_negatives": [
+        "9f0519209cdea8bd20e3299d1909d549",
+        "004a0ffa9e55f44f252eb2cc5082e9b7",
+        "daca8584c849769e394edb14dc415873",
+        "c2a2ad346a70bf95e5db7f31c6f5d334",
+        "984fb6e44cbc1552457f7806ee54414f",
+        "ea234165a0b14a0dbc0f5d1b31d6ba48",
+        "19861921e507d7ba142ecd0a1fb06375"
+      ],
+      "revisions": [
+        {
+          "at": "2026-09-19T00:00:00Z",
+          "changes": {},
+          "note": "Created in batch-1 axial coding: grouping and draft wording proposed by Claude from the reviewer's open codes; accepted by the reviewer 2026-09-19. Definitions are drafts."
+        },
+        {
+          "at": "2026-09-19T10:21:17+00:00",
+          "note": "Axial coding pass 2 (after batch 2): placement proposed by Claude, accepted by the reviewer 2026-09-19.",
+          "changes": {
+            "positives": [
+              "7f27317e"
+            ]
+          }
+        },
+        {
+          "at": "2026-09-19T12:31:57+00:00",
+          "note": "Axial coding pass 3 (after batch 3): placement proposed by Claude, accepted by the reviewer 2026-09-19. Taxonomy revision: ineligible_refund_mishandled renamed and widened to refusal_mishandled; absorbed permission_denied_escalated_without_confirming (support-0237 and its earlier positive) and support-0005 (shipped order, intercept ticket). One product change, the refusal rule, fixes all.",
+          "changes": {
+            "positives": [
+              "065b25b9",
+              "2c22f8dd",
+              "d63000bf",
+              "858840a2",
+              "fb0fafe4"
+            ],
+            "close_negatives": [
+              "c2a2ad34",
+              "984fb6e4",
+              "ea234165",
+              "19861921"
+            ],
+            "definition": {
+              "from": "When get_order returns refund_eligible: false, the agent does not tell the user it is not eligible and why (governing store/platform window and delivery date), or presents it as a failed 'automatic' check / opens an exception ticket without a policy allowing exceptions.",
+              "to": "The rules forbid what the user asked for (refund not eligible, order already shipped, no permission for the order), and the agent does not refuse clearly with the governing rule and the next step, or opens a ticket or 'exception' that no policy provides. Includes presenting refund_eligible: false as a failed 'automatic' check, citing the wrong governing window (support-0091), and escalating after permission_denied without first asking the user to confirm the order number."
+            },
+            "boundary": {
+              "from": "Not this mode when the agent refuses and explains the governing window with a citation (support-0034), or when an accurate refusal omits the reason, especially if the user asked for brevity (support-0025); misrepresenting the refusal or escalating it as an exception is. Differs from invented_date_reasoning: a correct refusal can still invent a date, and vice versa.",
+              "to": "Not this mode when the agent refuses and explains the governing rule with a citation (support-0034), or refuses after permission_denied and asks to double-check the number (support-0236, support-0238). A ticket is fine when an ESC rule lists the case, the user reports something to investigate (support-0024, misrouting) or confirms after being asked (support-0046). An accurate refusal that omits the reason, especially when the user asked for brevity, is a boundary case (support-0025). Differs from invented_date_reasoning: a correct refusal can still invent a date, and vice versa. Differs from out_of_scope_escalated: that is about requests outside Cartwheel support."
+            },
+            "spec_ref": {
+              "from": "RESP-5 (+ possible revision for refund_eligible false)",
+              "to": "RESP-5, ESC rules, AUTH-1, cw-cancellations + pending revision #4 and the refund_eligible false revision"
+            },
+            "evaluator": {
+              "from": "LLM judge",
+              "to": "LLM judge (+ code check: ticket opened after permission_denied or refund_eligible false)"
+            },
+            "product_change": {
+              "from": "Rule for refund_eligible false: fetch the store policy, state not eligible + governing window + delivery date; no exception tickets.",
+              "to": "Refusal rule: when a tool or record says no, say so, give the governing rule (store or platform window, shipped status, no access) and the next step; open a ticket only when an ESC rule lists the case; after permission_denied, ask the user to confirm the order number first."
+            }
+          }
+        },
+        {
+          "at": "2026-09-19T12:36:16.538Z",
+          "note": "",
+          "changes": {
+            "definition": {
+              "from": "The rules forbid what the user asked for (refund not eligible, order already shipped, no permission for the order), and the agent does not refuse clearly with the governing rule and the next step, or opens a ticket or 'exception' that no policy provides. Includes presenting refund_eligible: false as a failed 'automatic' check, citing the wrong governing window (support-0091), and escalating after permission_denied without first asking the user to confirm the order number.",
+              "to": "The rules prohibit what the user was asking for — the refund wasn’t eligible, the order had already shipped, or the system didn’t have permission to access it. \nBut the agent didn’t give a clear refusal with the correct governing rule and the next step.\n Instead, it sometimes opened a ticket or suggested an “exception” that no policy supports.\n This includes treating refund_eligible: false as an “automatic” failure, citing the wrong return window (as in support‑0091), and escalating after a permission_denied result without first asking the user to confirm the order number."
+            },
+            "evaluator": {
+              "from": "LLM judge (+ code check: ticket opened after permission_denied or refund_eligible false)",
+              "to": ""
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "inconsistent_record_not_flagged",
+      "status": "candidate",
+      "definition": "When a tool record contradicts itself or another record — for example, showing an item shipped after it was delivered or listing a product from a different store — the agent must treat that as an inconsistency. The correct response is to point out the contradiction, avoid asserting any timeline, and escalate. Instead, the agent handled the record as if everything were normal.",
+      "boundary": "Not this mode when a field is missing and the agent says so without computing from it (support-0028, support-0209: no delivery date). Differs from user_claim_not_reconciled: there a user's claim conflicts with the record; here the record is inconsistent by itself. support-0045 (store mismatch the user doubted) stays in user_claim_not_reconciled; revisit in Part D.",
+      "nearest_mode": "user_claim_not_reconciled",
+      "spec_ref": "RESP-3 (inconsistent), dq-order-reversed-dates",
+      "evaluator": "",
+      "product_change": "Rule: before using an order record, check that its dates are in order and its store matches the product; if not, state the inconsistency, do not assert a timeline, and escalate.",
+      "annotation_ids": [
+        "amu8cxegxioaz"
+      ],
+      "positives": [
+        "23c4ca83e91d06faa6ffce956b81395b"
+      ],
+      "close_negatives": [
+        "b105a3172950e91488dddc4726c4af41",
+        "fda900090bbffb9b4e43e42c9ce7009f"
+      ],
+      "revisions": [
+        {
+          "at": "2026-09-19T12:31:57+00:00",
+          "note": "Axial coding pass 3 (after batch 3): placement proposed by Claude, accepted by the reviewer 2026-09-19. New candidate created from support-0212.",
+          "changes": {}
+        },
+        {
+          "at": "2026-09-19T12:37:38.254Z",
+          "note": "",
+          "changes": {
+            "definition": {
+              "from": "A tool record contradicts itself or another record (e.g. shipped after delivered, product from a different store), and the agent treats it as normal instead of stating the inconsistency, not asserting a timeline, and escalating.",
+              "to": "When a tool record contradicts itself or another record — for example, showing an item shipped after it was delivered or listing a product from a different store — the agent must treat that as an inconsistency. The correct response is to point out the contradiction, avoid asserting any timeline, and escalate. Instead, the agent handled the record as if everything were normal."
+            },
+            "evaluator": {
+              "from": "code check (dates out of order in the tool result) + LLM judge (did the reply flag and escalate)",
+              "to": ""
+            }
+          }
         }
       ]
     }
