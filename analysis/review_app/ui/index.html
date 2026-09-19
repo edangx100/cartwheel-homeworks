@@ -594,7 +594,7 @@ function sessionItems() {
   const s = S.sessionIndex[S.sid]; if (!s) return [];
   const ids = new Set(s.turns.map(t => t.trace_id));
   const anns = S.annotations.filter(a => ids.has(a.trace_id)).map(a => ({...a, _k: 'human'}));
-  const sugg = S.suggestions.filter(x => x.kind === 'annotation' && x.status === 'pending' && ids.has(x.trace_id)).map(x => ({...x, _k: 'sugg'}));
+  const sugg = S.suggestions.filter(x => (x.kind === 'annotation' || x.kind === 'no_failure') && x.status === 'pending' && ids.has(x.trace_id)).map(x => ({...x, _k: 'sugg'}));
   return [...anns, ...sugg];
 }
 function applyHighlights() {
@@ -637,7 +637,7 @@ function layoutMargin() {
     note.className = 'mnote ' + (human ? 'human' : 'sugg') + (it.first_failure ? ' ff' : '') + (it.kind === 'no_failure' ? ' nofail' : '');
     note.dataset.item = it.id;
     let tag = human ? (it.kind === 'no_failure' ? 'no failure observed' : (it.first_failure ? 'first failure' : 'note'))
-      : 'AI suggestion' + (it.first_failure ? ' · first failure' : '') + (it.mode ? ' · ' + it.mode : '');
+      : 'AI suggestion' + (it.kind === 'no_failure' ? ' · no failure observed' : '') + (it.first_failure ? ' · first failure' : '') + (it.mode ? ' · ' + it.mode : '');
     if (human && it.source === 'ai_accepted') tag += ' · from accepted AI suggestion';
     if (it.batch === 'part_a') tag += ' · Part A';
     if (it.requirement) tag += ' · ' + it.requirement;
@@ -811,7 +811,14 @@ async function decideSuggestions(ids, accept) {
     const sg = S.suggestions.find(x => x.id === id);
     if (!sg || sg.status !== 'pending') continue;
     try {
-      if (accept && sg.kind === 'label') {
+      if (accept && sg.kind === 'no_failure') {
+        if (S.annotations.some(a => a.trace_id === sg.trace_id && a.first_failure)) throw new Error('this trace already has a first-failure note');
+        if (!S.annotations.some(a => a.trace_id === sg.trace_id && a.kind === 'no_failure')) {
+          S.annotations.push({id: newId('a'), kind: 'no_failure', source: 'ai_accepted', suggestion_id: sg.id, trace_id: sg.trace_id,
+            session_id: sessionOf(sg.trace_id), note: sg.note || 'no failure observed', first_failure: false,
+            created_at: nowIso(), updated_at: nowIso(), history: []});
+        }
+      } else if (accept && sg.kind === 'label') {
         await api.post('/api/labels', {mode: sg.mode, trace_id: sg.trace_id, label: sg.label, evidence: sg.evidence || sg.rationale,
           source: 'ai_accepted', suggestion_id: sg.id, session_id: sessionOf(sg.trace_id)});
       } else if (accept) {
@@ -844,7 +851,9 @@ function renderSuggestions() {
   $('sugg-count').textContent = pendingList.length;
   const row = (x, check) => {
     const hit = S.traceIndex[x.trace_id];
-    const what = x.kind === 'label' ? `${esc(x.mode)} = <b>${x.label === 1 ? 'present' : 'absent'}</b>` : `note${x.mode ? ' → ' + esc(x.mode) : ''}`;
+    const what = x.kind === 'label' ? `${esc(x.mode)} = <b>${x.label === 1 ? 'present' : 'absent'}</b>`
+      : x.kind === 'no_failure' ? '<b>no failure observed</b>'
+      : `${x.first_failure ? '<b>first failure</b> note' : 'note'}${x.mode ? ' → ' + esc(x.mode) : ''}`;
     return `<tr>
       ${check ? `<td><input type="checkbox" class="sg-check" value="${esc(x.id)}"></td>` : `<td><span class="chip ${x.status === 'accepted' ? 'ok' : 'warn'}">${esc(x.status)}</span></td>`}
       <td>${what}<div class="small muted">${esc(x.source || 'agent')}${x.search ? ' · search: ' + esc(x.search) : ''}</div></td>
