@@ -708,6 +708,21 @@
           "at": "2026-09-19T07:45:42.275Z"
         }
       ]
+    },
+    {
+      "id": "amu86306xpa1a",
+      "kind": "note",
+      "source": "human",
+      "trace_id": "51b203a5131802cabf8c77f6cfac470e",
+      "session_id": "c2b7a8352df348fd9e60ebdb51714e61",
+      "seg": "step1.text",
+      "start": 0,
+      "quote": "I found one unshipped matching order",
+      "note": "This is a close negative for *write_on_unconfirmed_target*: the lookup narrowed the user’s request to exactly one unshipped order, yet the agent still refused to act. (Contrast with **‑0242**, where multiple possible targets remained.)",
+      "first_failure": false,
+      "created_at": "2026-09-19T09:10:27.513Z",
+      "updated_at": "2026-09-19T09:10:27.513Z",
+      "history": []
     }
   ]
 }

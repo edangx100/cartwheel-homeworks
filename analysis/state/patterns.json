@@ -46,13 +46,31 @@
       ],
       "close_negatives": [
         "d3f81eae6523c72ada8e5226bc699b49",
-        "c2e06ef6ff1aca61c77ecf3571e461e3"
+        "c2e06ef6ff1aca61c77ecf3571e461e3",
+        "51b203a5131802cabf8c77f6cfac470e"
       ],
       "revisions": [
         {
           "at": "2026-09-19T00:00:00Z",
           "changes": {},
           "note": "Created in batch-1 axial coding: grouping and draft wording proposed by Claude from the reviewer's open codes; accepted by the reviewer 2026-09-19. Definitions are drafts."
+        },
+        {
+          "at": "2026-09-19T09:14:34.447Z",
+          "note": "",
+          "changes": {
+            "close_negatives": {
+              "from": [
+                "d3f81eae6523c72ada8e5226bc699b49",
+                "c2e06ef6ff1aca61c77ecf3571e461e3"
+              ],
+              "to": [
+                "d3f81eae6523c72ada8e5226bc699b49",
+                "c2e06ef6ff1aca61c77ecf3571e461e3",
+                "51b203a5131802cabf8c77f6cfac470e"
+              ]
+            }
+          }
         }
       ]
     },
