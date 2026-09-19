@@ -68,6 +68,18 @@ def test_turn_steps_pair_narration_with_tools_and_keep_reply_once() -> None:
     assert turn["langfuse_url"] == "http://lf/project/p/traces/" + "a" * 32
 
 
+def test_tool_result_pairs_with_the_call_that_requested_it() -> None:
+    """A tool span that starts after the next model call still belongs to its caller."""
+    raw = _raw("e" * 32, "2026-09-14T07:00:00Z", "price?", "It is $9.",
+               tools=[("search_products", {"query": "vase"}, {"ok": True, "count": 1})])
+    gens = [o for o in raw["observations"] if o["type"] == "GENERATION"]
+    tool = next(o for o in raw["observations"] if o["type"] == "TOOL")
+    tool["startTime"] = gens[1]["startTime"][:-1] + "5Z"  # later than the final model call
+    turn = traces.build_turn(raw, None, {})
+    assert [[t["name"] for t in s["tools"]] for s in turn["steps"]] == [["search_products"]]
+    assert turn["reply_meta"] is not None  # the reply is not repeated as narration
+
+
 def test_session_map_matches_nearest_stored_message(tmp_path: Path) -> None:
     raws = [_raw("1" * 32, "2026-09-14T07:00:00.200Z", "hello", "hi"),
             _raw("2" * 32, "2026-09-14T07:00:05.100Z", "again", "yes"),
