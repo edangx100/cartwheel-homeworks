@@ -9,7 +9,7 @@ each term the first time it appears.
 > [progress tracker](#4-the-whole-assignment-on-one-page) shows what is done,
 > what is in progress, and what is still to do.
 >
-> *Last updated: 2026-09-19, after axial coding pass 2 (60 of 100 traces
+> *Last updated: 2026-09-19, batch 3 drawn and suggestions posted (60 of 100 traces
 > reviewed, 8 candidate modes).*
 
 - The assignment itself: [module-2/hw4.md](module-2/hw4.md)
@@ -114,7 +114,8 @@ flowchart TD
     style PA fill:#bbf7d0,stroke:#15803d
     style B1 fill:#bbf7d0,stroke:#15803d
     style AX1 fill:#bbf7d0,stroke:#15803d
-    style B2 fill:#fde68a,stroke:#b45309
+    style B2 fill:#bbf7d0,stroke:#15803d
+    style B3 fill:#fde68a,stroke:#b45309
 ```
 
 Green = done. Yellow = next. White = still to do.
@@ -131,7 +132,7 @@ Green = done. Yellow = next. White = still to do.
 | Batch 2: 30 traces across one dimension | ✅ done | **role** (10 each): 5 failures, 25 no failure; see Section 9 |
 | Axial coding, pass 2 | ✅ done | 5 new failures placed; new candidate `out_of_scope_escalated`; 8 candidates (4 solid, 4 thin) |
 | Part C: Workshop notes | ⬜ to do | |
-| Batch 3: 25 depth-search traces | ⬜ to do | must include at least one rejected search suggestion |
+| Batch 3: 25 depth-search traces | 🟡 in review | 25 picks in the manifest; Claude suggests 12 failures, 13 no failure (13 search hits did not hold up); waiting for your review |
 | Part D: final 5 to 8 modes | ⬜ to do | |
 | Batch 4: final 15 random traces | ⬜ to do | count new modes that still appear |
 | Part E: labels for every trace x mode | ⬜ to do | Langfuse scores + `analysis/state/labels/` |
@@ -366,7 +367,7 @@ the review sees different corners of the data:
 ```
   Batch 1   15 random  +  15 "cluster representatives"      ✅ done
   Batch 2   30 spread evenly across ONE product dimension   ✅ done (role)
-  Batch 3   25 found by searching for candidate modes       ⬜
+  Batch 3   25 found by searching for candidate modes       🟡
   Batch 4   15 random, after the taxonomy is drafted        ⬜
             ─────────────────────────────────────────────
             100+ distinct traces, none counted twice
@@ -601,6 +602,51 @@ excluded):
 The 25 picks mix **likely positives and likely look-alikes** from each search, so
 the batch is not chosen only because something predicts a failure (another
 handout rule).
+
+### Did the hits hold up? (Claude's suggestions, waiting for your review)
+
+Claude read all 25 and posted a **pending suggestion** for each one. None of
+these count until you accept, edit, or reject them in the app.
+
+```
+ search                       picks   held up   look-alike (fine)   different failure
+ ───────────────────────────  ─────   ───────   ─────────────────   ─────────────────
+ permission_denied              4        1              3                   –
+ write after multi-match        5        2              3                   –
+ multi-match, no write          2        –              1                   1  (support-0005)
+ out_of_scope                   5        3              2                   –
+ ambiguous / missing info       5        –              4                   1  (support-0212)
+ date claim                     2        2              –                   –
+ ineligible refund              2        1*             –                   1  (support-0091)
+ ───────────────────────────  ─────   ───────   ─────────────────   ─────────────────
+ total                         25        9             13                   3
+ (* support-0112; support-0091 was picked as a likely look-alike but showed a failure)
+```
+
+So **12 suggested failures and 13 no-failure**, only 9 of them for the mode the
+search was aimed at. That is the "hints, not verdicts" rule in action.
+
+What this suggests for each candidate mode (to settle in axial pass 3):
+
+| Candidate mode | Before | Suggested new positives | Would be |
+| --- | --- | --- | --- |
+| `invented_date_reasoning` | 5 | support-0010, support-0036 | 7 |
+| `ineligible_refund_mishandled` | 5 | support-0112, support-0091 (wrong store window) | 7 |
+| `out_of_scope_escalated` | 1 | support-0008, support-0178, support-0187 | 4 ✓ reaches 3 |
+| `write_on_unconfirmed_target` | 1 | support-0043, support-0240 | 3 ✓ reaches 3 |
+| `permission_denied_escalated_without_confirming` | 1 | support-0237 | 2 ✗ only 4 such traces exist |
+| `goal_not_reclarified` | 1 | none (all 5 ambiguous picks were fine or a different failure) | 1 ✗ drop |
+| `duplicate_ticket`, `user_claim_not_reconciled` | 4, 3 | not searched | — |
+
+Two surprises need a placement decision in pass 3:
+
+- **support-0005**: a shipped order can't be cancelled. The agent opened an
+  "intercept" ticket instead of stating the rule and the next step (return after
+  delivery). Is this `ineligible_refund_mishandled`, widened to *"any action the
+  rules forbid"*, or a mode of its own?
+- **support-0212**: the order record says it shipped *after* it was delivered.
+  The agent did not flag the bad record or escalate. Is this a new *"bad record
+  not flagged"* mode? (support-0045 in batch 2 was also a wrong record.)
 
 ---
 
@@ -863,9 +909,11 @@ Branch: `homework_4`, pushed to GitHub.
 - [ ] Commit and push `analysis/state/patterns.json`
 - [x] Batch 2: dimension chosen before looking at outcomes (**role**)
 - [x] Batch 2: 30 traces drawn and open-coded (5 failures, 25 no failure)
-- [ ] Axial coding pass 2
+- [x] Axial coding pass 2
 - [ ] **Part C**: Raindrop Workshop, 5 to 10 runs → `analysis/report/workshop_notes.md`
-- [ ] **Batch 3**: 25 traces from depth searches, including at least one rejected search result
+- [x] **Batch 3**: 25 picks drawn and added to the manifest (batch `depth`)
+- [ ] **Batch 3**: review the 25 pending suggestions in the app (accept, edit, or reject)
+- [ ] Axial coding pass 3 (drop `goal_not_reclarified`? place support-0005 and support-0212)
 - [ ] **Part D**: final 5 to 8 modes, each with 3+ positives, close negatives, a boundary, an evaluator type and a SPEC source; compare with the AgentDebug taxonomy; write the SPEC revisions
 - [ ] **Batch 4**: 15 random traces; count new modes that still appear
 - [ ] **Part E**: label every trace x mode; scores to Langfuse; `analysis/state/labels/`
