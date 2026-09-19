@@ -960,8 +960,9 @@ function renderTaxonomy() {
     const form = page.querySelector(`.mode-form[data-mode="${i}"]`);
     const next = {};
     form.querySelectorAll('[data-k]').forEach(el => { next[el.dataset.k] = el.value.trim(); });
-    next.positives = next.positives ? next.positives.split(/[\s,]+/) : [];
-    next.close_negatives = next.close_negatives ? next.close_negatives.split(/[\s,]+/) : [];
+    // Split on spaces or commas and drop repeats, so pasting an ID twice does not list it twice.
+    next.positives = next.positives ? [...new Set(next.positives.split(/[\s,]+/))] : [];
+    next.close_negatives = next.close_negatives ? [...new Set(next.close_negatives.split(/[\s,]+/))] : [];
     const unknown = [...next.positives, ...next.close_negatives].filter(t => !S.traceIndex[t]);
     if (unknown.length) return toast('Unknown trace ids: ' + unknown.slice(0, 3).join(', '));
     if (!/^[a-z][a-z0-9_]{1,63}$/.test(next.name)) return toast('Name must be snake_case.');
