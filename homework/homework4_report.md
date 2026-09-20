@@ -11,8 +11,9 @@ each term the first time it appears.
 >
 > *Last updated: 2026-09-20, **Parts D and E complete**: 7 final modes,
 > 3 rejected groups, 110 traces reviewed, 770 judgments written and verified in
-> Langfuse, 6 new rules in `SPEC.md`, `review_summary.md` written. Only the
-> video and `interface_comparison.md` remain.*
+> Langfuse, 6 new rules in `SPEC.md`, `review_summary.md` and
+> `interface_comparison.md` written, everything committed and pushed. **Only
+> the video remains.** Homework 5 needs 169 more Fail labels first: Section 18.*
 
 - The assignment itself: [module-2/hw4.md](module-2/hw4.md)
 - The method it follows: the [error-discovery skill](https://github.com/ai-evals-course/evals-skills/blob/main/skills/error-discovery/SKILL.md)
@@ -133,7 +134,7 @@ Green = done. Yellow = next. White = still to do.
 | --- | --- | --- |
 | Part A: review 5 traces in the standard Langfuse view | ✅ done (2026-09-18) | 5 traces, friction notes, 4 open codes, pending revisions #1 to #4 |
 | Part A: build the review interface | ✅ done (2026-09-19) | `analysis/review_app/`, merged and pushed |
-| Part A: `interface_comparison.md` | 🟡 drafted | needs rewriting in your own words |
+| Part A: `interface_comparison.md` | ✅ done (2026-09-20) | rewritten in your own words: retained design, changed design, remaining limitation |
 | Batch 1: 15 random + 15 cluster traces | ✅ done | 30/30 reviewed: 10 failures, 20 no failure |
 | Axial coding, pass 1 | ✅ done | 7 candidate modes |
 | Batch 2: 30 traces across one dimension | ✅ done | **role** (10 each): 5 failures, 25 no failure; see Section 9 |
@@ -1728,7 +1729,7 @@ cartwheel-homeworks/
 │       ├── part_a_langfuse_review.md
 │       ├── workshop_notes.md        ← Part C, all 6 decisions recorded
 │       ├── review_summary.md        ← the Part D + E write-up
-│       └── interface_comparison.md   ← draft, to rewrite
+│       └── interface_comparison.md   ← Part A write-up, in your words
 ├── homework/
 │   └── homework4_report.md      ← this file
 ├── SPEC.md                      ← now has RESP-6/7/8, ESC-5/6 + revision history
@@ -1765,11 +1766,11 @@ Branch: `homework_4`, pushed to GitHub.
 
 **Still to do:**
 
-- [ ] Rewrite `interface_comparison.md` in your own words
-- [ ] Edit the mode definitions in the Taxonomy tab into your own words if any
-      still read as Claude's drafting
-- [ ] Commit and push
-- [ ] Video (max 5 minutes)
+- [x] `interface_comparison.md` rewritten in your own words
+- [x] Committed and pushed (`4e89601` on `homework_4`)
+- [ ] Optional: reword any mode definition in the Taxonomy tab that still reads
+      as Claude's drafting
+- [ ] **Video (max 5 minutes)** — the only thing left for Homework 4
 
 ### What the video needs, and where it now lives
 
@@ -1784,3 +1785,53 @@ The handout asks for seven specific things. All but the last are ready:
 | One rejected search suggestion + the boundary | `support-0222` — the SVG in Section 11b is the picture of it |
 | One relationship between a mode and `SPEC.md` | Section 12 — e.g. `duplicate_ticket` → ESC-6, a rule that did not exist until you found the failure |
 | New modes in the final 15 traces | **zero** — Section 9c |
+
+---
+
+## 18. Before Homework 5 starts
+
+Homework 4 is finished. Homework 5 has an entry requirement that Homework 4
+does not meet yet, and it is worth seeing now rather than discovering later.
+
+To split and validate an LLM judge, Homework 5 needs **at least 30 Pass and 30
+Fail labels for each mode**. Pass labels are plentiful. Fail labels are not:
+
+```
+                                     Fail   Pass    short by
+  refusal_mishandled               ██  10    100      -20
+  invented_date_reasoning          █    8    102      -22
+  user_claim_not_reconciled        █    6    104      -24
+  duplicate_ticket                 █    5    105      -25
+  inconsistent_record_not_flagged  █    5    105      -25
+  out_of_scope_not_declined        █    4    106      -26
+  write_on_unconfirmed_target      █    3    107      -27
+                                                     ─────
+                                                      169
+```
+
+The handout's instruction is to **generate synthetic scenarios targeting each
+thin mode**, run them, and label the results — the Homework 3 machinery again,
+aimed at seven specific targets.
+
+Two of the seven are harder than the arithmetic suggests:
+
+**`inconsistent_record_not_flagged` needs new seed data, not new scenarios.**
+All five of its failures come from three deliberately corrupted orders, and the
+database contains exactly **one** store-mismatch order. No number of scenarios
+will produce 25 more failures from three broken records:
+
+```
+  orders 8001, 8002, 8003  ──▶  14 traces  ──▶  5 failures
+       (all there is)                            (all there can be)
+```
+
+`seed/adversarial.py` would have to produce more corrupt orders first.
+
+**`invented_date_reasoning` is intermittent.** `support-0114` passed in Module 1
+and failed when replayed on identical data, so scenarios aimed at this mode will
+only fail some of the time. Expect to generate well beyond 22 to land 22.
+
+**Worth checking the Homework 5 handout first.** If it scopes the judge to a
+single mode rather than all seven, the cheapest and best-understood target is
+`refusal_mishandled`: the smallest gap at 20, the largest set of existing
+examples, and a definition already stated as a clear pass/fail rule.
