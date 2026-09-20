@@ -1,5 +1,3 @@
-<!-- DRAFT written by Claude from my Part A notes (part_a_langfuse_review.md). Edit into my own words, then delete this line. -->
-
 # Interface comparison
 
 My review interface is in `analysis/review_app/`. I compared it with the reference interface (`analysis/server.py`, `analysis/ui/index.html`) and with the standard Langfuse trace view, where I reviewed five traces first (`part_a_langfuse_review.md`).

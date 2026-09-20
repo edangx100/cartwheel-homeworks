@@ -9,8 +9,10 @@ each term the first time it appears.
 > [progress tracker](#4-the-whole-assignment-on-one-page) shows what is done,
 > what is in progress, and what is still to do.
 >
-> *Last updated: 2026-09-19, batch 4 reviewed (100 of 100 traces reviewed;
-> 6 modes with 3+ examples, 1 candidate with 2, 2 rejected).*
+> *Last updated: 2026-09-20, **Parts D and E complete**: 7 final modes,
+> 3 rejected groups, 110 traces reviewed, 770 judgments written and verified in
+> Langfuse, 6 new rules in `SPEC.md`, `review_summary.md` written. Only the
+> video and `interface_comparison.md` remain.*
 
 - The assignment itself: [module-2/hw4.md](module-2/hw4.md)
 - The method it follows: the [error-discovery skill](https://github.com/ai-evals-course/evals-skills/blob/main/skills/error-discovery/SKILL.md)
@@ -81,7 +83,7 @@ reading traces one at a time.
 | **failure mode** | A named, yes/no-checkable kind of mistake | `duplicate_ticket` |
 | **close negative** | A trace that *looks* like it has the mistake but doesn't. It shows where the line is | `support-0201`: user repeats a request, agent points to the existing ticket instead of opening a new one |
 | **SPEC requirement** | A numbered rule in `SPEC.md`, like `RESP-3` | RESP-3: "state when information is missing or inconsistent" |
-| **pending revision** | A rule you decided `SPEC.md` is missing, written down before a mistake can be counted against it | #5: "reuse an open ticket for the same issue" |
+| **pending revision** | A rule you decided `SPEC.md` is missing, written down before a mistake can be counted against it. The five that modes depend on are no longer pending — see Section 12 | #5 became **ESC-6**: "reuse an open ticket for the same issue" |
 | **AI suggestion** | A note or mark drafted by Claude that you must **accept or reject** before it counts | 15 so far: 14 accepted, 1 rejected |
 | **sample fraction** | How often a mode appeared *in the traces you chose to read*. Not a rate for all traffic | "4 of 30" |
 
@@ -117,8 +119,10 @@ flowchart TD
     style B2 fill:#bbf7d0,stroke:#15803d
     style B3 fill:#bbf7d0,stroke:#15803d
     style PC fill:#bbf7d0,stroke:#15803d
-    style PD fill:#fde68a,stroke:#b45309
+    style PD fill:#bbf7d0,stroke:#15803d
     style B4 fill:#bbf7d0,stroke:#15803d
+    style PE fill:#bbf7d0,stroke:#15803d
+    style V fill:#fde68a,stroke:#b45309
 ```
 
 Green = done. Yellow = next. White = still to do.
@@ -133,15 +137,24 @@ Green = done. Yellow = next. White = still to do.
 | Batch 1: 15 random + 15 cluster traces | ✅ done | 30/30 reviewed: 10 failures, 20 no failure |
 | Axial coding, pass 1 | ✅ done | 7 candidate modes |
 | Batch 2: 30 traces across one dimension | ✅ done | **role** (10 each): 5 failures, 25 no failure; see Section 9 |
-| Axial coding, pass 2 | ✅ done | 5 new failures placed; new candidate `out_of_scope_escalated`; 8 candidates (4 solid, 4 thin) |
-| Part C: Workshop notes | 🟡 drafted | 8 replayed runs in local Workshop; 6 hypotheses (W1–W6), your decisions pending; see Section 9d |
+| Axial coding, pass 2 | ✅ done | 5 new failures placed; new candidate `out_of_scope_escalated` (renamed in Part D); 8 candidates (4 solid, 4 thin) |
+| Part C: Workshop notes | ✅ done | 8 replayed runs; all 6 hypotheses decided: 1 accepted, 1 revised, 4 reproductions; **0 new modes**; see Section 9d |
 | Batch 3: 25 depth-search traces | ✅ done | 25/25 reviewed: 12 failures, 13 no failure (13 search hits did not hold up); see Section 9b |
 | Axial coding, pass 3 | ✅ done | `goal_not_reclarified` rejected; permission mode merged into `refusal_mishandled`; new candidate `inconsistent_record_not_flagged`; see Section 11 |
-| Part D: final 5 to 8 modes | ⬜ to do | |
-| Batch 4: final 15 random traces | ✅ done | 15/15 reviewed (seed 7): 3 failures, all in existing modes; **0 new modes**; 100 distinct traces in total; see Section 9c |
-| Part E: labels for every trace x mode | ⬜ to do | Langfuse scores + `analysis/state/labels/` |
-| `review_summary.md`, `workshop_notes.md` | ⬜ to do | |
+| Part D: final 5 to 8 modes | ✅ done (2026-09-20) | **7 final modes**, 3 rejected groups; 2 searches; renamed 1 mode after the AgentDebug comparison; see Section 11b |
+| Batch 4: final 15 random traces | ✅ done | 15/15 reviewed (seed 7): 3 failures, all in existing modes; **0 new modes**; 100 distinct traces; Part D searches later added 7 more, for 107; see Section 9c |
+| Part E: labels for every trace x mode | ✅ done (2026-09-20) | 7 modes x 110 traces = **770 judgments**, all written and **verified** in Langfuse; see Section 11c |
+| `workshop_notes.md` | ✅ done | all 6 Workshop decisions recorded |
+| `review_summary.md` | ✅ done | [analysis/report/review_summary.md](../analysis/report/review_summary.md) |
 | Video (max 5 minutes) | ⬜ to do | yours to record |
+
+> **Two notes on reading the older sections.** This report is a record of what
+> happened in order, so earlier sections keep the words that were true at the
+> time. One mode was **renamed** in Part D — `out_of_scope_escalated` became
+> `out_of_scope_not_declined` (why: Section 11b) — and the "pending revisions"
+> of Sections 11 and 12 have since been **written into `SPEC.md`** as RESP-6,
+> RESP-7, RESP-8, ESC-5 and ESC-6. Nothing earlier was rewritten to match,
+> because the trail from observation to category has to stay inspectable.
 
 ---
 
@@ -739,17 +752,41 @@ doesn't touch the Langfuse tracing.
 **What 8 fresh runs showed** (details and run IDs in
 [workshop_notes.md](../analysis/report/workshop_notes.md)):
 
-| Finding | Mode it points to | New or reproduced? |
+| Finding | Mode it points to | **Your decision** |
 | --- | --- | --- |
-| W1 `support-0221`: told support that Blue Heron "handles" an order whose product belongs to another store, no flag | `inconsistent_record_not_flagged` | **new**: the store-mismatch kind of bad record |
-| W2 `support-0114`: called "delivered 2 days ago" a discrepancy when it was exactly right | `invented_date_reasoning` | **new** instance |
-| W3 `support-0043`: refunded one of two same-named orders without asking | `write_on_unconfirmed_target` | reproduced |
-| W4 `support-0237`: ticket straight after `permission_denied` | `refusal_mishandled` | reproduced |
-| W5 `support-0178`: tool call on an out-of-scope request | `out_of_scope_escalated` | reproduced |
-| W6 `support-0029`: **did** flag order 8001's impossible dates | close negative | the same data failed in `-0212` and `-0214` |
+| W1 `support-0221`: told support that Blue Heron "handles" an order whose product belongs to another store, no flag | `inconsistent_record_not_flagged` | ✅ **accepted**, evidence moved to the real trace (below) |
+| W2 `support-0114`: called "delivered 2 days ago" a discrepancy when it was exactly right | `invented_date_reasoning` | ✏️ **revised**, not counted as a new example (below) |
+| W3 `support-0043`: refunded one of two same-named orders without asking | `write_on_unconfirmed_target` | ✅ reproduction of a failure you already had |
+| W4 `support-0237`: ticket straight after `permission_denied` | `refusal_mishandled` | ✅ reproduction |
+| W5 `support-0178`: tool call on an out-of-scope request | `out_of_scope_not_declined` | ✅ reproduction |
+| W6 `support-0029`: **did** flag order 8001's impossible dates | close negative | ✅ accepted; already found by the Part D search too |
 
-No behaviour outside the current taxonomy appeared. Your accept / revise /
-reject decisions on W1–W6 are recorded in Part D.
+**No behaviour outside the taxonomy appeared, and Part C added no new mode.**
+That is a real result: a different tool, looking at fresh runs with a live
+model, found only things you had already named.
+
+#### Why W1 and W2 were not simply accepted
+
+Both were checked against the **original HW3 recording** of the same scenario,
+and the two came out differently:
+
+```
+  W1  support-0221            W2  support-0114
+  ─────────────────           ─────────────────
+  replay:   FAILED            replay:   FAILED
+  original: FAILED  ✔ same    original: PASSED  ✘ different
+       │                           │
+       ▼                           ▼
+  a real trace exists,         only the replay failed, so there is no
+  so use THAT as the           Langfuse trace to label in Part E, and
+  evidence (it can be          support-0036 already shows the same
+  labelled in Part E)          mistake inside the reviewed sample
+```
+
+So W1 became a positive backed by a real recording, and W2 was kept only as
+evidence that the mode is **intermittent**: the very same scenario, on the very
+same data, passed once and failed once. That matters for Homework 5 — a mode
+that fires only sometimes is harder for a judge to learn.
 
 ---
 
@@ -770,19 +807,23 @@ its findings as **suggestions**, never directly as your notes:
      └──────────┘                                   └──────────┘
 ```
 
-| | Count |
+| | Count (whole assignment) |
 | --- | --- |
-| Suggestions made | 15 |
-| Accepted | 14 |
-| Rejected | **1**: `support-0189` turn 4 |
+| Suggestions made | 92 |
+| Accepted | 89 |
+| Rejected | **3** |
 
-**The rejection.** Claude first suggested "no failure" for `support-0189`
-turn 4. You questioned it. On a second look, the reply calls ticket #191 a
-"broader charge mismatch" when the user had already said it was the same
-planner charge as ticket #190. You rejected the suggestion with that reason and
-coded the turn as a failure. The handout requires at least one rejected
-suggestion. This one is a genuine disagreement, which is exactly what that
-requirement is for.
+**The three rejections.** The handout requires at least one. Each of these is a
+different *kind* of disagreement, which is worth knowing:
+
+| Rejected | Why | What kind |
+| --- | --- | --- |
+| `support-0189` t4 | Claude said "no failure"; on a second look the reply calls ticket #191 a "broader charge mismatch" when the user had already said it was the same planner charge | you spotted a failure the AI missed |
+| `support-0002` t1 | A search hit that did not hold up — you had already marked it "no failure" yourself | duplicate work, same verdict |
+| `support-0222` t1 | A Part D search hit, rejected **on the boundary** — see Section 11b | a genuine line-drawing decision |
+
+The third is the most useful one for the video: it is not a mistake being
+corrected, it is you deciding exactly how far a mode reaches.
 
 You then rewrote **7 notes** in your own words. The app keeps each original
 wording in the note's history.
@@ -988,25 +1029,625 @@ Part D's search will test the candidate on those.
 That is 6 modes with at least 3 examples each, plus 1 to test. The handout
 asks for 5 to 8.
 
-## 12. Rules the SPEC was missing (pending revisions)
+---
+
+## 11b. Part D: making the taxonomy final
+
+Part D turns working groups into a finished taxonomy. Every mode has to earn
+eight things, and until it has all eight it stays a *candidate*:
+
+```
+  a snake_case name          a boundary vs its nearest neighbour
+  a binary definition        an evaluator type (code check or LLM judge)
+  3+ positives               a rule it comes from (a SPEC identifier)
+  3+ close negatives         the human notes it grew out of
+```
+
+### The gap check
+
+Laying the seven candidates against that list showed where the work was:
+
+```
+  mode                              pos  neg  evaluator  rule
+  ────────────────────────────────  ───  ───  ─────────  ────────────────
+  refusal_mishandled                 10    7  MISSING    half-written
+  invented_date_reasoning             8    4  ok         ok
+  duplicate_ticket                    5    4  ok         not written yet
+  out_of_scope_escalated              4    3  ok         ok
+  user_claim_not_reconciled           3    4  ok         not written yet
+  write_on_unconfirmed_target         3    7  ok         not written yet
+  inconsistent_record_not_flagged     2 ⚠  3  MISSING    ok
+```
+
+Two modes had no evaluator type, four pointed at rules that had never been
+written into `SPEC.md`, and one was a single example short.
+
+### Searching for the missing example
+
+The thin mode was `inconsistent_record_not_flagged` — records that contradict
+themselves. Rather than guess, a **deterministic filter** read all 250
+conversations and flagged every order record whose own fields disagree:
+
+```
+  ordered_at  >  shipped_at     ?          order's store  ≠  product's store ?
+  shipped_at  >  delivered_at   ?          status says delivered, no date    ?
+```
+
+That is a *retrieval signal*, not a verdict: it says "look here", and you still
+read every trace. It returned **11** traces, 4 already placed. You read the
+other 7 and accepted all of them — one positive, six close negatives.
+
+### Why the search had to be run twice
+
+The handout asks you to repeat a search after changing a definition, and this
+is a good illustration of why. The first filter could only notice a
+store mismatch **if the agent itself had looked the product up**. So it was
+blind to exactly the traces where *not looking* was the mistake.
+
+The second run compared each order against the product catalogue directly, and
+immediately found traces the first pass could never have seen.
+
+### The boundary, drawn on one bad order
+
+Order 8003 is recorded under Blue Heron Ceramics, but its product belongs to
+Golden Hour Coffee. Four conversations touch it, and they do **not** all get the
+same verdict:
+
+<svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Four conversations about order 8003 and their verdicts">
+  <rect x="270" y="8" width="180" height="40" rx="6" fill="#fee2e2" stroke="#b91c1c" stroke-width="1.5"/>
+  <text x="360" y="26" text-anchor="middle" font-family="sans-serif" font-size="12.5" font-weight="700" fill="#7f1d1d">order 8003 is broken</text>
+  <text x="360" y="40" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#7f1d1d">store 1, but product 553 is store 14</text>
+
+  <path d="M360 48 L120 78 M360 48 L300 78 M360 48 L480 78 M360 48 L640 78" stroke="#94a3b8" stroke-width="1.2" fill="none"/>
+
+  <g font-family="sans-serif">
+    <rect x="20" y="80" width="185" height="118" rx="6" fill="#dcfce7" stroke="#15803d" stroke-width="1.5"/>
+    <text x="30" y="98" font-size="11" font-weight="700" fill="#14532d">support-0220 (merchant)</text>
+    <text x="30" y="114" font-size="10" fill="#14532d">"we don't sell a Jam Trio"</text>
+    <text x="30" y="132" font-size="10" fill="#166534">→ checked the catalogue</text>
+    <text x="30" y="147" font-size="10" fill="#166534">→ flagged it, escalated</text>
+    <text x="30" y="172" font-size="11.5" font-weight="700" fill="#15803d">CLOSE NEGATIVE</text>
+    <text x="30" y="188" font-size="9.5" fill="#166534">did the right thing</text>
+
+    <rect x="215" y="80" width="185" height="118" rx="6" fill="#fee2e2" stroke="#b91c1c" stroke-width="1.5"/>
+    <text x="225" y="98" font-size="11" font-weight="700" fill="#7f1d1d">support-0221 (support)</text>
+    <text x="225" y="114" font-size="10" fill="#7f1d1d">"which store handles this?"</text>
+    <text x="225" y="132" font-size="10" fill="#991b1b">→ one lookup, no check</text>
+    <text x="225" y="147" font-size="10" fill="#991b1b">→ "Blue Heron handles it"</text>
+    <text x="225" y="172" font-size="11.5" font-weight="700" fill="#b91c1c">POSITIVE</text>
+    <text x="225" y="188" font-size="9.5" fill="#991b1b">the answer given IS the broken field</text>
+
+    <rect x="410" y="80" width="185" height="118" rx="6" fill="#fef3c7" stroke="#b45309" stroke-width="1.5" stroke-dasharray="5 3"/>
+    <text x="420" y="98" font-size="11" font-weight="700" fill="#78350f">support-0222 (shopper)</text>
+    <text x="420" y="114" font-size="10" fill="#78350f">"refund for order 8003"</text>
+    <text x="420" y="132" font-size="10" fill="#92400e">→ one lookup, no check</text>
+    <text x="420" y="147" font-size="10" fill="#92400e">→ escalated on eligibility</text>
+    <text x="420" y="172" font-size="11.5" font-weight="700" fill="#b45309">REJECTED</text>
+    <text x="420" y="188" font-size="9.5" fill="#92400e">suggested, and you said no</text>
+
+    <rect x="605" y="80" width="100" height="118" rx="6" fill="#fee2e2" stroke="#b91c1c" stroke-width="1.5"/>
+    <text x="615" y="98" font-size="11" font-weight="700" fill="#7f1d1d">support-0045</text>
+    <text x="615" y="114" font-size="10" fill="#7f1d1d">"that doesn't</text>
+    <text x="615" y="127" font-size="10" fill="#7f1d1d">sound right?"</text>
+    <text x="615" y="147" font-size="10" fill="#991b1b">→ dismissed it</text>
+    <text x="615" y="172" font-size="11.5" font-weight="700" fill="#b91c1c">POSITIVE</text>
+    <text x="615" y="188" font-size="9.5" fill="#991b1b">in 2 modes</text>
+  </g>
+
+  <rect x="20" y="218" width="685" height="70" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
+  <text x="32" y="238" font-family="sans-serif" font-size="11.5" font-weight="700" fill="#0f172a">The line you drew</text>
+  <text x="32" y="256" font-family="sans-serif" font-size="10.5" fill="#334155">The agent owes a second lookup when the question TURNS ON the broken relationship.</text>
+  <text x="32" y="272" font-family="sans-serif" font-size="10.5" fill="#334155">"Which store handles this?" is such a question. "Please refund this" is not — and the reply never named a store.</text>
+</svg>
+
+`support-0221` and `support-0222` look almost identical: same broken order,
+same single lookup, same silence about the mismatch. The difference is what was
+**asked**. That is why rejecting `support-0222` is worth more than accepting it
+would have been — it fixes the edge of the mode in a way another reviewer can
+apply.
+
+### A group considered and turned down
+
+The catalogue also has three broken **products**: a negative price, a blank
+title, and two listings with the same name. Sixteen conversations run into
+them. Should that be an eighth mode?
+
+```
+  16 traces surface a broken product record
+   │
+   ├── 4 are inside your reviewed sample ──▶ you read all 4, found NO failure
+   │                                          (3 now serve as close negatives)
+   ├── 11 handled it well (named the blank title, called -$5.00 an error)
+   └──  1 looks like a real miss (support-0223), and it is unreviewed
+```
+
+**Rejected.** The handout allows a new mode only when your own traces and notes
+support it, and one unreviewed trace is not that. It is recorded as a rejected
+group so the decision is inspectable, and flagged as the candidate to revisit
+if Homework 5 needs an eighth mode.
+
+### Checking against a published taxonomy
+
+The handout asks you to compare with **AgentErrorTaxonomy** (arXiv 2509.25370)
+*after* your own taxonomy is stable — late, so you don't copy someone else's
+categories while coding. The two are organised on different axes:
+
+| | Organised by | Answers |
+| --- | --- | --- |
+| AgentErrorTaxonomy | which part of the agent broke (memory, reflection, planning, action, system) | *why did it fail?* — for debugging |
+| Yours | which product rule broke | *did it break a rule?* — for evaluation |
+
+Three things came out of the comparison:
+
+**1. A name that lied (fixed).** Checking `out_of_scope_escalated` against their
+"misalignment" idea exposed that only **1 of its 4 examples actually
+escalates**:
+
+```
+  support-0186   escalate_to_human                    ✔ escalated
+  support-0008   search_help_center                   ✘ no ticket
+  support-0178   list_my_orders                       ✘ no ticket
+  support-0187   search_help_center, get_policy       ✘ no ticket
+```
+
+The definition was always right ("opens a ticket **or calls tools** instead of
+declining"), but a reviewer reading the *name* would mislabel three of four.
+Renamed to **`out_of_scope_not_declined`**.
+
+**2 and 3. Two gaps, both declined.** Their taxonomy has *parameter error* and
+*inefficient plan*; yours has neither.
+
+| Their category | Seen in Cartwheel? | Why it is not a mode |
+| --- | --- | --- |
+| Parameter error | Yes, twice (`search_products` given `"3"`, then `"553"`) | You had already judged it a tool-contract ambiguity; the agent recovered; no rule is broken |
+| Inefficient plan | Yes — and it is their **biggest** category (48 of 199) | Cartwheel's SPEC has no efficiency requirement, and the user-visible answer was right |
+
+Declining both is the point of the exercise: the comparison is a checklist, not
+a shopping list.
+
+### The finished taxonomy
+
+```
+  refusal_mishandled               ██████████  10 positives   ✅
+  invented_date_reasoning          ████████     8             ✅
+  duplicate_ticket                 █████        5             ✅
+  inconsistent_record_not_flagged  █████        5             ✅  (was 2)
+  out_of_scope_not_declined        ████         4             ✅  (renamed)
+  user_claim_not_reconciled        ███          3             ✅
+  write_on_unconfirmed_target      ███          3             ✅
+
+  rejected groups: goal_not_reclarified · permission_denied_… (merged)
+                   product_record_defect_not_flagged (new, Part D)
+```
+
+**7 final modes**, inside the handout's 5-to-8. Every one has a binary
+definition, 3+ positives, 3+ close negatives, a boundary, an evaluator type and
+a rule in `SPEC.md`.
+
+### What each mode means, in plain words
+
+Every mode is a **yes/no question** you ask about one trace. Here is each one
+stated as that question, with a real example of the agent failing it and a real
+example of the agent passing it.
+
+---
+
+**1. `refusal_mishandled` — "the answer was no, and the agent fumbled saying so"**
+
+> Did the agent fail to give a clear "no" with the reason, when a rule or a
+> tool result forbade what the user asked for?
+
+The refund isn't eligible, the order already shipped, or this user isn't
+allowed to see that order. The agent has to say so plainly, name the rule, and
+say what happens next. Instead it waffles, blames a failed "automatic check",
+or opens a ticket for an "exception" that no policy actually offers.
+
+```
+  ✘ FAILS   support-0038: order 554 is outside Meridian's 21-day window.
+            Agent calls it "not auto-eligible", opens ticket #163 for an
+            "exception", and never says the window has closed.
+
+  ✔ PASSES  support-0034: "Order 908 is not eligible" — names the window,
+            cites the policy, offers no imaginary exception.
+```
+
+The fumble matters more than it sounds: a user told "a human may approve an
+exception" waits for something that is never coming.
+
+---
+
+**2. `invented_date_reasoning` — "the agent did maths on a date it made up"**
+
+> Did the agent claim how much time has passed, without any source for what
+> today is, and get it wrong or act on it?
+
+The agent has no clock. Nothing in its instructions says what today's date is,
+so when it needs one it invents one — and in two traces it used **2026-09-14**,
+the day the recordings were made, rather than **2026-07-01**, when the
+scenarios are set.
+
+This shows up in two opposite shapes, which is why it is easy to miss:
+
+```
+  shape (a)  "that window has passed"        ← when it hasn't
+  shape (b)  "your dates don't match ours"   ← when they match perfectly
+```
+
+```
+  ✘ FAILS   support-0036: user says "delivered like 8 days ago". The record
+            says 8 days ago. The agent calls it a discrepancy and escalates.
+
+  ✔ PASSES  support-0114 (original): same setup, agent makes no date claim.
+```
+
+This is the mode that produced **RESP-9** (Section 12).
+
+---
+
+**3. `duplicate_ticket` — "the agent opened a second ticket for the same thing"**
+
+> Was a ticket for this exact issue already open in the conversation, and the
+> agent opened another anyway?
+
+The user repeats themselves, adds nothing new, and the agent files a fresh
+ticket instead of pointing at the one already running.
+
+```
+  ✘ FAILS   support-0023: ticket #155 opened in turn 1. In turn 2 the user
+            says "I'm saying the same thing again". Agent opens #156 — and
+            even writes "#155 was created for this same issue" into it.
+
+  ✔ PASSES  support-0201: refers back to the ticket already open.
+```
+
+This is the cheapest mode to check automatically — count the tickets — which
+is why its evaluator type is a **code check**, not an LLM judge.
+
+---
+
+**4. `inconsistent_record_not_flagged` — "the record was broken and the agent read it out anyway"**
+
+> Did the agent state a fact from a record that contradicts itself, without
+> mentioning that the record is broken?
+
+Three orders in the database are deliberately corrupt: one shipped *after* it
+was delivered, one is "delivered" with no delivery date, one sits under the
+wrong store. The agent is supposed to notice and escalate, not recite.
+
+```
+  ✘ FAILS   support-0214: order 8001 shows delivery on June 23 and shipping
+            on June 25. Agent calculates a return deadline from June 23 as
+            though nothing were wrong.
+
+  ✔ PASSES  support-0213: same record — "those dates don't line up" — and
+            opens a ticket to get it fixed.
+```
+
+The boundary here is the subtle one, drawn in the picture above: the agent owes
+a second lookup only when the question **turns on** the broken relationship.
+
+---
+
+**5. `out_of_scope_not_declined` — "not our job, and the agent didn't just say so"**
+
+> For a request Cartwheel doesn't handle at all, did the agent do something
+> other than decline briefly?
+
+Legal advice, tax advice, someone else's Amazon parcel. The correct answer is
+one or two sentences: no, and here's what I *can* help with. Anything else —
+searching, listing orders, opening a ticket — is the failure.
+
+```
+  ✘ FAILS   support-0178: user asks about an Amazon order. Agent calls
+            list_my_orders and reads out Cartwheel orders instead.
+
+  ✔ PASSES  support-0018: declines a legal-risk question in two sentences,
+            calls no tools, says what it can do instead.
+```
+
+Note the name: this mode was called `out_of_scope_escalated` until Part D,
+until it turned out **3 of its 4 examples never escalate at all** — they just
+call a tool they shouldn't.
+
+---
+
+**6. `user_claim_not_reconciled` — "the agent took the user's word for it"**
+
+> Did the agent repeat something the user said as if the system had confirmed
+> it, or carry on without mentioning that the two disagree?
+
+Users say things like "the Classic Scarf" or "it arrived today". Those are
+claims, not facts. The agent must either check them or label them as
+user-reported — and if the record disagrees, say so before acting.
+
+```
+  ✘ FAILS   support-0246: the user calls it "the Classic Scarf". get_order
+            returns only product_id 591 — no name. The reply prints
+            "Item: Classic Scarf" in a list of verified order fields, so the
+            user's own guess comes back looking like confirmed record data.
+
+  ✔ PASSES  support-0242: the product name the merchant used is checked
+            against the catalogue before it appears in the reply.
+```
+
+This is the only mode with **no automatic shortcut** — deciding it always
+needs a person to read the conversation.
+
+---
+
+**7. `write_on_unconfirmed_target` — "the agent guessed which order to touch"**
+
+> Did the agent refund or cancel an order it picked itself, when the user
+> hadn't said which one and the lookups didn't narrow it to exactly one?
+
+Money moves here, so guessing is the expensive failure.
+
+```
+  ✘ FAILS   support-0242: merchant says "refund a customer's Compact Trowel
+            Set order" — no order number, no amount. Agent picks order #753
+            from five fuzzy matches and refunds $57.
+
+  ✔ PASSES  support-0030: multiple listings match, so the agent lists them
+            and asks which one instead of choosing.
+```
+
+---
+
+### How to tell the near-neighbours apart
+
+Three pairs look alike until you ask *what fix would prevent it*:
+
+```
+  user_claim_not_reconciled   vs   write_on_unconfirmed_target
+  ──────────────────────────       ───────────────────────────
+  the user SAID something          the user said NOTHING useful
+  and the agent didn't check it    and the agent picked for them
+
+  invented_date_reasoning     vs   refusal_mishandled
+  ───────────────────────          ──────────────────
+  about the DATE MATHS             about the REFUSAL
+  (a correct refusal can still invent a date, and the reverse)
+
+  inconsistent_record_…       vs   user_claim_not_reconciled
+  ─────────────────────            ─────────────────────────
+  the RECORD contradicts itself    the USER contradicts the record
+```
+
+`support-0045` is the trace that sits in **both** of the last pair: the user
+doubted the store, the agent brushed the doubt aside, *and* the record really
+was broken. A trace is allowed to carry more than one mode.
+
+### The review set grew to 107
+
+Seven traces found by the Part D searches were accepted and added as a new
+batch, `depth_partd`. Without them, two of `inconsistent_record_not_flagged`'s
+positives would sit outside the sample and never get a label in Part E.
+
+| Batch | Traces |
+| --- | --- |
+| initial_uniform | 15 |
+| initial_cluster | 15 |
+| dimension (role) | 30 |
+| depth | 25 |
+| final_uniform | 15 |
+| **depth_partd** | **7** |
+| **total** | **107** |
+
+## 11c. Part E: labelling every trace against every mode
+
+Parts A to D found the failures and named them. Part E asks a different
+question, and asks it exhaustively:
+
+> For **every** trace and **every** mode: is this failure present, yes or no?
+
+7 modes x 110 traces = **770 separate judgments**. Not one of them may be left
+blank.
+
+### Why every pair, when you already know where the failures are?
+
+Because open coding used a **stopping rule**: you read until the first failure,
+wrote it down, and moved on. That was deliberate — it keeps long traces
+manageable — but it means a trace with an early failure was never checked for
+the *other* six modes.
+
+```
+  OPEN CODING (Part B)              STRUCTURED LABELLING (Part E)
+  ──────────────────                ─────────────────────────────
+  read until the 1st failure        ask all 7 questions of all 110 traces
+  write it in your own words        answer present / absent, no blanks
+  stop                              a trace may carry more than one mode
+
+  finds the failures                measures how often each one occurs
+```
+
+### How 770 judgments got made without 770 clicks
+
+Most of the answers were already implied by work you had already done. The job
+was to make them explicit, not to decide them again:
+
+```
+  770 judgments
+   │
+   ├─ 80  ── your taxonomy already said so ────────── the confirmed positives
+   │                                                  and close negatives
+   │
+   ├─ 429 ── your "no failure observed" marks ─────── you read those 70 traces
+   │                                                  end to end and found
+   │                                                  nothing, so all 7 modes
+   │                                                  are absent
+   │
+   ├─ 171 ── a rule you approved ──────────────────── e.g. no refund call in
+   │                                                  the turn, so "refunded
+   │                                                  the wrong order" cannot
+   │                                                  have happened
+   │
+   └─ 90  ── genuinely open ───────────────────────── read and decided by you
+                                                      in the review app
+```
+
+**The rules only ever rule a failure OUT, never in.** That is the safety
+property that makes them acceptable:
+
+```
+  no issue_refund call in the turn   ──▶  ABSENT, certainly
+  issue_refund WAS called            ──▶  goes to you; the rule stays silent
+```
+
+A wrong rule can therefore hide a real failure, but it can never invent one.
+Each of the 770 rows records which of the four routes produced it, so any of
+them can be audited or reversed.
+
+### The 90 you decided yourself
+
+They were not handed over as a flat list. Each came with the evidence already
+gathered — the timing phrases in the reply, the dates the tools returned, which
+trigger had fired — and a confidence tag, sorted hardest-first:
+
+```
+  [01-40]  LOW — read it    ████████████████  open the trace, read it properly
+  [41-50]  MEDIUM           ████              glance at the reply
+  [51-90]  HIGH             ████████████████  skim, then tick
+```
+
+They landed in the three modes that a computer genuinely cannot settle:
+`user_claim_not_reconciled` (38), `refusal_mishandled` (26),
+`invented_date_reasoning` (23), plus 3 stragglers.
+
+### Where the judgments went
+
+Each one is stored twice — once in the repository, once in Langfuse:
+
+```
+   your decision
+        │
+        ├──────────────▶  analysis/state/labels/<mode>.jsonl
+        │                 one line per trace, with the evidence and which
+        │                 route produced it
+        │
+        └──────────────▶  Langfuse score on that trace
+                          name = the mode, value = 1 present / 0 absent,
+                          comment = the evidence
+```
+
+Score ids are computed from the trace id and the mode, so re-running the sync
+overwrites rather than duplicates. All 770 were **verified**, meaning each was
+read back out of Langfuse and checked against the local file — not merely sent.
+
+### The results
+
+```
+  refusal_mishandled               ██████████  10 of 110    9.1%
+  invented_date_reasoning          ████████     8 of 110    7.3%
+  user_claim_not_reconciled        ██████       6 of 110    5.5%
+  duplicate_ticket                 █████        5 of 110    4.5%
+  inconsistent_record_not_flagged  █████        5 of 110    4.5%
+  out_of_scope_not_declined        ████         4 of 110    3.6%
+  write_on_unconfirmed_target      ███          3 of 110    2.7%
+```
+
+And how many modes each trace carries:
+
+```
+  no failure at all   ████████████████████████████████████  72 traces
+  exactly one mode    █████████████████                     35 traces
+  two modes           █                                      3 traces
+```
+
+**These are sample fractions, not prevalence.** The sample was deliberately
+steered toward failures — clustered, stratified by role, and searched
+repeatedly for specific modes. Saying "9.1% of Cartwheel conversations mishandle
+a refusal" would be wrong. Homework 5 estimates the real rate against the full
+trace store.
+
+### Two corrections made along the way
+
+Part E is also where two earlier judgments were revisited. Both are written up
+in [review_summary.md](../analysis/report/review_summary.md) section 7:
+
+1. **A positive was withdrawn.** `support-0234` had been counted as a failure
+   on the grounds that "delivered today" clashed with a record showing
+   2026-07-01 — but that *is* the date the scenarios are set on, so the two
+   agree. The same date-anchoring mistake the taxonomy names in
+   `invented_date_reasoning`, this time made while reviewing.
+
+2. **A boundary was set, and 12 traces re-examined.** Losing that positive
+   triggered a search, which found 12 traces where the reply prints the user's
+   own product name as though the system had confirmed it. Rather than rule on
+   them one by one, you set the rule once:
+
+```
+   the unchecked name only reached the chat reply   ──▶  not a failure   (8)
+   it reached a refund, a cancellation or a ticket  ──▶  a failure       (4)
+```
+
+   The line is now written into the mode's boundary, so another reviewer draws
+   it in the same place.
+
+---
+
+## 12. Rules the SPEC was missing — now written
 
 Sometimes a mistake broke no written rule, because the rule didn't exist yet.
-The handout says: write the rule down **before** counting the mistake.
+The handout is strict about the order here:
 
-| # | Draft rule | Came from |
-| --- | --- | --- |
-| 1 | For a dispute outside the window: say it's likely ineligible, cite the policy, still escalate | `support-0246` |
-| 2 | Don't present user-supplied details as verified order data | `support-0246` |
-| 3 | Before a refund or cancel: if the order or amount isn't pinned down, ask; don't guess | `support-0242` |
-| 4 | After `permission_denied`: say so and ask to confirm the order number before escalating | `support-0249` |
-| 5 | If a ticket for the same issue is open, refer to it; open a new one only for a new issue | `support-0023` |
+```
+  see the mistake  ──▶  write the RULE down  ──▶  only then count it as a failure
+                        (in SPEC.md)
+```
 
-After pass 3, three more are likely:
+Doing it the other way round would mean inventing a standard to justify a
+label you had already decided on. In Part D the five rules the modes depend on
+were written into [`SPEC.md`](../SPEC.md), each recorded in a new
+**Section 7, revision history**, naming the note it came from:
 
-- **give the agent today's date**;
-- **the refusal rule** from `refusal_mishandled`, which now includes #4;
-- **flag and escalate inconsistent records**. None of
-these has been written into `SPEC.md` yet. Doing that is part of Part D.
+| New rule | In plain words | Came from | Mode that needs it |
+| --- | --- | --- | --- |
+| **RESP-6** | Don't present what the user told you as verified order data | `support-0246` | `user_claim_not_reconciled` |
+| **RESP-7** | Before a refund or cancel, if the order or amount isn't pinned to one candidate, ask | `support-0242` | `write_on_unconfirmed_target` |
+| **RESP-8** | When `refund_eligible` is false, say it's not eligible and why; no invented "exception" path | order 554, ticket #163 | `refusal_mishandled` |
+| **ESC-5** | After `permission_denied`, say so and ask to confirm the order number before opening a ticket | `support-0249` | `refusal_mishandled` |
+| **ESC-6** | If a ticket for the same issue is already open, refer to it instead of opening another | ticket #155/#156 | `duplicate_ticket` |
+| **RESP-9** | The session context states today's date; time elapsed may only be computed from it and from dates the tools return | `support-0198`, order 81 | `invented_date_reasoning` |
+
+**Important:** editing `SPEC.md` does not change the running agent. The rules
+live in the prompt, the tool code and the permission checks; the document is
+the source they are written from. So none of the failures you found have
+quietly disappeared — the recordings are exactly as they were.
+
+**RESP-9 is different from the rest: it needs a code change, not just wording.**
+Every scenario is set on **2026-07-01**, but nothing tells the agent that. The
+block the server injects at the top of every conversation says only:
+
+```
+  ## Session context (injected by the server; never taken from chat)
+  - User role: shopper
+  - User id: 1
+  - Store id: none          ←  no date anywhere
+```
+
+With no date to work from, the agent supplies one. In two traces it wrote
+**"Current date 2026-09-14"** into a ticket — the day the Homework 3
+recordings were actually made — and told the user an order was outside a
+window it was comfortably inside:
+
+```
+  2026-05-04          2026-07-01                       2026-09-14
+  delivered           the scenario's "today"           the date the agent used
+      │                     │                                │
+      ├─────── 58 days ─────┤                                │
+      │                  INSIDE the 60-day dispute window     │
+      ├──────────────────── 133 days ─────────────────────────┤
+                         what the agent thought → "outside the window"  ✘
+```
+
+So the first half of RESP-9 ("the session context states the current date") is a
+change to the prompt template and the server that fills it. **That change is
+not part of Homework 4** — the rule is written now so the failures you found
+have something to cite, and `SPEC.md` says so plainly.
+
+**One draft still left unwritten.** A rule was drafted for disputes outside the
+window ("say it's likely ineligible, cite the policy, still escalate"), but no
+mode depends on it, so it stays recorded as pending rather than added.
 
 ---
 
@@ -1022,7 +1663,18 @@ these has been written into `SPEC.md` yet. Doing that is part of Part D.
   merging A with C                             wrote the draft mode definitions
   support-0025 as a close negative             recovered the session IDs
   accepting the 7 candidate modes              kept this report up to date
+
+  ── Part D ───────────────────────────        ── Part D ──────────────────────
+  all 6 Workshop verdicts (W1–W6)              ran both searches, proposed hits
+  all 8 search hits, one REJECTED              drafted the binary definitions
+  support-0045 belongs to two modes            wrote the 5 rules into SPEC.md
+  turning down the 8th mode                    found the misleading mode name
+  the rename to out_of_scope_not_declined      checked every mode's 8 requirements
+  growing the sample to 107
 ```
+
+The pattern holds throughout: **Claude retrieves and drafts, you decide.** No
+trace entered the taxonomy without you reading it first.
 
 ---
 
@@ -1047,7 +1699,8 @@ these has been written into `SPEC.md` yet. Doing that is part of Part D.
 | Session recovery: 350/350 matched, 1 session per scenario | script against `.sessions.db` | no |
 | Review app driven in a headless browser (selection, suggestions, counter) | Playwright on a copy of your state | no |
 | App loaded 416 traces from Langfuse, hid 66, grouped 350 | live Langfuse, read-only | no model; Langfuse only |
-| Scores written to Langfuse | not yet (Part E) | — |
+| 770 scores written to Langfuse | app sync, deterministic score ids | no |
+| Scores verified, not just sent | 12 sampled and read back by id (12/12 match); 0 local-vs-ledger disagreements across all 770 | no |
 | Workshop hook tests (3) + full suite: 169 passed, 1 unrelated failure | `uv run pytest` | no |
 | Part C: 8 HW3 scenarios replayed into Workshop | scenario runner → local server | **yes**: 11 turns with `gpt-5.5` |
 
@@ -1068,13 +1721,17 @@ cartwheel-homeworks/
 │   │   ├── sample_manifest.json ← which traces are in which batch
 │   │   ├── annotations.json     ← your open codes and marks
 │   │   ├── suggestions.json     ← AI suggestions + your decisions
-│   │   ├── patterns.json        ← the candidate modes (taxonomy)
-│   │   └── labels/              ← Part E: one file per final mode
+│   │   ├── patterns.json        ← the taxonomy: 7 final modes + 3 rejected
+│   │   ├── labels/              ← 7 files, 770 judgments, one per trace x mode
+│   │   └── label_sync.json      ← proof each score reached Langfuse
 │   └── report/
 │       ├── part_a_langfuse_review.md
+│       ├── workshop_notes.md        ← Part C, all 6 decisions recorded
+│       ├── review_summary.md        ← the Part D + E write-up
 │       └── interface_comparison.md   ← draft, to rewrite
 ├── homework/
 │   └── homework4_report.md      ← this file
+├── SPEC.md                      ← now has RESP-6/7/8, ESC-5/6 + revision history
 └── tests/test_review_app.py
 ```
 
@@ -1084,20 +1741,46 @@ Branch: `homework_4`, pushed to GitHub.
 
 ## 17. What is left
 
-- [ ] Edit the mode definitions in the Taxonomy tab into your own words (6 modes + 1 candidate)
-- [ ] Commit and push `analysis/state/patterns.json`
-- [x] Batch 2: dimension chosen before looking at outcomes (**role**)
-- [x] Batch 2: 30 traces drawn and open-coded (5 failures, 25 no failure)
-- [x] Axial coding pass 2
-- [x] **Part C**: Workshop installed, Cartwheel instrumented (opt-in), 8 runs inspected → `analysis/report/workshop_notes.md` (draft)
-- [ ] **Part C**: record your accept / revise / reject decision for W1–W6 (in Part D)
-- [x] **Batch 3**: 25 picks drawn and added to the manifest (batch `depth`)
-- [x] **Batch 3**: 25 suggestions reviewed (all 12 failures accepted)
-- [x] Axial coding pass 3
-- [ ] **Part D**: final 5 to 8 modes, each with 3+ positives, close negatives, a boundary, an evaluator type and a SPEC source; compare with the AgentDebug taxonomy; write the SPEC revisions
-- [x] **Batch 4**: 15 random traces drawn (100 distinct in total)
-- [x] **Batch 4**: 15 suggestions reviewed (all accepted); 3 failures placed in existing modes
-- [ ] **Part E**: label every trace x mode; scores to Langfuse; `analysis/state/labels/`
-- [ ] `analysis/report/review_summary.md`
+**Done in Part D** (was the whole middle of this list):
+
+- [x] **Part C**: your accept / revise / reject decision recorded for all of W1–W6
+- [x] **Part D**: 7 final modes, each with a binary definition, 3+ positives, 3+ close
+      negatives, a boundary, an evaluator type and a rule in `SPEC.md`
+- [x] **Part D**: the five missing rules written into `SPEC.md` (RESP-6/7/8, ESC-5/6)
+- [x] **Part D**: search for more examples of one mode, then repeated after the
+      definition changed — 8 hits reviewed, 1 rejected on the boundary
+- [x] **Part D**: compared with the AgentErrorTaxonomy → 1 rename, 2 gaps declined
+- [x] **Part D**: an 8th mode considered and turned down, on the evidence
+- [x] Review set grown to 107 traces (new batch `depth_partd`), then to **110**
+      when the 3 Part A traces were added in Part E
+
+**Done in Part E:**
+
+- [x] All **770** judgments (7 modes × 110 traces) recorded — no pair left blank
+- [x] Every judgment written to `analysis/state/labels/` **and** to Langfuse as a
+      score, all 770 **verified** by reading them back
+- [x] [`analysis/report/review_summary.md`](../analysis/report/review_summary.md)
+      written: sample composition, fractions per mode, stability, the taxonomy
+      revision, the SPEC revisions and the rejected suggestion
+
+**Still to do:**
+
 - [ ] Rewrite `interface_comparison.md` in your own words
+- [ ] Edit the mode definitions in the Taxonomy tab into your own words if any
+      still read as Claude's drafting
+- [ ] Commit and push
 - [ ] Video (max 5 minutes)
+
+### What the video needs, and where it now lives
+
+The handout asks for seven specific things. All but the last are ready:
+
+| The video must explain | Where it is |
+| --- | --- |
+| One interface decision made after seeing traces | Section 7 (grouping turns into one conversation) |
+| One Workshop suggestion and your decision | Section 9d — W1 accepted, or W2 revised |
+| Two failure modes + a supporting trace each | Section 11b table |
+| One taxonomy revision or rejected group | the merge into `refusal_mishandled`, or the 8th mode turned down |
+| One rejected search suggestion + the boundary | `support-0222` — the SVG in Section 11b is the picture of it |
+| One relationship between a mode and `SPEC.md` | Section 12 — e.g. `duplicate_ticket` → ESC-6, a rule that did not exist until you found the failure |
+| New modes in the final 15 traces | **zero** — Section 9c |

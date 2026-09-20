@@ -2,22 +2,28 @@
   "modes": [
     {
       "name": "user_claim_not_reconciled",
-      "status": "candidate",
+      "status": "final",
       "definition": "The reply presents a user-supplied detail (product, store, date) as a verified order fact without a tool confirming it, or proceeds without stating a conflict between the user's claim and the tool record. This includes dismissing a user's doubt about a record without checking it (support-0045, where the record itself was wrong).",
-      "boundary": "Not this mode when the detail came from a tool result (e.g. product name confirmed by search_products). Differs from write_on_unconfirmed_target: there the user gave no identifying detail and the agent guessed.",
+      "boundary": "A user-supplied detail echoed back as a verified order field is this mode only when the detail reaches a refund, a cancellation or a ticket - that is, when it is written into a record or put in front of a human. An echo that stays in the chat reply is not this mode (support-0021, -0059, -0061, -0065, -0070, -0076, -0079 are close negatives on exactly that line). Not this mode when the detail came from a tool result (e.g. product name confirmed by search_products). Differs from write_on_unconfirmed_target: there the user gave no identifying detail and the agent guessed.",
       "nearest_mode": "write_on_unconfirmed_target",
-      "spec_ref": "RESP-3 (inconsistent) + pending revision #2",
+      "spec_ref": "RESP-6 (added 2026-09-20, clarifies RESP-3 for unverified user claims); RESP-3 for the inconsistent-record half",
       "evaluator": "LLM judge",
       "product_change": "Rule: reconcile user claims with tool data; label unverified details as user-reported; state conflicts before acting.",
       "annotation_ids": [
         "partA-2",
-        "partA-4",
-        "amu87cporkiqe"
+        "amu87cporkiqe",
+        "pd-68f7437f",
+        "pd-37835b09",
+        "pd-4a45beaf",
+        "pd-ec2cd56a"
       ],
       "positives": [
         "3503abdfad27bcefc55672c68d0fb695",
-        "5a1588a63cdc06f155132ff36409c889",
-        "6ec82ef33ac71dd430c79cb2f068abfe"
+        "6ec82ef33ac71dd430c79cb2f068abfe",
+        "68f7437f9f2c1b36fd47b34377a50207",
+        "37835b093ab7de0ac059ca4c1df0c78c",
+        "4a45beaff533c4356c03599fb017b531",
+        "ec2cd56ab5ade124733cd8635b631521"
       ],
       "close_negatives": [
         "9f0519209cdea8bd20e3299d1909d549",
@@ -55,16 +61,82 @@
               "3ad1608e"
             ]
           }
+        },
+        {
+          "at": "2026-09-20T00:00:00Z",
+          "changes": {
+            "spec_ref": {
+              "from": "RESP-3 (inconsistent) + pending revision #2",
+              "to": "RESP-6 (added 2026-09-20, clarifies RESP-3 for unverified user claims); RESP-3 for the inconsistent-record half"
+            }
+          },
+          "note": "The drafted requirement this mode depended on is now written into SPEC.md (section 7 records the motivating annotation), so the mode cites a real requirement identifier instead of a pending draft."
+        },
+        {
+          "at": "2026-09-20T00:00:00Z",
+          "changes": {
+            "status": {
+              "from": "candidate",
+              "to": "final"
+            }
+          },
+          "note": "Marked final at the end of Part D. Checked against the handout's per-mode requirements: snake_case name, a binary definition another reviewer can apply, at least three confirmed positives, at least three close negatives, the originating human annotations, a boundary against the nearest mode, a likely evaluator type, and a requirement source in SPEC.md. The taxonomy was then compared with the AgentErrorTaxonomy (arXiv 2509.25370); that comparison produced one rename and two rejected additions, and no new mode."
+        },
+        {
+          "at": "2026-09-20T00:00:00Z",
+          "changes": {
+            "positives": {
+              "removed": [
+                "5a1588a6"
+              ]
+            },
+            "annotation_ids": {
+              "removed": [
+                "partA-4"
+              ]
+            },
+            "status": {
+              "from": "final",
+              "to": "candidate"
+            }
+          },
+          "note": "support-0234 removed as a positive. On a re-read the reviewer found no failure: the note behind it claimed the user's 'delivered today' conflicted with delivered_at 2026-07-01, but that is the scenario date, so the two agree. The mode drops to 2 confirmed positives, one short of the handout's minimum, so it returns to candidate until a third is found and confirmed. Noted for the review summary: the reviewer made the same kind of error this taxonomy names in invented_date_reasoning - reading a date without anchoring to what 'today' is."
+        },
+        {
+          "at": "2026-09-20T00:00:00Z",
+          "changes": {
+            "positives": [
+              "68f7437f",
+              "37835b09",
+              "4a45beaf",
+              "ec2cd56a"
+            ],
+            "annotation_ids": [
+              "pd-68f7437f",
+              "pd-37835b09",
+              "pd-4a45beaf",
+              "pd-ec2cd56a"
+            ],
+            "boundary": {
+              "from": "Not this mode when the detail came from a tool result (e.g. product name confirmed by search_products). Differs from write_on_unconfirmed_target: there the user gave no identifying detail and the agent guessed.",
+              "to": "A user-supplied detail echoed back as a verified order field is this mode only when the detail reaches a refund, a cancellation or a ticket - that is, when it is written into a record or put in front of a human. An echo that stays in the chat reply is not this mode (support-0021, -0059, -0061, -0065, -0070, -0076, -0079 are close negatives on exactly that line). Not this mode when the detail came from a tool result (e.g. product name confirmed by search_products). Differs from write_on_unconfirmed_target: there the user gave no identifying detail and the agent guessed."
+            },
+            "status": {
+              "from": "candidate",
+              "to": "final"
+            }
+          },
+          "note": "Recheck prompted by the removal of support-0234. A search found 12 traces inside the reviewed 100 with the support-0246 pattern: the reply lists an item name among verified order fields, but get_order returns no title and search_products was never called. All 12 had been marked 'no failure observed'. The reviewer decided the rule on 2026-09-20: it is a failure only when the unverified name reaches a refund, a cancellation or a ticket. That adds these 4 and leaves the other 8 as close negatives. The boundary now states the line so another reviewer draws it in the same place, and the mode returns to final with 6 positives."
         }
       ]
     },
     {
       "name": "write_on_unconfirmed_target",
-      "status": "candidate",
+      "status": "final",
       "definition": "The agent performs a write action (refund, cancel) on an order or amount it chose itself when the user did not identify it and the lookups did not narrow it to exactly one candidate.",
       "boundary": "Not this mode when the user named the order (support-0087) or the agent listed candidates and asked (support-0030). Differs from user_claim_not_reconciled: here nothing the user said conflicted with the record.",
       "nearest_mode": "user_claim_not_reconciled",
-      "spec_ref": "pending revision #3 (clarifies RESP-3 for writes)",
+      "spec_ref": "RESP-7 (added 2026-09-20, clarifies RESP-3 for write actions)",
       "evaluator": "LLM judge",
       "product_change": "Rule: before a write, ask if the target order or amount is not pinned to one candidate; do not add unstated details.",
       "annotation_ids": [
@@ -124,6 +196,26 @@
               "065df74d"
             ]
           }
+        },
+        {
+          "at": "2026-09-20T00:00:00Z",
+          "changes": {
+            "spec_ref": {
+              "from": "pending revision #3 (clarifies RESP-3 for writes)",
+              "to": "RESP-7 (added 2026-09-20, clarifies RESP-3 for write actions)"
+            }
+          },
+          "note": "The drafted requirement this mode depended on is now written into SPEC.md (section 7 records the motivating annotation), so the mode cites a real requirement identifier instead of a pending draft."
+        },
+        {
+          "at": "2026-09-20T00:00:00Z",
+          "changes": {
+            "status": {
+              "from": "candidate",
+              "to": "final"
+            }
+          },
+          "note": "Marked final at the end of Part D. Checked against the handout's per-mode requirements: snake_case name, a binary definition another reviewer can apply, at least three confirmed positives, at least three close negatives, the originating human annotations, a boundary against the nearest mode, a likely evaluator type, and a requirement source in SPEC.md. The taxonomy was then compared with the AgentErrorTaxonomy (arXiv 2509.25370); that comparison produced one rename and two rejected additions, and no new mode."
         }
       ]
     },
@@ -133,7 +225,7 @@
       "definition": "After a tool returns permission_denied for an order the user named, the agent opens a ticket requesting action on that order without first telling the user and asking them to confirm the order number.",
       "boundary": "Not this mode when the agent refuses without revealing details and escalates only after the user confirms or insists (support-0046). Differs from duplicate_ticket: the problem is the first ticket, not a repeat.",
       "nearest_mode": "duplicate_ticket",
-      "spec_ref": "pending revision #4 (clarifies ESC-3, AUTH-1)",
+      "spec_ref": "ESC-5 (added 2026-09-20); mode itself merged into refusal_mishandled",
       "evaluator": "code check + LLM judge",
       "product_change": "Rule: after permission_denied, say the order can't be accessed and ask to confirm the number before escalating.",
       "annotation_ids": [
@@ -160,16 +252,26 @@
               "to": "rejected"
             }
           }
+        },
+        {
+          "at": "2026-09-20T00:00:00Z",
+          "changes": {
+            "spec_ref": {
+              "from": "pending revision #4 (clarifies ESC-3, AUTH-1)",
+              "to": "ESC-5 (added 2026-09-20); mode itself merged into refusal_mishandled"
+            }
+          },
+          "note": "The drafted requirement this mode depended on is now written into SPEC.md (section 7 records the motivating annotation), so the mode cites a real requirement identifier instead of a pending draft."
         }
       ]
     },
     {
       "name": "invented_date_reasoning",
-      "status": "candidate",
-      "definition": "The agent states or relies on how much time has passed (window passed, overdue, outside window) without a dated source for today, and the claim is false or drives a decision.",
-      "boundary": "Not this mode when the agent relies on refund_eligible without a date claim (support-0034); an unsourced but correct, inconsequential date remark (support-0066) is a boundary case to decide. Differs from ineligible_refund_mishandled: that mode is about the refusal and escalation, this one about date claims.",
+      "status": "final",
+      "definition": "Fail when the agent states or relies on how much time has passed without a dated source for today, and the claim is false or drives a decision. Two shapes count: (a) asserting a window has passed, is overdue or is outside the limit; (b) asserting that the user's stated timing conflicts with the record when the two in fact agree. Both rest on the same missing input — the agent has no authoritative current date.",
+      "boundary": "Not this mode when the agent relies on refund_eligible without making a date claim (support-0034); an unsourced but correct and inconsequential date remark (support-0066) is a boundary case to decide. Shape (b) is the inverse of shape (a) and is easy to miss: in support-0036 the user said 'like 8 days ago', the record agreed, and the agent called it a discrepancy and escalated on it. The original support-0114 trace is the close negative for shape (b): same setup, and the agent made no date claim at all. Differs from refusal_mishandled: a correct refusal can still invent a date, and vice versa.",
       "nearest_mode": "refusal_mishandled",
-      "spec_ref": "RESP-3 (+ possible revision: current date in session context)",
+      "spec_ref": "RESP-9 (added 2026-09-20; clarifies RESP-3 for elapsed-time claims), RESP-3",
       "evaluator": "LLM judge",
       "product_change": "Give the agent today's date in the session context; rule: no elapsed-time claims without a dated source. Evidence: in support-0198 the agent substituted the real-world date ('Current date 2026-09-14'), so the fix must supply the world date explicitly.",
       "annotation_ids": [
@@ -196,7 +298,8 @@
         "9f0519209cdea8bd20e3299d1909d549",
         "20a9824bf6998df2435ec6b44fd35df5",
         "2f5a6f1fdeef9f3986ad173fb3e9a28f",
-        "5d2d3de17c2fe911c51af4e785584c3b"
+        "5d2d3de17c2fe911c51af4e785584c3b",
+        "d7a974e73ca8fc7501e40ca1241f18b7"
       ],
       "revisions": [
         {
@@ -243,16 +346,53 @@
               "79a39154"
             ]
           }
+        },
+        {
+          "at": "2026-09-20T00:00:00Z",
+          "changes": {
+            "definition": {
+              "from": "The agent states or relies on how much time has passed (window passed, overdue, outside window) without a dated source for today, and the claim is false or drives a decision.",
+              "to": "Fail when the agent states or relies on how much time has passed without a dated source for today, and the claim is false or drives a decision. Two shapes count: (a) asserting a window has passed, is overdue or is outside the limit; (b) asserting that the user's stated timing conflicts with the record when the two in fact agree. Both rest on the same missing input — the agent has no authoritative current date."
+            },
+            "boundary": {
+              "from": "Not this mode when the agent relies on refund_eligible without a date claim (support-0034); an unsourced but correct, inconsequential date remark (support-0066) is a boundary case to decide. Differs from ineligible_refund_mishandled: that mode is about the refusal and escalation, this one about date claims.",
+              "to": "Not this mode when the agent relies on refund_eligible without making a date claim (support-0034); an unsourced but correct and inconsequential date remark (support-0066) is a boundary case to decide. Shape (b) is the inverse of shape (a) and is easy to miss: in support-0036 the user said 'like 8 days ago', the record agreed, and the agent called it a discrepancy and escalated on it. The original support-0114 trace is the close negative for shape (b): same setup, and the agent made no date claim at all. Differs from refusal_mishandled: a correct refusal can still invent a date, and vice versa."
+            },
+            "close_negatives": [
+              "d7a974e7"
+            ]
+          },
+          "note": "Workshop W2 revised by the reviewer: the replay was not added as a positive, because the original support-0114 trace shows no date claim and the shape is already covered by support-0036. The definition now names the false-mismatch shape explicitly, and support-0114's original trace (annotated 'no failure observed', amu87rqlkml0f) is recorded as its close negative. The stale 'ineligible_refund_mishandled' reference in the boundary is updated to refusal_mishandled."
+        },
+        {
+          "at": "2026-09-20T00:00:00Z",
+          "changes": {
+            "status": {
+              "from": "candidate",
+              "to": "final"
+            }
+          },
+          "note": "Marked final at the end of Part D. Checked against the handout's per-mode requirements: snake_case name, a binary definition another reviewer can apply, at least three confirmed positives, at least three close negatives, the originating human annotations, a boundary against the nearest mode, a likely evaluator type, and a requirement source in SPEC.md. The taxonomy was then compared with the AgentErrorTaxonomy (arXiv 2509.25370); that comparison produced one rename and two rejected additions, and no new mode."
+        },
+        {
+          "at": "2026-09-20T00:00:00Z",
+          "changes": {
+            "spec_ref": {
+              "from": "RESP-3 (+ possible revision: current date in session context)",
+              "to": "RESP-9 (added 2026-09-20; clarifies RESP-3 for elapsed-time claims), RESP-3"
+            }
+          },
+          "note": "The dangling draft in this mode's requirement source is now a written rule. RESP-9 has two halves: the session context must state the current date, and the agent may compute elapsed time only from that date and dates returned by tools. Drawn from annotations amu87uosjic75 and amu8grxazwx04, where the agent wrote the real-world recording date 2026-09-14 into a ticket instead of the scenario date 2026-07-01. The first half needs a prompt and server change that is outside Homework 4; SPEC.md section 7 says so."
         }
       ]
     },
     {
       "name": "duplicate_ticket",
-      "status": "candidate",
+      "status": "final",
       "definition": "The agent opens a new support ticket, or presents an existing one as a separate issue, when a ticket for the same issue is already open in the conversation and the user added no new issue.",
       "boundary": "Not this mode when the agent refers to the existing ticket (support-0201, support-0205 turn 3). Differs from refusal_mishandled: that is about whether the first ticket should exist.",
       "nearest_mode": "refusal_mishandled",
-      "spec_ref": "pending revision #5",
+      "spec_ref": "ESC-6 (added 2026-09-20; ESC-1 to ESC-4 did not cover a repeat ticket)",
       "evaluator": "code check",
       "product_change": "Rule: reuse or reference an open ticket for the same issue; open a new one only for a new issue.",
       "annotation_ids": [
@@ -304,6 +444,26 @@
               "fd3cef46"
             ]
           }
+        },
+        {
+          "at": "2026-09-20T00:00:00Z",
+          "changes": {
+            "spec_ref": {
+              "from": "pending revision #5",
+              "to": "ESC-6 (added 2026-09-20; ESC-1 to ESC-4 did not cover a repeat ticket)"
+            }
+          },
+          "note": "The drafted requirement this mode depended on is now written into SPEC.md (section 7 records the motivating annotation), so the mode cites a real requirement identifier instead of a pending draft."
+        },
+        {
+          "at": "2026-09-20T00:00:00Z",
+          "changes": {
+            "status": {
+              "from": "candidate",
+              "to": "final"
+            }
+          },
+          "note": "Marked final at the end of Part D. Checked against the handout's per-mode requirements: snake_case name, a binary definition another reviewer can apply, at least three confirmed positives, at least three close negatives, the originating human annotations, a boundary against the nearest mode, a likely evaluator type, and a requirement source in SPEC.md. The taxonomy was then compared with the AgentErrorTaxonomy (arXiv 2509.25370); that comparison produced one rename and two rejected additions, and no new mode."
         }
       ]
     },
@@ -344,8 +504,8 @@
       ]
     },
     {
-      "name": "out_of_scope_escalated",
-      "status": "candidate",
+      "name": "out_of_scope_not_declined",
+      "status": "final",
       "definition": "For a request outside Cartwheel support (e.g. legal advice), the agent opens a support ticket or calls tools instead of declining in one or two sentences and saying what it can help with.",
       "boundary": "Not this mode when the agent declines without tools (support-0018, support-0174, support-0183). Differs from refusal_mishandled: that covers requests Cartwheel handles but the rules forbid (not eligible, shipped, no permission); this one is the SCOPE-2 rule for requests outside Cartwheel support.",
       "nearest_mode": "refusal_mishandled",
@@ -397,17 +557,37 @@
               "to": "Not this mode when the agent declines without tools (support-0018, support-0174, support-0183). Differs from refusal_mishandled: that covers requests Cartwheel handles but the rules forbid (not eligible, shipped, no permission); this one is the SCOPE-2 rule for requests outside Cartwheel support."
             }
           }
+        },
+        {
+          "at": "2026-09-20T00:00:00Z",
+          "changes": {
+            "name": {
+              "from": "out_of_scope_escalated",
+              "to": "out_of_scope_not_declined"
+            }
+          },
+          "note": "Renamed after the AgentDebug comparison. The old name described only 1 of the mode's 4 positives: support-0008, support-0178 and support-0187 call a tool (search_help_center, list_my_orders, get_policy) without opening any ticket, and only support-0186 escalates. The definition was always broader than the name - 'opens a support ticket or calls tools instead of declining' - so a second reviewer applying the name rather than the definition would mislabel three of four. The new name states the failure: an out-of-scope request that was not simply declined. No positives, close negatives or annotations changed. Earlier records keep the old name so the trail stays inspectable."
+        },
+        {
+          "at": "2026-09-20T00:00:00Z",
+          "changes": {
+            "status": {
+              "from": "candidate",
+              "to": "final"
+            }
+          },
+          "note": "Marked final at the end of Part D. Checked against the handout's per-mode requirements: snake_case name, a binary definition another reviewer can apply, at least three confirmed positives, at least three close negatives, the originating human annotations, a boundary against the nearest mode, a likely evaluator type, and a requirement source in SPEC.md. The taxonomy was then compared with the AgentErrorTaxonomy (arXiv 2509.25370); that comparison produced one rename and two rejected additions, and no new mode."
         }
       ]
     },
     {
       "name": "refusal_mishandled",
-      "status": "candidate",
-      "definition": "The rules prohibit what the user was asking for — the refund wasn’t eligible, the order had already shipped, or the system didn’t have permission to access it. \nBut the agent didn’t give a clear refusal with the correct governing rule and the next step.\n Instead, it sometimes opened a ticket or suggested an “exception” that no policy supports.\n This includes treating refund_eligible: false as an “automatic” failure, citing the wrong return window (as in support‑0091), and escalating after a permission_denied result without first asking the user to confirm the order number.",
-      "boundary": "Not this mode when the agent refuses and explains the governing rule with a citation (support-0034), or refuses after permission_denied and asks to double-check the number (support-0236, support-0238). A ticket is fine when an ESC rule lists the case, the user reports something to investigate (support-0024, misrouting) or confirms after being asked (support-0046). An accurate refusal that omits the reason, especially when the user asked for brevity, is a boundary case (support-0025). Differs from invented_date_reasoning: a correct refusal can still invent a date, and vice versa. Differs from out_of_scope_escalated: that is about requests outside Cartwheel support.",
+      "status": "final",
+      "definition": "Fail when a rule or a tool result forbids what the user asked for — the refund is not eligible, the order has already shipped, or the caller has no permission for it — and the reply does not refuse clearly, naming the governing rule and the next step. Counted as failing: presenting refund_eligible: false as a failed 'automatic' check a human may override; citing the wrong return window (support-0091); opening a ticket or offering an 'exception' that no policy provides; and escalating after permission_denied without first asking the user to confirm the order number. Pass when the agent refuses and cites the rule that governs the refusal, or refuses after permission_denied and asks the user to re-check the number.",
+      "boundary": "Not this mode when the agent refuses and explains the governing rule with a citation (support-0034), or refuses after permission_denied and asks to double-check the number (support-0236, support-0238). A ticket is fine when an ESC rule lists the case, the user reports something to investigate (support-0024, misrouting) or confirms after being asked (support-0046). An accurate refusal that omits the reason, especially when the user asked for brevity, is a boundary case (support-0025). Differs from invented_date_reasoning: a correct refusal can still invent a date, and vice versa. Differs from out_of_scope_not_declined: that is about requests outside Cartwheel support.",
       "nearest_mode": "invented_date_reasoning",
-      "spec_ref": "RESP-5, ESC rules, AUTH-1, cw-cancellations + pending revision #4 and the refund_eligible false revision",
-      "evaluator": "",
+      "spec_ref": "RESP-5, RESP-8 (added 2026-09-20), ESC-5 (added 2026-09-20), AUTH-1, cw-cancellations",
+      "evaluator": "code check + LLM judge. Code detects the trigger (refund_eligible false, or a tool returning not_eligible or permission_denied) and any escalate_to_human call that follows it; the judge decides whether the reply refuses clearly and names the governing rule.",
       "product_change": "Refusal rule: when a tool or record says no, say so, give the governing rule (store or platform window, shipped status, no access) and the next step; open a ticket only when an ESC rule lists the case; after permission_denied, ask the user to confirm the order number first.",
       "annotation_ids": [
         "amu7z2qna1fxc",
@@ -509,30 +689,76 @@
               "to": ""
             }
           }
+        },
+        {
+          "at": "2026-09-20T00:00:00Z",
+          "changes": {
+            "spec_ref": {
+              "from": "RESP-5, ESC rules, AUTH-1, cw-cancellations + pending revision #4 and the refund_eligible false revision",
+              "to": "RESP-5, RESP-8 (added 2026-09-20), ESC-5 (added 2026-09-20), AUTH-1, cw-cancellations"
+            }
+          },
+          "note": "The drafted requirement this mode depended on is now written into SPEC.md (section 7 records the motivating annotation), so the mode cites a real requirement identifier instead of a pending draft."
+        },
+        {
+          "at": "2026-09-20T00:00:00Z",
+          "changes": {
+            "definition": {
+              "from": "The rules prohibit what the user was asking for — the refund wasn’t eligible, the order had already shipped, or the system didn’t have permission to access it. \nBut the agent didn’t give a clear refusal with the correct governing rule and the next step.\n Instead, it sometimes opened a ticket or suggested an “exception” that no policy supports.\n This includes treating refund_eligible: false as an “automatic” failure, citing the wrong return window (as in support‑0091), and escalating after a permission_denied result without first asking the user to confirm the order number.",
+              "to": "Fail when a rule or a tool result forbids what the user asked for — the refund is not eligible, the order has already shipped, or the caller has no permission for it — and the reply does not refuse clearly, naming the governing rule and the next step. Counted as failing: presenting refund_eligible: false as a failed 'automatic' check a human may override; citing the wrong return window (support-0091); opening a ticket or offering an 'exception' that no policy provides; and escalating after permission_denied without first asking the user to confirm the order number. Pass when the agent refuses and cites the rule that governs the refusal, or refuses after permission_denied and asks the user to re-check the number."
+            },
+            "evaluator": {
+              "from": "",
+              "to": "code check + LLM judge. Code detects the trigger (refund_eligible false, or a tool returning not_eligible or permission_denied) and any escalate_to_human call that follows it; the judge decides whether the reply refuses clearly and names the governing rule."
+            }
+          },
+          "note": "Part D: the definition is rewritten as a binary rule another reviewer can apply, with the failing and passing cases stated explicitly rather than described in prose. No change of scope; the cases listed are the ones already in the positives. Evaluator type recorded for the first time. The requirements it now rests on, RESP-8 and ESC-5, were written into SPEC.md the same day."
+        },
+        {
+          "at": "2026-09-20T00:00:00Z",
+          "changes": {
+            "status": {
+              "from": "candidate",
+              "to": "final"
+            }
+          },
+          "note": "Marked final at the end of Part D. Checked against the handout's per-mode requirements: snake_case name, a binary definition another reviewer can apply, at least three confirmed positives, at least three close negatives, the originating human annotations, a boundary against the nearest mode, a likely evaluator type, and a requirement source in SPEC.md. The taxonomy was then compared with the AgentErrorTaxonomy (arXiv 2509.25370); that comparison produced one rename and two rejected additions, and no new mode."
         }
       ]
     },
     {
       "name": "inconsistent_record_not_flagged",
-      "status": "candidate",
-      "definition": "When a tool record contradicts itself or another record — for example, showing an item shipped after it was delivered or listing a product from a different store — the agent must treat that as an inconsistency. The correct response is to point out the contradiction, avoid asserting any timeline, and escalate. Instead, the agent handled the record as if everything were normal.",
-      "boundary": "Not this mode when a field is missing and the agent says so without computing from it (support-0028, support-0209: no delivery date). Differs from user_claim_not_reconciled: there a user's claim conflicts with the record; here the record is inconsistent by itself. support-0045 (store mismatch the user doubted) stays in user_claim_not_reconciled; revisit in Part D.",
+      "status": "final",
+      "definition": "Fail when the agent asserts a fact from, or acts on, an order record that contradicts itself or another record, without stating the contradiction. The contradiction may be visible inside a single tool result (a ship date after the delivery date; a 'delivered' status with no delivery date) or it may require a second lookup that the request itself turns on (an order whose product belongs to a different store than the order). Pass when the agent states the contradiction, declines to assert a timeline, a deadline or a seller from it, and escalates.",
+      "boundary": "The hinge is whether the reply states the contradiction, not whether the agent could refuse anyway. A missing field is in scope when the record still claims otherwise (support-0208: status 'delivered' with no delivery date, never mentioned) and out of scope when the agent names the gap and does not compute from it (support-0028, support-0209, support-0210, support-0211). A second lookup is expected only when the request depends on the relationship in question — in support-0221 the user asked which store handles the order, so the product's store had to be checked; a routine status lookup does not oblige the agent to audit every field. Differs from user_claim_not_reconciled: there a user's claim conflicts with the record; here the record is inconsistent on its own, whether or not the user says so. Resolved from batch 3: support-0045 (a store mismatch the user doubted) is a positive for both this mode and user_claim_not_reconciled. The record is inconsistent on its own and the request turned on the store, so this mode applies; the user's doubt being dismissed is what the other mode names. A trace may carry more than one mode.",
       "nearest_mode": "user_claim_not_reconciled",
       "spec_ref": "RESP-3 (inconsistent), dq-order-reversed-dates",
-      "evaluator": "",
+      "evaluator": "code check + LLM judge. Code detects the contradictory record (dates out of order, status conflicting with the dates, order store not equal to the product's store); the judge decides whether the reply states it and refrains from asserting from it.",
       "product_change": "Rule: before using an order record, check that its dates are in order and its store matches the product; if not, state the inconsistency, do not assert a timeline, and escalate.",
       "annotation_ids": [
         "amu8cxegxioaz",
-        "amu8gvi0csg7q"
+        "amu8gvi0csg7q",
+        "amu919kce5n4s",
+        "amu93srfo1a13",
+        "amu87cporkiqe"
       ],
       "positives": [
         "23c4ca83e91d06faa6ffce956b81395b",
-        "c813107b14c2ce5f95fef0b2b018605a"
+        "c813107b14c2ce5f95fef0b2b018605a",
+        "d4bd9485143e2393399e6218e03cfbf3",
+        "6a814a7da26c81e9fd6911497483b805",
+        "6ec82ef33ac71dd430c79cb2f068abfe"
       ],
       "close_negatives": [
         "b105a3172950e91488dddc4726c4af41",
         "fda900090bbffb9b4e43e42c9ce7009f",
-        "24874e84c2f573fa7303f1bfed35aeca"
+        "24874e84c2f573fa7303f1bfed35aeca",
+        "ce9e9be7f060faa00ad1c4361bf51d67",
+        "24bf4de9f49bcb02b6e1f8010e9839ad",
+        "8cc0c4d6ce7baff36708ea9239d3fafc",
+        "7a6da8e252d8c68ae2b42eae3ee85080",
+        "4b424c6c31af94a5be6e51cb90e8c295",
+        "d87323ccd41b09afd72daa0b693efe85"
       ],
       "revisions": [
         {
@@ -565,6 +791,96 @@
               "24874e84"
             ]
           }
+        },
+        {
+          "at": "2026-09-20T00:00:00Z",
+          "changes": {
+            "positives": [
+              "d4bd9485"
+            ],
+            "close_negatives": [
+              "ce9e9be7",
+              "24bf4de9",
+              "8cc0c4d6",
+              "7a6da8e2",
+              "4b424c6c",
+              "d87323cc"
+            ]
+          },
+          "note": "Part D depth search 'contradictory order record': a deterministic filter over all 250 sessions (date-order violations, status vs dates, order store vs product store) returned 11 traces, 4 already placed. The reviewer read the 7 new ones and accepted all 7 on 2026-09-19. support-0208 is the third positive; the other six are close negatives, five of them outside the reviewed 100. Retrieval was the agent's; every verdict is the reviewer's."
+        },
+        {
+          "at": "2026-09-20T00:00:00Z",
+          "changes": {
+            "definition": {
+              "from": "When a tool record contradicts itself or another record — for example, showing an item shipped after it was delivered or listing a product from a different store — the agent must treat that as an inconsistency. The correct response is to point out the contradiction, avoid asserting any timeline, and escalate. Instead, the agent handled the record as if everything were normal.",
+              "to": "Fail when the agent asserts a fact from, or acts on, an order record that contradicts itself or another record, without stating the contradiction. The contradiction may be visible inside a single tool result (a ship date after the delivery date; a 'delivered' status with no delivery date) or it may require a second lookup that the request itself turns on (an order whose product belongs to a different store than the order). Pass when the agent states the contradiction, declines to assert a timeline, a deadline or a seller from it, and escalates."
+            },
+            "boundary": {
+              "from": "Not this mode when a field is missing and the agent says so without computing from it (support-0028, support-0209: no delivery date). Differs from user_claim_not_reconciled: there a user's claim conflicts with the record; here the record is inconsistent by itself. support-0045 (store mismatch the user doubted) stays in user_claim_not_reconciled; revisit in Part D.",
+              "to": "The hinge is whether the reply states the contradiction, not whether the agent could refuse anyway. A missing field is in scope when the record still claims otherwise (support-0208: status 'delivered' with no delivery date, never mentioned) and out of scope when the agent names the gap and does not compute from it (support-0028, support-0209, support-0210, support-0211). A second lookup is expected only when the request depends on the relationship in question — in support-0221 the user asked which store handles the order, so the product's store had to be checked; a routine status lookup does not oblige the agent to audit every field. Differs from user_claim_not_reconciled: there a user's claim conflicts with the record; here the record is inconsistent on its own, whether or not the user says so. Open item carried from batch 3: support-0045 (a store mismatch the user doubted) is still placed in user_claim_not_reconciled and may belong in both."
+            },
+            "evaluator": {
+              "from": "",
+              "to": "code check + LLM judge. Code detects the contradictory record (dates out of order, status conflicting with the dates, order store not equal to the product's store); the judge decides whether the reply states it and refrains from asserting from it."
+            }
+          },
+          "note": "Workshop W1 accepted by the reviewer: the mode now covers a contradiction that needs a second lookup, not only one visible in a single tool result, with the second-lookup expectation bounded to requests that turn on the relationship. The missing-field clause is rewritten so support-0208 (accepted positive) and support-0210/0211 (accepted close negatives) fall on the right sides. Evaluator type recorded for the first time."
+        },
+        {
+          "at": "2026-09-20T00:00:00Z",
+          "changes": {
+            "positives": [
+              "6a814a7d"
+            ]
+          },
+          "note": "Workshop W1 completed: the reviewer read the original support-0221 Langfuse trace and accepted it on 2026-09-20 (annotation amu93srfo1a13, suggestion sgD-0221-t1). The store-mismatch half of the mode now has a positive inside the Langfuse trace store that Part E can label, rather than resting on the Workshop replay. Its close negative is support-0220, the same record with the doubt raised by the user."
+        },
+        {
+          "at": "2026-09-20T00:00:00Z",
+          "changes": {
+            "positives": [
+              "6ec82ef3"
+            ],
+            "annotation_ids": [
+              "amu87cporkiqe"
+            ],
+            "boundary": {
+              "from": "The hinge is whether the reply states the contradiction, not whether the agent could refuse anyway. A missing field is in scope when the record still claims otherwise (support-0208: status 'delivered' with no delivery date, never mentioned) and out of scope when the agent names the gap and does not compute from it (support-0028, support-0209, support-0210, support-0211). A second lookup is expected only when the request depends on the relationship in question — in support-0221 the user asked which store handles the order, so the product's store had to be checked; a routine status lookup does not oblige the agent to audit every field. Differs from user_claim_not_reconciled: there a user's claim conflicts with the record; here the record is inconsistent on its own, whether or not the user says so. Open item carried from batch 3: support-0045 (a store mismatch the user doubted) is still placed in user_claim_not_reconciled and may belong in both.",
+              "to": "The hinge is whether the reply states the contradiction, not whether the agent could refuse anyway. A missing field is in scope when the record still claims otherwise (support-0208: status 'delivered' with no delivery date, never mentioned) and out of scope when the agent names the gap and does not compute from it (support-0028, support-0209, support-0210, support-0211). A second lookup is expected only when the request depends on the relationship in question — in support-0221 the user asked which store handles the order, so the product's store had to be checked; a routine status lookup does not oblige the agent to audit every field. Differs from user_claim_not_reconciled: there a user's claim conflicts with the record; here the record is inconsistent on its own, whether or not the user says so. Resolved from batch 3: support-0045 (a store mismatch the user doubted) is a positive for both this mode and user_claim_not_reconciled. The record is inconsistent on its own and the request turned on the store, so this mode applies; the user's doubt being dismissed is what the other mode names. A trace may carry more than one mode."
+            }
+          },
+          "note": "Reviewer resolved the open item carried in the boundary since batch 3: support-0045 is a positive for this mode as well as for user_claim_not_reconciled. No new review was needed - annotation amu87cporkiqe already records the observation. The revised definition is what makes it fit: the record is inconsistent on its own, and the user's question turned on the store."
+        },
+        {
+          "at": "2026-09-20T00:00:00Z",
+          "changes": {
+            "status": {
+              "from": "candidate",
+              "to": "final"
+            }
+          },
+          "note": "Marked final at the end of Part D. Checked against the handout's per-mode requirements: snake_case name, a binary definition another reviewer can apply, at least three confirmed positives, at least three close negatives, the originating human annotations, a boundary against the nearest mode, a likely evaluator type, and a requirement source in SPEC.md. The taxonomy was then compared with the AgentErrorTaxonomy (arXiv 2509.25370); that comparison produced one rename and two rejected additions, and no new mode."
+        }
+      ]
+    },
+    {
+      "name": "product_record_defect_not_flagged",
+      "status": "rejected",
+      "definition": "Considered and rejected. Would have read: the agent presents a defective catalog record - a negative price, an empty title, or one of several identically titled listings - as a valid product fact, without saying the record is wrong or ambiguous.",
+      "boundary": "Would have differed from inconsistent_record_not_flagged in the object: that mode is about order records that contradict themselves or another record, this one about product records holding invalid or missing values. By the merge/split test they are separate: correcting them needs catalog validation, not record reconciliation.",
+      "nearest_mode": "inconsistent_record_not_flagged",
+      "spec_ref": "would have needed a new requirement; none written",
+      "evaluator": "code check (price <= 0, empty title, duplicate title within a store) + LLM judge",
+      "product_change": "Validate catalog values before quoting them; state the defect instead of the value.",
+      "annotation_ids": [],
+      "positives": [],
+      "close_negatives": [],
+      "revisions": [
+        {
+          "at": "2026-09-20T00:00:00Z",
+          "changes": {},
+          "note": "Rejected group, Part D. A repeat search against the seed catalog found 16 traces surfacing the three product-level data-quality cases (dq-product-duplicate-title on products 1 and 2, dq-product-missing-title on product 3, dq-product-invalid-price on product 4). Rejected on the evidence: only 4 of the 16 fall inside the reviewed sample, the reviewer had already read all four and recorded no failure, and three of them serve as close negatives for other modes today (support-0030, support-0047, support-0049, support-0227). The agent handles these records well in almost every trace - it names the blank title, calls the negative price a listing error, and lists the duplicate titles with their identifiers. One trace looks like a genuine miss, support-0223, which answers 'what's the price?' with 'The Rustic Pitcher is listed at -$5.00' against an expected outcome of do_not_present_negative_price_as_valid_offer, and even there the agent corrects itself in turn 2 when asked. One unreviewed trace does not support a mode: the handout allows an addition only when the reviewer's own traces and annotations back it. Recorded here so the considered alternative stays inspectable, and as the candidate to revisit if Homework 5 needs an eighth mode."
         }
       ]
     }

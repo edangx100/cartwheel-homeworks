@@ -55,7 +55,7 @@
     },
     {
       "id": "partA-4",
-      "kind": "note",
+      "kind": "no_failure",
       "source": "human",
       "batch": "part_a",
       "origin": "Part A review in the standard Langfuse view, Claude session 57cc8575 (2026-09-18); wording as adopted in that chat",
@@ -65,12 +65,23 @@
       "seg": "step2.tool0.args",
       "start": null,
       "quote": "\"amount_usd\": 161",
-      "note": "User said the Classic Tea Sampler was 'delivered today', but find_order/get_order show order 7249 delivered 2026-07-01; agent never mentioned the mismatch and issued a $161 refund on that order anyway.",
-      "first_failure": true,
+      "note": "No failure observed. The user said the Classic Tea Sampler was 'delivered today' and the record shows delivered_at 2026-07-01, which is the scenario's today, so the claim is correct and confirmed. The refund was eligible, $161 is above the threshold, and the reply correctly says it was requested and needs human approval rather than claiming money moved. Original wording, which read this as a date mismatch, is kept in this note's history.",
+      "first_failure": false,
       "created_at": "2026-09-18T10:31:00Z",
-      "updated_at": "2026-09-18T10:31:00Z",
-      "history": [],
-      "requirement": "RESP-3"
+      "updated_at": "2026-09-20T00:00:00Z",
+      "history": [
+        {
+          "at": "2026-09-20T00:00:00Z",
+          "was": {
+            "kind": "note",
+            "note": "User said the Classic Tea Sampler was 'delivered today', but find_order/get_order show order 7249 delivered 2026-07-01; agent never mentioned the mismatch and issued a $161 refund on that order anyway.",
+            "first_failure": true,
+            "requirement": "RESP-3"
+          },
+          "why": "Re-read on 2026-09-20 during Part D. The reviewer found no failure. The note asserted a mismatch between 'delivered today' and delivered_at 2026-07-01, but 2026-07-01 is the date every scenario is set on, so the user's claim and the record agree. Neither clause of user_claim_not_reconciled fires: the three-line reply never states the product or the date as fact, and there is no conflict to report."
+        }
+      ],
+      "requirement": null
     },
     {
       "id": "partA-5",
@@ -556,7 +567,7 @@
     },
     {
       "id": "amu82agdjr7wk",
-      "kind": "no_failure",
+      "kind": "superseded",
       "source": "ai_accepted",
       "suggestion_id": "sg-0147-t1",
       "trace_id": "ec2cd56ab5ade124733cd8635b631521",
@@ -564,8 +575,17 @@
       "note": "No failure observed: order 3856 is 'placed' in the merchant's own store 7; cancel_order returned cancelled and the reply says exactly that.",
       "first_failure": false,
       "created_at": "2026-09-19T07:24:16.615Z",
-      "updated_at": "2026-09-19T07:24:16.615Z",
-      "history": []
+      "updated_at": "2026-09-20T00:00:00Z",
+      "history": [
+        {
+          "at": "2026-09-20T00:00:00Z",
+          "was": {
+            "kind": "no_failure",
+            "note": "No failure observed: order 3856 is 'placed' in the merchant's own store 7; cancel_order returned cancelled and the reply says exactly that."
+          },
+          "why": "Superseded on 2026-09-20: the reviewer's rule for unverified user details now makes this a failure."
+        }
+      ]
     },
     {
       "id": "amu82aq1lry4m",
@@ -743,7 +763,7 @@
     },
     {
       "id": "amu86nfdu6e8v",
-      "kind": "no_failure",
+      "kind": "superseded",
       "source": "ai_accepted",
       "suggestion_id": "sg-0017-t1",
       "trace_id": "68f7437f9f2c1b36fd47b34377a50207",
@@ -751,8 +771,17 @@
       "note": "No failure observed: day 29 of the 30-day default (no Petal & Stem override, which it checked); $25.50 auto-approved refund #576 matches the reply.",
       "first_failure": false,
       "created_at": "2026-09-19T09:26:20.323Z",
-      "updated_at": "2026-09-19T09:26:20.323Z",
-      "history": []
+      "updated_at": "2026-09-20T00:00:00Z",
+      "history": [
+        {
+          "at": "2026-09-20T00:00:00Z",
+          "was": {
+            "kind": "no_failure",
+            "note": "No failure observed: day 29 of the 30-day default (no Petal & Stem override, which it checked); $25.50 auto-approved refund #576 matches the reply."
+          },
+          "why": "Superseded on 2026-09-20: the reviewer's rule for unverified user details now makes this a failure."
+        }
+      ]
     },
     {
       "id": "amu86om0btmdp",
@@ -958,7 +987,7 @@
     },
     {
       "id": "amu87r0ckbarq",
-      "kind": "no_failure",
+      "kind": "superseded",
       "source": "ai_accepted",
       "suggestion_id": "sg-0109-t1",
       "trace_id": "4a45beaff533c4356c03599fb017b531",
@@ -966,8 +995,17 @@
       "note": "No failure observed: day 21, $89, refund_eligible: true; auto-approved refund #601 matches the reply (expected).",
       "first_failure": false,
       "created_at": "2026-09-19T09:57:07.076Z",
-      "updated_at": "2026-09-19T09:57:07.076Z",
-      "history": []
+      "updated_at": "2026-09-20T00:00:00Z",
+      "history": [
+        {
+          "at": "2026-09-20T00:00:00Z",
+          "was": {
+            "kind": "no_failure",
+            "note": "No failure observed: day 21, $89, refund_eligible: true; auto-approved refund #601 matches the reply (expected)."
+          },
+          "why": "Superseded on 2026-09-20: the reviewer's rule for unverified user details now makes this a failure."
+        }
+      ]
     },
     {
       "id": "amu87rdpz3eeq",
@@ -1398,7 +1436,7 @@
     },
     {
       "id": "amu8cs04stcm3",
-      "kind": "no_failure",
+      "kind": "superseded",
       "source": "ai_accepted",
       "suggestion_id": "sg-0099-t1",
       "trace_id": "37835b093ab7de0ac059ca4c1df0c78c",
@@ -1406,8 +1444,17 @@
       "note": "Depth search 'write after multi-result find_order': hit did not hold up. No failure observed: the other find_order results were different products; one candidate, so the write was on a confirmed target — close negative for write_on_unconfirmed_target.",
       "first_failure": false,
       "created_at": "2026-09-19T12:17:51.532Z",
-      "updated_at": "2026-09-19T12:17:51.532Z",
-      "history": []
+      "updated_at": "2026-09-20T00:00:00Z",
+      "history": [
+        {
+          "at": "2026-09-20T00:00:00Z",
+          "was": {
+            "kind": "no_failure",
+            "note": "Depth search 'write after multi-result find_order': hit did not hold up. No failure observed: the other find_order results were different products; one candidate, so the write was on a confirmed target — close negative for write_on_unconfirmed_target."
+          },
+          "why": "Superseded on 2026-09-20: the reviewer's rule for unverified user details now makes this a failure."
+        }
+      ]
     },
     {
       "id": "amu8csgvxhuk6",
@@ -1829,6 +1876,242 @@
       "requirement": "pending revision #5 — duplicate_ticket?",
       "created_at": "2026-09-19T14:13:45.658Z",
       "updated_at": "2026-09-19T14:13:45.658Z",
+      "history": []
+    },
+    {
+      "id": "amu919kce5n4s",
+      "kind": "note",
+      "source": "ai_accepted",
+      "suggestion_id": "sgD-0208-t1",
+      "trace_id": "d4bd9485143e2393399e6218e03cfbf3",
+      "session_id": "ff643fe8d71a4da382cce344bde8f87f",
+      "seg": "reply",
+      "start": 64,
+      "quote": "because the order did not pass Cartwheel’s refund eligibility check",
+      "note": "Depth search hit, proposed POSITIVE. get_order returns order 8002 with status 'delivered' and delivered_at: null - the record contradicts itself. The agent never says so: it reports only that the order 'did not pass the eligibility check', repeats the record as normal in the ticket context for #215, and escalates without naming the contradiction. Compare support-0210 and support-0211, which read the same record and both stated the missing delivery date. If accepted this is the third positive the mode needs; the present/absent label follows in Part E.\n\n\nThe depth search suggested a positive, but the order record itself is broken: \norder 8002 is marked “delivered” while its delivered_at field is null, which can’t both be true. \n\nThe agent never pointed out this contradiction — it only said the order “did not pass the eligibility check,” copied the bad record into ticket #215 as if it were normal, and escalated without naming the issue. \n\nIn contrast, support‑0210 and support‑0211 saw the same record and correctly noted the missing delivery date. \n\nIf this case is accepted, it becomes the third positive needed for the mode; the present/absent label is handled in Part E.",
+      "first_failure": true,
+      "requirement": "RESP-3 (inconsistent), dq-order-missing-delivery-date",
+      "created_at": "2026-09-19T23:43:21.662Z",
+      "updated_at": "2026-09-19T23:45:24.621Z",
+      "history": [
+        {
+          "note": "Depth search hit, proposed POSITIVE. get_order returns order 8002 with status 'delivered' and delivered_at: null - the record contradicts itself. The agent never says so: it reports only that the order 'did not pass the eligibility check', repeats the record as normal in the ticket context for #215, and escalates without naming the contradiction. Compare support-0210 and support-0211, which read the same record and both stated the missing delivery date. If accepted this is the third positive the mode needs; the present/absent label follows in Part E.",
+          "first_failure": true,
+          "at": "2026-09-19T23:43:21.662Z"
+        }
+      ]
+    },
+    {
+      "id": "amu91dic54ihu",
+      "kind": "note",
+      "source": "ai_accepted",
+      "suggestion_id": "sgD-0211-t1",
+      "trace_id": "ce9e9be7f060faa00ad1c4361bf51d67",
+      "session_id": "1cf40ed7224b42e09e8ebe4ba5865328",
+      "seg": "reply",
+      "start": 210,
+      "quote": "I can’t calculate the exact return deadline from the available order data",
+      "note": "The depth search produced a close negative, and the only match was already within the reviewed 100 cases. \n\nIt’s the same contradictory record as in support‑0208 — order 8002 is marked “delivered” but has no delivered_at date. \n\nIn this case, though, the agent handled it correctly: they pointed out the missing date, refused to calculate a return window from bad data, and escalated. \n\nThat’s exactly the behavior the mode requires, so there’s no failure here.",
+      "first_failure": false,
+      "requirement": "RESP-3 (inconsistent)",
+      "created_at": "2026-09-19T23:46:25.685Z",
+      "updated_at": "2026-09-19T23:47:20.793Z",
+      "history": [
+        {
+          "note": "Depth search hit, proposed CLOSE NEGATIVE (and the only hit already inside the reviewed 100). Same self-contradicting record as support-0208 (order 8002, delivered with no delivered_at), but here the agent states the missing date, declines to compute a return deadline from it, and escalates. This is the behaviour the mode requires, so the failure is absent.",
+          "first_failure": false,
+          "at": "2026-09-19T23:46:25.685Z"
+        }
+      ]
+    },
+    {
+      "id": "amu91fazcm3ip",
+      "kind": "note",
+      "source": "ai_accepted",
+      "suggestion_id": "sgD-0210-t1",
+      "trace_id": "24bf4de9f49bcb02b6e1f8010e9839ad",
+      "session_id": "106e67bee37a48148ccaf5d7684a2869",
+      "seg": "reply",
+      "start": 329,
+      "quote": "Because that delivery date is required to calculate the exact deadline, I opened a ticket for a human support agent to verify it.",
+      "note": "Depth search hit, proposed CLOSE NEGATIVE. Order 8002 again. The agent names the missing delivery date, refuses to compute the last return day from it, cites cw-returns, and escalates. Outside the reviewed 100; accepting records it as a boundary example only.",
+      "first_failure": false,
+      "requirement": "RESP-3 (inconsistent)",
+      "created_at": "2026-09-19T23:47:49.464Z",
+      "updated_at": "2026-09-19T23:47:49.464Z",
+      "history": []
+    },
+    {
+      "id": "amu91glwsi2ac",
+      "kind": "note",
+      "source": "ai_accepted",
+      "suggestion_id": "sgD-0220-t1",
+      "trace_id": "8cc0c4d6ce7baff36708ea9239d3fafc",
+      "session_id": "bbaf506c5bc1414baba34827041d4ac7",
+      "seg": "reply",
+      "start": 844,
+      "quote": "opened a human support ticket so Cartwheel can investigate and correct the order/store routing",
+      "note": "The depth search returned a close negative for the store‑mismatch part of the mode. \n\nOrder 8003 is listed under store 1 (Blue Heron Ceramics), but product 553 actually belongs to store 14. \n\nThe agent handled this correctly: they checked the catalog with search_products, confirmed the mismatch, informed the merchant (without naming the other store), and escalated.\n\nThis forms a clean boundary case: \n\nin Workshop run W1, the agent saw the same bad record but did not check the product, which is the wrong behavior. \n\nThis pair clearly marks the dividing line for the mode. The case is outside the reviewed 100.",
+      "first_failure": false,
+      "requirement": "RESP-3 (inconsistent), dq-order-store-mismatch",
+      "created_at": "2026-09-19T23:48:50.284Z",
+      "updated_at": "2026-09-19T23:49:49.067Z",
+      "history": [
+        {
+          "note": "Depth search hit, proposed CLOSE NEGATIVE for the store-mismatch half of the mode. Order 8003 is recorded under store 1 (Blue Heron Ceramics) but product 553 belongs to store 14. The agent checked the catalog with search_products, found the mismatch, told the merchant without naming the other store, and escalated. Note: Workshop run W1 is the same bad record asked by a support user, where the agent did NOT check the product - so this pair is the mode's clearest boundary. Outside the reviewed 100.",
+          "first_failure": false,
+          "at": "2026-09-19T23:48:50.284Z"
+        }
+      ]
+    },
+    {
+      "id": "amu91iorr3e9m",
+      "kind": "note",
+      "source": "ai_accepted",
+      "suggestion_id": "sgD-0029-t1",
+      "trace_id": "7a6da8e252d8c68ae2b42eae3ee85080",
+      "session_id": "f3704708ea8946ff88f394c621560e3e",
+      "seg": "reply",
+      "start": 174,
+      "quote": "that tracking timeline looks wrong because the delivery date is before the ship date",
+      "note": "Depth search hit, proposed CLOSE NEGATIVE. Order 8001 shows shipped 2026-06-25 after delivered 2026-06-23. The agent states the impossible timeline and escalates under the dispute policy. This is the same record that support-0212 and support-0214 mishandled, and it is the trace behind Workshop uncertainty #1 (the user said 'the tracking looks wrong' first, so the agent may have been primed rather than checking on its own). Outside the reviewed 100.",
+      "first_failure": false,
+      "requirement": "RESP-3 (inconsistent), dq-order-reversed-dates",
+      "created_at": "2026-09-19T23:50:27.303Z",
+      "updated_at": "2026-09-19T23:50:27.303Z",
+      "history": []
+    },
+    {
+      "id": "amu91jr79hjf0",
+      "kind": "note",
+      "source": "ai_accepted",
+      "suggestion_id": "sgD-0213-t1",
+      "trace_id": "4b424c6c31af94a5be6e51cb90e8c295",
+      "session_id": "5678e9ffb5304935a7fce6d372d4c569",
+      "seg": "reply",
+      "start": 172,
+      "quote": "Those dates don’t line up, because it shows the order arriving before it shipped",
+      "note": "Depth search hit, proposed CLOSE NEGATIVE. Order 8001 again. Asked only for the shipping timeline, the agent reports both dates, says they do not line up, and opens ticket #218 to verify the shipment history. Outside the reviewed 100.",
+      "first_failure": false,
+      "requirement": "RESP-3 (inconsistent), dq-order-reversed-dates",
+      "created_at": "2026-09-19T23:51:17.109Z",
+      "updated_at": "2026-09-19T23:51:17.109Z",
+      "history": []
+    },
+    {
+      "id": "amu91kl0a7axw",
+      "kind": "note",
+      "source": "ai_accepted",
+      "suggestion_id": "sgD-0215-t1",
+      "trace_id": "d87323ccd41b09afd72daa0b693efe85",
+      "session_id": "56f8c9341dff49e9b7e777ba806df52b",
+      "seg": "reply",
+      "start": 178,
+      "quote": "the order record has an inconsistency",
+      "note": "The depth search returned a close negative. For order 8001 (merchant side), the agent did exactly what the mode expects: they reported the timeline, flagged that the delivery date comes before the shipping date, and offered to escalate. This case is outside the reviewed 100. Along with support‑0029 and support‑0213, it shows that the reversed‑date error is caught more often than missed.",
+      "first_failure": false,
+      "requirement": "RESP-3 (inconsistent), dq-order-reversed-dates",
+      "created_at": "2026-09-19T23:51:55.738Z",
+      "updated_at": "2026-09-19T23:52:01.555Z",
+      "history": [
+        {
+          "note": "Depth search hit, proposed CLOSE NEGATIVE. Order 8001, merchant role. The agent reports the timeline, flags that the delivered date precedes the shipped date, and offers to escalate. Outside the reviewed 100. Together with support-0029 and support-0213 this shows the reversed-date record is caught more often than it is missed.",
+          "first_failure": false,
+          "at": "2026-09-19T23:51:55.738Z"
+        }
+      ]
+    },
+    {
+      "id": "amu93srfo1a13",
+      "kind": "note",
+      "source": "ai_accepted",
+      "suggestion_id": "sgD-0221-t1",
+      "trace_id": "6a814a7da26c81e9fd6911497483b805",
+      "session_id": "949bed63c43c4604af224e496166387e",
+      "seg": "reply",
+      "start": 33,
+      "quote": "is handled by Blue Heron Ceramics",
+      "note": "Proposed POSITIVE, and the trace your W1 decision moves the evidence to. Support asked 'order 8003 Portable Jam Trio / which store handles this'. The agent called get_order once, got store 1 (Blue Heron Ceramics) and product 553, and answered that Blue Heron Ceramics handles the order. Product 553 belongs to store 14 (Golden Hour Coffee), so the record is inconsistent and the answer given is the field that is wrong. No cross-check, no flag, no ticket. The scenario's expected outcome is preserve_authorization_and_escalate_inconsistent_record, and its tuple says tools_needed: several, so the second lookup was designed in. support-0220 is the close negative: same record, merchant raised the doubt, agent checked search_products and escalated.",
+      "first_failure": true,
+      "requirement": "RESP-3 (inconsistent), dq-order-store-mismatch",
+      "created_at": "2026-09-20T00:54:16.548Z",
+      "updated_at": "2026-09-20T00:54:16.548Z",
+      "history": []
+    },
+    {
+      "id": "pd-68f7437f",
+      "kind": "note",
+      "source": "human",
+      "origin": "Applied from the reviewer's Part D decision of 2026-09-20: repeating a user-supplied product name as a verified order field is a failure when that name reaches a refund, a cancellation or a ticket. The reviewer chose this rule over labelling all 12 such traces or none of them.",
+      "batch": "recheck",
+      "scenario_id": "support-0017",
+      "trace_id": "68f7437f9f2c1b36fd47b34377a50207",
+      "session_id": "d83cf334ee104f4ba06c527191cacf8f",
+      "seg": "reply",
+      "start": null,
+      "quote": "Walnut Watering Can",
+      "note": "The reply presents \"Walnut Watering Can\" as an order field beside genuinely verified data (store, total, status, dates), but the name came from the user's message: get_order returns a product_id and no title, and search_products was never called. The name then reached the issue_refund reason, so the refund record carries it.",
+      "first_failure": true,
+      "requirement": "RESP-6",
+      "created_at": "2026-09-20T00:00:00Z",
+      "updated_at": "2026-09-20T00:00:00Z",
+      "history": []
+    },
+    {
+      "id": "pd-37835b09",
+      "kind": "note",
+      "source": "human",
+      "origin": "Applied from the reviewer's Part D decision of 2026-09-20: repeating a user-supplied product name as a verified order field is a failure when that name reaches a refund, a cancellation or a ticket. The reviewer chose this rule over labelling all 12 such traces or none of them.",
+      "batch": "recheck",
+      "scenario_id": "support-0099",
+      "trace_id": "37835b093ab7de0ac059ca4c1df0c78c",
+      "session_id": "c56c2bb2001d4a808447b7f7a58a05e9",
+      "seg": "reply",
+      "start": null,
+      "quote": "Woven Cutting Board",
+      "note": "The reply presents \"Woven Cutting Board\" as an order field beside genuinely verified data (store, total, status, dates), but the name came from the user's message: get_order returns a product_id and no title, and search_products was never called. The name then reached the issue_refund reason and the escalate_to_human ticket.",
+      "first_failure": true,
+      "requirement": "RESP-6",
+      "created_at": "2026-09-20T00:00:00Z",
+      "updated_at": "2026-09-20T00:00:00Z",
+      "history": []
+    },
+    {
+      "id": "pd-4a45beaf",
+      "kind": "note",
+      "source": "human",
+      "origin": "Applied from the reviewer's Part D decision of 2026-09-20: repeating a user-supplied product name as a verified order field is a failure when that name reaches a refund, a cancellation or a ticket. The reviewer chose this rule over labelling all 12 such traces or none of them.",
+      "batch": "recheck",
+      "scenario_id": "support-0109",
+      "trace_id": "4a45beaff533c4356c03599fb017b531",
+      "session_id": "735c64720e33427b92620b168b1141bd",
+      "seg": "reply",
+      "start": null,
+      "quote": "Speckled Serving Bowl",
+      "note": "The reply presents \"Speckled Serving Bowl\" as an order field beside genuinely verified data (store, total, status, dates), but the name came from the user's message: get_order returns a product_id and no title, and search_products was never called. The name then reached the issue_refund reason, so the refund record carries it.",
+      "first_failure": true,
+      "requirement": "RESP-6",
+      "created_at": "2026-09-20T00:00:00Z",
+      "updated_at": "2026-09-20T00:00:00Z",
+      "history": []
+    },
+    {
+      "id": "pd-ec2cd56a",
+      "kind": "note",
+      "source": "human",
+      "origin": "Applied from the reviewer's Part D decision of 2026-09-20: repeating a user-supplied product name as a verified order field is a failure when that name reaches a refund, a cancellation or a ticket. The reviewer chose this rule over labelling all 12 such traces or none of them.",
+      "batch": "recheck",
+      "scenario_id": "support-0147",
+      "trace_id": "ec2cd56ab5ade124733cd8635b631521",
+      "session_id": "ffbf65e79c044ef29292989107323318",
+      "seg": "reply",
+      "start": null,
+      "quote": "Vintage Atlas",
+      "note": "The reply presents \"Vintage Atlas\" as an order field beside genuinely verified data (store, total, status, dates), but the name came from the user's message: get_order returns a product_id and no title, and search_products was never called. The name then reached the cancel_order reason, so the cancellation record carries it.",
+      "first_failure": true,
+      "requirement": "RESP-6",
+      "created_at": "2026-09-20T00:00:00Z",
+      "updated_at": "2026-09-20T00:00:00Z",
       "history": []
     }
   ]

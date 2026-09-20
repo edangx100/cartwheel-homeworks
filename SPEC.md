@@ -16,6 +16,7 @@ requirements to decide which situations the agent must encounter.
 | Refund eligibility and approval threshold | `seed/eligibility.py`, `facts.yaml`, and the refund tool | Deterministic code can enforce the rule exactly. |
 | Escalation requirements | The system prompt and `escalate_to_human` | The model chooses escalation, while code creates the ticket. |
 | Expected behavior in evaluation scenarios | `scenarios/*.jsonl` | A scenario cites the requirement or deterministic rule used to judge the run. |
+| The current date for the session | The session context block in `SYSTEM_PROMPT_TEMPLATE` in `agent/agent.py`, filled by the server | The model has no reliable clock. Without an injected date it substitutes one, and the observed substitution is the real-world date the trace was recorded on, not the date the scenario is set in. |
 
 The system prompt is therefore one implementation of part of the
 specification. Copying the entire specification into the prompt would be
@@ -99,6 +100,13 @@ The following cases always go to a human:
 - **ESC-3.** Disputes and requests the agent cannot resolve from the help center and the
   order record.
 - **ESC-4.** Any case where the agent is unsure whether policy allows an action.
+- **ESC-5.** When a tool returns `permission_denied` for an order the user named, tell
+  the user the order cannot be accessed and ask them to confirm the order number. Do
+  not open a ticket requesting action on an order outside the caller's scope unless the
+  user confirms the number and the request still needs a human.
+- **ESC-6.** If a ticket for the same issue was opened earlier in the conversation and
+  is still within its SLA, refer the user to that ticket instead of opening a new one.
+  Open a new ticket only when there is new information.
 
 ## 6. Other response requirements
 
@@ -109,3 +117,48 @@ Requirements that do not fit in the sections above, including tone and style gui
 - **RESP-3.** State when required information is missing or inconsistent, rather than inventing a value.
 - **RESP-4.** Explain refusals and escalations without revealing inaccessible order or user information.
 - **RESP-5.** Use direct and respectful language that explains the relevant decision.
+- **RESP-6.** Do not present user-supplied details as verified order data. Label them as
+  reported by the user, or verify them with a tool before stating them as order facts.
+- **RESP-7.** Before a write action (refund, cancel), if the user did not specify the
+  target order or the amount, and the lookups do not identify exactly one candidate, ask
+  the user rather than choosing.
+- **RESP-8.** When `refund_eligible` is false, state that the order is not eligible and
+  why, citing the governing policy (the platform window, the store override, or the
+  order status). Do not present the refusal as awaiting human approval, or as an
+  available exception, unless a policy provides one.
+- **RESP-9.** The session context states the current date. Elapsed time is computed
+  only from that date and dates returned by tools. The agent does not state or rely on
+  how much time has passed — that a window has closed, that an order is overdue, or
+  that the user's stated timing disagrees with the record — unless both endpoints come
+  from one of those two sources.
+
+## 7. Revision history
+
+Requirements added during Homework 4 error analysis. Each was drafted from a reviewed
+trace before any failure label was assigned to it, as the handout requires. Adding a
+requirement here does not change the running application; the agent's behaviour in the
+Module 1 traces predates all of these.
+
+| ID | Clarifies | Motivating annotation | Scenario | Added |
+| --- | --- | --- | --- | --- |
+| RESP-6 | RESP-3, for unverified user claims | `partA-2` | `support-0246` | 2026-09-20 |
+| RESP-7 | RESP-3, for write actions | `partA-3` | `support-0242` | 2026-09-20 |
+| RESP-8 | RESP-5 and the refund contract in section 4 | `amu7z2qna1fxc` | order 554, ticket #163 | 2026-09-20 |
+| ESC-5 | ESC-3 and AUTH-1 | `partA-5` | `support-0249` | 2026-09-20 |
+| ESC-6 | ESC-1 to ESC-4, none of which cover a repeat ticket | `amu7wji3zst4g` | ticket #155 / #156 | 2026-09-20 |
+| RESP-9 | RESP-3, for claims about elapsed time | `amu87uosjic75`, `amu8grxazwx04` | `support-0198`, order 81 | 2026-09-20 |
+
+RESP-9 is the only one of these that cannot be satisfied by wording alone. The
+session context in `SYSTEM_PROMPT_TEMPLATE` currently carries the caller's role, user
+id and store id, and no date, so the first half of the requirement is a change to the
+prompt template and the server that fills it. That change is not part of Homework 4;
+the requirement is recorded here so the failures found against it have a rule to cite.
+The motivating evidence is that in two traces the agent wrote "Current date
+2026-09-14" — the day the Homework 3 traces were recorded — into a ticket, while every
+scenario is set on 2026-07-01, and told the user an order was outside a window it was
+comfortably inside.
+
+One further draft revision remains unwritten because no failure mode rests on it: a
+dispute that appears to fall outside the `cw-disputes` window should be reported as
+likely ineligible, with the policy cited, and still escalated for a human decision
+(motivating annotation `partA-2`, recorded as pending revision #1).

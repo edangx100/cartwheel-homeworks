@@ -20,6 +20,14 @@
     "final_uniform": {
       "target": 15,
       "method": "uniform random stability check"
+    },
+    "depth_partd": {
+      "target": 7,
+      "method": "Part D search for additional instances of a confirmed mode, then repeated after the definition was revised. Every returned trace was read and ruled on by the reviewer; accepted ones joined the review set so Part E can label them."
+    },
+    "part_a": {
+      "target": 3,
+      "method": "Traces reviewed in the standard Langfuse view during Part A, before the review app existed. They do not count toward the 100 drawn in batches 1-4; they are in the review set because each is the founding observation of a final mode and must carry a Part E label."
     }
   },
   "items": [
@@ -1622,6 +1630,166 @@
         "user_style": "typo_heavy"
       },
       "added_at": "2026-09-19T12:42:14+00:00"
+    },
+    {
+      "trace_id": "d4bd9485143e2393399e6218e03cfbf3",
+      "session_id": "ff643fe8d71a4da382cce344bde8f87f",
+      "batch": "depth_partd",
+      "reason": "support-0208: positive: delivered status with no delivery date, never stated",
+      "dims": {
+        "role": "shopper",
+        "intent": "refund",
+        "record_state": "order_missing_delivery_date",
+        "applicable_policy": "platform_rule",
+        "tools_needed": "several",
+        "difficulty": "missing_information",
+        "user_style": "operational_shorthand"
+      },
+      "added_at": "2026-09-20T00:00:00Z"
+    },
+    {
+      "trace_id": "6a814a7da26c81e9fd6911497483b805",
+      "session_id": "949bed63c43c4604af224e496166387e",
+      "batch": "depth_partd",
+      "reason": "support-0221: positive: store mismatch on order 8003, asked which store handles it",
+      "dims": {
+        "role": "support",
+        "intent": "order_status",
+        "record_state": "order_store_mismatch",
+        "applicable_policy": "none",
+        "tools_needed": "several",
+        "difficulty": "ambiguous",
+        "user_style": "terse_fragmentary"
+      },
+      "added_at": "2026-09-20T00:00:00Z"
+    },
+    {
+      "trace_id": "24bf4de9f49bcb02b6e1f8010e9839ad",
+      "session_id": "106e67bee37a48148ccaf5d7684a2869",
+      "batch": "depth_partd",
+      "reason": "support-0210: close negative: stated the missing delivery date, refused to compute",
+      "dims": {
+        "role": "shopper",
+        "intent": "return_policy_question",
+        "record_state": "order_missing_delivery_date",
+        "applicable_policy": "platform_rule",
+        "tools_needed": "several",
+        "difficulty": "missing_information",
+        "user_style": "neutral_conversational"
+      },
+      "added_at": "2026-09-20T00:00:00Z"
+    },
+    {
+      "trace_id": "8cc0c4d6ce7baff36708ea9239d3fafc",
+      "session_id": "bbaf506c5bc1414baba34827041d4ac7",
+      "batch": "depth_partd",
+      "reason": "support-0220: close negative: checked the catalog, found the store mismatch, escalated",
+      "dims": {
+        "role": "merchant",
+        "intent": "order_status",
+        "record_state": "order_store_mismatch",
+        "applicable_policy": "none",
+        "tools_needed": "several",
+        "difficulty": "ambiguous",
+        "user_style": "neutral_conversational"
+      },
+      "added_at": "2026-09-20T00:00:00Z"
+    },
+    {
+      "trace_id": "7a6da8e252d8c68ae2b42eae3ee85080",
+      "session_id": "f3704708ea8946ff88f394c621560e3e",
+      "batch": "depth_partd",
+      "reason": "support-0029: close negative: flagged the reversed dates on order 8001",
+      "dims": {
+        "role": "shopper",
+        "intent": "dispute",
+        "record_state": "order_reversed_dates",
+        "applicable_policy": "platform_rule",
+        "tools_needed": "several",
+        "difficulty": "ambiguous",
+        "user_style": "frustrated_impatient"
+      },
+      "added_at": "2026-09-20T00:00:00Z"
+    },
+    {
+      "trace_id": "4b424c6c31af94a5be6e51cb90e8c295",
+      "session_id": "5678e9ffb5304935a7fce6d372d4c569",
+      "batch": "depth_partd",
+      "reason": "support-0213: close negative: reported both dates and said they do not line up",
+      "dims": {
+        "role": "shopper",
+        "intent": "order_status",
+        "record_state": "order_reversed_dates",
+        "applicable_policy": "platform_rule",
+        "tools_needed": "several",
+        "difficulty": "ambiguous",
+        "user_style": "typo_heavy"
+      },
+      "added_at": "2026-09-20T00:00:00Z"
+    },
+    {
+      "trace_id": "d87323ccd41b09afd72daa0b693efe85",
+      "session_id": "56f8c9341dff49e9b7e777ba806df52b",
+      "batch": "depth_partd",
+      "reason": "support-0215: close negative: flagged that delivery precedes shipment",
+      "dims": {
+        "role": "merchant",
+        "intent": "order_status",
+        "record_state": "order_reversed_dates",
+        "applicable_policy": "platform_rule",
+        "tools_needed": "several",
+        "difficulty": "ambiguous",
+        "user_style": "frustrated_impatient"
+      },
+      "added_at": "2026-09-20T00:00:00Z"
+    },
+    {
+      "trace_id": "3503abdfad27bcefc55672c68d0fb695",
+      "session_id": "29e2c53ee39a4a918b913ad71e4c4118",
+      "batch": "part_a",
+      "reason": "support-0246: the Classic Scarf, origin of user_claim_not_reconciled",
+      "dims": {
+        "role": "support",
+        "intent": "dispute",
+        "record_state": "order_past_window",
+        "applicable_policy": "platform_rule",
+        "tools_needed": "several",
+        "difficulty": "boundary",
+        "user_style": "neutral_conversational"
+      },
+      "added_at": "2026-09-20T00:00:00Z"
+    },
+    {
+      "trace_id": "cc93a580370b4336aacd5b81607aaa3b",
+      "session_id": "c5679b22331944a28943d2f8fbb0ff9a",
+      "batch": "part_a",
+      "reason": "support-0242: refund on a fuzzy match, origin of write_on_unconfirmed_target",
+      "dims": {
+        "role": "merchant",
+        "intent": "refund",
+        "record_state": "order_in_window",
+        "applicable_policy": "platform_rule",
+        "tools_needed": "several",
+        "difficulty": "missing_information",
+        "user_style": "operational_shorthand"
+      },
+      "added_at": "2026-09-20T00:00:00Z"
+    },
+    {
+      "trace_id": "065b25b9a3789d83ff7da86558aa2c55",
+      "session_id": "fa10095d026f459baaee3cc47fb8fe02",
+      "batch": "part_a",
+      "reason": "support-0249: ticket after permission_denied, origin of refusal_mishandled",
+      "dims": {
+        "role": "merchant",
+        "intent": "cancellation",
+        "record_state": "order_placed",
+        "applicable_policy": "platform_rule",
+        "tools_needed": "several",
+        "difficulty": "ambiguous",
+        "user_style": "terse_fragmentary"
+      },
+      "added_at": "2026-09-20T00:00:00Z"
     }
   ]
 }
