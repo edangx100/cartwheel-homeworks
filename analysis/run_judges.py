@@ -16,6 +16,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
+import os
 import re
 from collections import Counter, defaultdict
 from pathlib import Path
@@ -88,6 +90,10 @@ def _turn_messages(raw: dict[str, Any]) -> list[dict[str, Any]]:
     return messages
 
 
+def _label_rows() -> list[dict[str, Any]]:
+    return [json.loads(line) for line in LABELS_PATH.read_text().splitlines() if line.strip()]
+
+
 def prepare_inputs(out_path: Path = INPUTS_PATH) -> list[dict[str, Any]]:
     """Write one judge input per labelled conversation.
 
@@ -97,7 +103,7 @@ def prepare_inputs(out_path: Path = INPUTS_PATH) -> list[dict[str, Any]]:
     labelled turn, each with its tool calls and results. Labels, evidence,
     scenario ids and expected outcomes are never included.
     """
-    labelled = [json.loads(line) for line in LABELS_PATH.read_text().splitlines() if line.strip()]
+    labelled = [row for row in _label_rows() if not row.get("superseded_by")]
     raws: dict[str, dict[str, Any]] = {}
     for path in TRACE_EXPORTS:
         for raw in json.loads(path.read_text())["traces"]:
@@ -204,11 +210,7 @@ def split_data(mode: str = MODE) -> dict[str, list[str]]:
 def split_counts(mode: str = MODE) -> dict[str, dict[str, int]]:
     """Pass/Fail counts per split, in HW5 polarity."""
     splits = json.loads((STATE / "splits.json").read_text())[mode]
-    labels = {}
-    for line in LABELS_PATH.read_text().splitlines():
-        if line.strip():
-            row = json.loads(line)
-            labels[row["trace_id"]] = row["label"]
+    labels = {row["trace_id"]: row["label"] for row in _label_rows() if not row.get("superseded_by")}
     out = {}
     for name in ("train", "dev", "test"):
         c = Counter(labels[tid] for tid in splits[name])
@@ -216,10 +218,162 @@ def split_counts(mode: str = MODE) -> dict[str, dict[str, int]]:
     return out
 
 
+def sync_labels(mode: str = MODE) -> list[dict[str, Any]]:
+    """Carry label corrections made in the review app into the HW5 file.
+
+    The app records judgments in ``labels/<mode>.jsonl`` (1 = failure present);
+    the judge helpers read ``hw5_labels/<mode>.jsonl`` (1 = Pass). When the
+    latest app judgment for an evaluated trace disagrees with its live HW5
+    row, the row is marked ``superseded_by`` and a corrected row is appended,
+    the helpers' append-only convention, so the history is kept.
+    """
+    latest = {}
+    for line in (STATE / "labels" / f"{mode}.jsonl").read_text().splitlines():
+        if line.strip():
+            row = json.loads(line)
+            latest[row["trace_id"]] = row
+    rows = [json.loads(line) for line in LABELS_PATH.read_text().splitlines() if line.strip()]
+    changed = []
+    for row in list(rows):
+        app = latest.get(row["trace_id"])
+        if row.get("superseded_by") or app is None or 1 - int(app["label"]) == row["label"]:
+            continue
+        row["superseded_by"] = app["label_id"]
+        new = {"trace_id": row["trace_id"], "label": 1 - int(app["label"]), "scenario_id": row["scenario_id"],
+               "source": app.get("source", "human"), "evidence": app.get("evidence", ""),
+               "hw4_label_id": app["label_id"], "ts": app["ts"], "corrects": row.get("hw4_label_id")}
+        rows.append(new)
+        changed.append(new)
+    if changed:
+        LABELS_PATH.write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rows))
+    return changed
+
+
+JUDGE_MODEL = "gpt-4o-mini"
+REPORT = REPO / "analysis" / "report"
+
+
+def wilson(successes: int, n: int, z: float = 1.96) -> tuple[float, float]:
+    """95% Wilson score interval for a proportion, computed here as an
+    independent check on the helper's interval."""
+    if n == 0:
+        return (0.0, 1.0)
+    p = successes / n
+    centre = (p + z * z / (2 * n)) / (1 + z * z / n)
+    half = z * math.sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / (1 + z * z / n)
+    return (round(max(0.0, centre - half), 4), round(min(1.0, centre + half), 4))
+
+
+def _judge_env() -> None:
+    """Point the judge at the saved inputs and load the model key from .env."""
+    from dotenv import load_dotenv
+
+    load_dotenv(REPO / ".env")
+    os.environ["CARTWHEEL_JUDGE_TRACE_SOURCE"] = str(INPUTS_PATH)
+
+
+def _metrics_report(judge_id: str, split: str, prompt_path: str | None) -> dict[str, Any]:
+    from analysis.helpers import judge_alignment
+
+    metrics = judge_alignment(judge_id, split=split)
+    tp, fn, tn, fp = metrics["tp"], metrics["fn"], metrics["tn"], metrics["fp"]
+    check = {"tpr_interval": wilson(tp, tp + fn), "tnr_interval": wilson(tn, tn + fp)}
+    for key in check:
+        if [round(x, 3) for x in metrics[key]] != [round(x, 3) for x in check[key]]:
+            raise ValueError(f"{key}: helper {metrics[key]} != independent {check[key]}")
+    judge = json.loads((STATE / "judges" / f"{judge_id}.json").read_text())
+    return {
+        **metrics,
+        "mode": MODE,
+        "model": judge["model"],
+        "prompt_path": prompt_path,
+        "prompt_hash": judge["prompt_hash"],
+        "class_counts": {"human_pass": tp + fn, "human_fail": tn + fp},
+        "confusion": {"TP": tp, "FN": fn, "TN": tn, "FP (missed failure)": fp},
+        "interval_method": "95% Wilson score, recomputed independently and matched to the helper",
+    }
+
+
+def run_development(mode: str, prompt_path: str) -> dict[str, Any]:
+    """Register a prompt version, run it on the dev split, and save metrics
+    to ``analysis/report/dev-<judge_id>.json``. Calls a live model."""
+    from analysis.helpers import register_judge, run_judge
+
+    if mode != MODE:
+        raise ValueError(f"this homework judges {MODE}")
+    _judge_env()
+    record = register_judge(mode=mode, prompt_text=(REPO / prompt_path).read_text(), judge_model=JUDGE_MODEL)
+    judge_id = record["judge_id"]
+    run_judge(judge_id, split="dev", batch_size=10)
+    report = _metrics_report(judge_id, "dev", prompt_path)
+    (REPORT / f"dev-{judge_id}.json").write_text(json.dumps(report, indent=1) + "\n")
+    return report
+
+
+def resume_development(judge_id: str) -> dict[str, Any]:
+    """Finish an interrupted dev run: cached batches are not re-billed, and
+    the judge is not registered again."""
+    from analysis.helpers import run_judge
+
+    _judge_env()
+    run_judge(judge_id, split="dev", batch_size=10)
+    judge = json.loads((STATE / "judges" / f"{judge_id}.json").read_text())
+    prompt_path = next((p for p in (REPO / "analysis" / "prompts").glob("*.txt")
+                        if p.read_text() == judge["prompt_text"]), None)
+    report = _metrics_report(judge_id, "dev", str(prompt_path.relative_to(REPO)) if prompt_path else None)
+    (REPORT / f"dev-{judge_id}.json").write_text(json.dumps(report, indent=1) + "\n")
+    return report
+
+
+def run_test(judge_id: str) -> dict[str, Any]:
+    """Freeze the chosen judge and evaluate the held-out test split once.
+
+    ``freeze_judge`` locks the prompt; the helpers refuse to score ``test``
+    until it is frozen, so no test prediction exists before this call.
+    Metrics are saved to ``analysis/report/test-<judge_id>.json``.
+    """
+    from analysis.helpers import freeze_judge, run_judge
+
+    _judge_env()
+    judge = json.loads((STATE / "judges" / f"{judge_id}.json").read_text())
+    if judge.get("status") != "frozen":
+        freeze_judge(judge_id)
+    run_judge(judge_id, split="test", batch_size=10)
+    prompt_path = next((str(p.relative_to(REPO)) for p in (REPO / "analysis" / "prompts").glob("*.txt")
+                        if p.read_text() == judge["prompt_text"]), None)
+    report = _metrics_report(judge_id, "test", prompt_path)
+    (REPORT / f"test-{judge_id}.json").write_text(json.dumps(report, indent=1) + "\n")
+    return report
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("command", choices=["prepare", "split", "counts"])
+    parser.add_argument("command", choices=["prepare", "split", "counts", "dev", "resume-dev", "sync-labels", "test"])
+    parser.add_argument("target", nargs="?", help="prompt path for dev, judge id for resume-dev and test")
     args = parser.parse_args()
+    if args.command == "test":
+        if not args.target:
+            parser.error("test needs a judge id")
+        report = run_test(args.target)
+        print(json.dumps({k: report[k] for k in ("judge_id", "split", "model", "n", "class_counts",
+              "confusion", "tpr", "tpr_interval", "tnr", "tnr_interval", "agreement")}, indent=1))
+        print(f"saved analysis/report/test-{report['judge_id']}.json")
+        return
+    if args.command in ("dev", "resume-dev"):
+        if not args.target:
+            parser.error(f"{args.command} needs a {'prompt path' if args.command == 'dev' else 'judge id'}")
+        report = run_development(MODE, args.target) if args.command == "dev" else resume_development(args.target)
+        shown = {k: report[k] for k in ("judge_id", "model", "n", "class_counts", "confusion",
+                                         "tpr", "tpr_interval", "tnr", "tnr_interval", "agreement")}
+        print(json.dumps(shown, indent=1))
+        print(f"disagreements: {len(report['disagreements'])}; saved analysis/report/dev-{report['judge_id']}.json")
+        return
+    if args.command == "sync-labels":
+        changed = sync_labels()
+        for row in changed:
+            print(f"{row['scenario_id']}: now {'Pass' if row['label'] else 'Fail'} (from {row['hw4_label_id']})")
+        print(f"{len(changed)} label(s) carried into {LABELS_PATH.relative_to(REPO)}")
+        return
     if args.command == "prepare":
         records = prepare_inputs()
         print(f"wrote {len(records)} records to {INPUTS_PATH.relative_to(REPO)}")

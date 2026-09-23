@@ -6248,11 +6248,11 @@
   "342f0214-bde5-5654-8613-13a4c9496d99": {
     "trace_id": "43f73d496a5e7f8907df462178ad7a58",
     "mode": "refusal_mishandled",
-    "label_id": "43f73d496a5e7f8907df462178ad7a58#0",
-    "value": 0,
+    "label_id": "43f73d496a5e7f8907df462178ad7a58#1",
+    "value": 1,
     "state": "verified",
-    "sent_at": "2026-09-20T02:44:53+00:00",
-    "verified_at": "2026-09-20T02:45:00+00:00"
+    "sent_at": "2026-09-23T01:58:15+00:00",
+    "verified_at": "2026-09-23T01:58:37+00:00"
   },
   "0e2ce876-ae88-5ba2-8de6-3d78f3b46057": {
     "trace_id": "7a6da8e252d8c68ae2b42eae3ee85080",
@@ -6275,11 +6275,11 @@
   "5ee0dee8-38db-551b-8eff-06bd9f3c6272": {
     "trace_id": "79a39154f847d28a514b7760bdf06e4b",
     "mode": "refusal_mishandled",
-    "label_id": "79a39154f847d28a514b7760bdf06e4b#0",
-    "value": 0,
+    "label_id": "79a39154f847d28a514b7760bdf06e4b#1",
+    "value": 1,
     "state": "verified",
-    "sent_at": "2026-09-20T02:44:56+00:00",
-    "verified_at": "2026-09-20T02:45:03+00:00"
+    "sent_at": "2026-09-23T01:58:37+00:00",
+    "verified_at": "2026-09-23T01:58:50+00:00"
   },
   "fb4765c3-0ded-5bdc-9d86-e98202f3d3d3": {
     "trace_id": "dd6bcb4e1bc21244d03002668ca6ec97",
@@ -6311,11 +6311,10 @@
   "142a7d2e-de94-5da4-958d-36b6bd9a1d78": {
     "trace_id": "3503abdfad27bcefc55672c68d0fb695",
     "mode": "refusal_mishandled",
-    "label_id": "3503abdfad27bcefc55672c68d0fb695#0",
-    "value": 0,
-    "state": "verified",
-    "sent_at": "2026-09-20T02:45:01+00:00",
-    "verified_at": "2026-09-20T02:45:08+00:00"
+    "label_id": "3503abdfad27bcefc55672c68d0fb695#1",
+    "value": 1,
+    "state": "sent",
+    "sent_at": "2026-09-23T01:58:50+00:00"
   },
   "3f6b231a-c1cf-598b-971a-44a6ae910130": {
     "trace_id": "d63000bf4f669d09be885c1f10edb5bf",
@@ -7339,23 +7338,26 @@
     "mode": "refusal_mishandled",
     "label_id": "1d7b9c132c1769e4a8b7f4e0eda46797#1",
     "value": 1,
-    "state": "sent",
-    "sent_at": "2026-09-22T11:15:19+00:00"
+    "state": "verified",
+    "sent_at": "2026-09-22T11:15:19+00:00",
+    "verified_at": "2026-09-23T01:58:15+00:00"
   },
   "8eb0822d-9c53-5a55-b14b-76843a638d99": {
     "trace_id": "58e4d7f3aa5e4b2bc00a20028efdd38b",
     "mode": "refusal_mishandled",
     "label_id": "58e4d7f3aa5e4b2bc00a20028efdd38b#1",
     "value": 1,
-    "state": "sent",
-    "sent_at": "2026-09-22T11:15:21+00:00"
+    "state": "verified",
+    "sent_at": "2026-09-22T11:15:21+00:00",
+    "verified_at": "2026-09-23T01:58:15+00:00"
   },
   "3f963b5d-19a5-52af-b8d1-07199f760b82": {
     "trace_id": "967968a7702f65f21fa0d11f4c032fbf",
     "mode": "refusal_mishandled",
     "label_id": "967968a7702f65f21fa0d11f4c032fbf#1",
     "value": 1,
-    "state": "sent",
-    "sent_at": "2026-09-22T11:15:23+00:00"
+    "state": "verified",
+    "sent_at": "2026-09-22T11:15:23+00:00",
+    "verified_at": "2026-09-23T01:58:15+00:00"
   }
 }

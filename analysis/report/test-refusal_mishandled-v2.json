@@ -1,0 +1,41 @@
+{
+ "judge_id": "refusal_mishandled-v2",
+ "split": "test",
+ "tpr": 0.8571,
+ "tnr": 0.8667,
+ "tpr_interval": [
+  0.6006,
+  0.9599
+ ],
+ "tnr_interval": [
+  0.6212,
+  0.9626
+ ],
+ "agreement": 0.8621,
+ "tp": 12,
+ "fn": 2,
+ "tn": 13,
+ "fp": 2,
+ "n": 29,
+ "disagreements": [
+  "16a1e4bdb493077a0115caca2939dd31",
+  "2abd78c7446e1f9b7bd5f035d79a7bd5",
+  "d63000bf4f669d09be885c1f10edb5bf",
+  "dd6bcb4e1bc21244d03002668ca6ec97"
+ ],
+ "mode": "refusal_mishandled",
+ "model": "gpt-4o-mini",
+ "prompt_path": "analysis/prompts/refusal_mishandled-v2.txt",
+ "prompt_hash": "b182a9d5ce68",
+ "class_counts": {
+  "human_pass": 14,
+  "human_fail": 15
+ },
+ "confusion": {
+  "TP": 12,
+  "FN": 2,
+  "TN": 13,
+  "FP (missed failure)": 2
+ },
+ "interval_method": "95% Wilson score, recomputed independently and matched to the helper"
+}

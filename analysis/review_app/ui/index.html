@@ -233,6 +233,7 @@ tr.sel td { background: var(--user-bg); }
     <button data-view="labels">Labels</button>
     <button data-view="progress">Progress</button>
     <button data-view="suggestions">AI suggestions <span class="count" id="sugg-count">0</span></button>
+    <button data-view="judge">Judge</button>
   </nav>
   <button id="counter" title="Open the Progress tab"></button>
   <span id="source"></span>
@@ -267,6 +268,7 @@ tr.sel td { background: var(--user-bg); }
   <section class="view" id="view-labels"><div class="page" id="labels-page"></div></section>
   <section class="view" id="view-progress"><div class="page" id="progress-page"></div></section>
   <section class="view" id="view-suggestions"><div class="page" id="suggestions-page"></div></section>
+  <section class="view" id="view-judge"><div class="page" id="judge-page"></div></section>
 </main>
 
 <div id="popover">
@@ -1147,6 +1149,7 @@ function renderView() {
   else if (S.view === 'labels') renderLabels();
   else if (S.view === 'progress') renderProgress();
   else if (S.view === 'suggestions') renderSuggestions();
+  else if (S.view === 'judge') renderJudge();
 }
 /* Live review count for the sampled traces, shown in the top bar. */
 function reviewCounts(tids) {
@@ -1181,6 +1184,58 @@ function renderCounter() {
   }).join('\n') + '\n\nClick to open the Progress tab.';
 }
 $('counter').onclick = () => switchView('progress');
+
+/* ------------------------------------------------------------------ *
+ * judge review (Homework 5)                                            *
+ * ------------------------------------------------------------------ */
+/* The judge's verdict and critique beside the human label, per registered
+ * version. Test rows come from the server only once a judge is frozen. */
+async function renderJudge() {
+  const page = $('judge-page');
+  let data;
+  try { data = await api.get('/api/judges'); } catch (e) { page.innerHTML = `<div class="card">Could not load judges: ${esc(e.message)}</div>`; return; }
+  const judges = data.judges || [];
+  if (!judges.length) { page.innerHTML = '<h2>Judge</h2><div class="card muted">No judge versions registered yet.</div>'; return; }
+  const J = S.judgeView = Object.assign({id: judges[judges.length - 1].judge_id, split: 'dev', only: true}, S.judgeView || {});
+  const judge = judges.find(j => j.judge_id === J.id) || judges[judges.length - 1];
+  J.id = judge.judge_id;
+  const splits = ['dev', 'train', ...(judge.frozen ? ['test'] : [])];
+  if (!splits.includes(J.split)) J.split = 'dev';
+  const all = judge.rows.filter(r => r.split === J.split);
+  const scored = all.filter(r => r.judge && r.human);
+  const n = (h, p) => scored.filter(r => r.human === h && r.judge === p).length;
+  const tp = n('Pass', 'Pass'), fn = n('Pass', 'Fail'), tn = n('Fail', 'Fail'), fp = n('Fail', 'Pass');
+  const rate = (a, b) => b ? (a / b).toFixed(3) + ` (${a}/${b})` : '–';
+  const rows = all.filter(r => !J.only || (r.judge && r.human && r.judge !== r.human));
+  const hidden = judge.hidden && judge.hidden.test ? `<span class="chip">test: ${judge.hidden.test} traces hidden until this judge is frozen</span>` : '';
+  page.innerHTML = `<h2>Judge</h2>
+    <p class="muted small">The judge's verdict and critique beside your label. Pass means the failure is absent. Open a trace to read it in full, then decide: the judge is wrong (fix the prompt), your label is wrong (fix it in the Labels tab), or the rule is unclear.</p>
+    <div class="card" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <select id="jv-id">${judges.map(j => `<option ${j.judge_id === J.id ? 'selected' : ''}>${esc(j.judge_id)}</option>`).join('')}</select>
+      <select id="jv-split">${splits.map(s => `<option ${s === J.split ? 'selected' : ''}>${s}</option>`).join('')}</select>
+      <label><input type="checkbox" id="jv-only" ${J.only ? 'checked' : ''}> disagreements only</label>
+      <span class="chip">${esc(judge.model || '')}</span><span class="chip ${judge.frozen ? 'ok' : ''}">${esc(judge.status || '')}</span>${hidden}
+    </div>
+    <div class="card small">
+      scored ${scored.length}/${all.length} ·
+      TP ${tp} · FN ${fn} · TN ${tn} · FP (missed failure) ${fp} ·
+      <b>TPR ${rate(tp, tp + fn)}</b> · <b>TNR ${rate(tn, tn + fp)}</b> ·
+      ${fn + fp} disagreements
+    </div>
+    <div class="card" style="overflow:auto"><table>
+      <thead><tr><th>Trace</th><th>Human</th><th>Judge</th><th>Critique</th></tr></thead>
+      <tbody>${rows.map(r => { const hit = S.traceIndex[r.trace_id];
+        const tag = v => v ? `<span class="chip ${v === 'Pass' ? 'ok' : 'warn'}">${v}</span>` : '<span class="muted">–</span>';
+        return `<tr><td><a class="link" data-goto="${esc(r.trace_id)}">${esc(hit ? (hit.session.scenario_id || short(r.trace_id)) : short(r.trace_id))}</a>
+          <div class="small muted">${short(r.trace_id)}</div></td>
+          <td>${tag(r.human)}</td><td>${tag(r.judge)}</td>
+          <td class="small" style="white-space:pre-wrap;max-width:780px">${esc(r.critique || '')}</td></tr>`; }).join('') ||
+        '<tr><td colspan="4" class="muted">Nothing to show.</td></tr>'}</tbody></table></div>`;
+  page.querySelectorAll('[data-goto]').forEach(a => a.onclick = () => gotoTrace(a.dataset.goto));
+  $('jv-id').onchange = e => { J.id = e.target.value; renderJudge(); };
+  $('jv-split').onchange = e => { J.split = e.target.value; renderJudge(); };
+  $('jv-only').onchange = e => { J.only = e.target.checked; renderJudge(); };
+}
 
 function renderAll() { renderCounter(); renderSource(); renderBatchFilter(); $('sugg-count').textContent = S.suggestions.filter(x => x.status === 'pending').length; renderView(); }
 document.querySelectorAll('#tabs button').forEach(b => b.onclick = () => switchView(b.dataset.view));
