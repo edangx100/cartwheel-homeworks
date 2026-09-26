@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 
 from replay.harness import ReplayInfraError, replay_case, summarize_rollouts
-from replay.rollout import judge_trace_text
+from replay.rollout import hw5_judge_input_text, judge_trace_text
 
 
 def test_replay_resets_before_each_run_and_retries_only_infrastructure() -> None:
@@ -86,4 +86,39 @@ def test_judge_trace_text_uses_the_hw5_normalized_roles() -> None:
         'tool_call: {"order_id": 42}',
         'tool_result: {"ok": true, "status": "shipped"}',
         "assistant: It shipped today.",
+    ]
+
+
+def test_hw5_judge_input_text_matches_the_saved_hw5_layout() -> None:
+    transcript = {
+        "turns": [
+            {
+                "user": "Where is my order?",
+                "reply": "It shipped today.",
+                "tool_calls": [
+                    {
+                        "name": "get_order",
+                        "args": {"order_id": 42},
+                        "result": {"status": "shipped", "ok": True},
+                    }
+                ],
+                "sequence": [
+                    {"text": "Let me check."},
+                    {"tool_call": 0},
+                    {"text": "It shipped today."},
+                ],
+            },
+            {"user": "Thanks", "reply": "", "tool_calls": []},
+        ]
+    }
+
+    assert hw5_judge_input_text(transcript, "The user is signed in as: shopper.\nRef").splitlines() == [
+        "context: The user is signed in as: shopper.",
+        "Ref",
+        "user: Where is my order?",
+        "assistant: Let me check.",
+        'tool_call: get_order({"order_id": 42})',
+        'tool_result: get_order returned {"ok": true, "status": "shipped"}',
+        "assistant: It shipped today.",
+        "user: Thanks",
     ]
