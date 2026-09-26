@@ -1,0 +1,63 @@
+{
+ "mode": "refusal_mishandled",
+ "reason": "Matched the trigger scan but the mode does not apply; recorded so the screening is auditable.",
+ "traces": [
+  {
+   "scenario": "support-0160",
+   "trace_id": "1ea1ee0373ba470e0c23d07d8554a15e",
+   "why": "Asks for a return deadline; the agent answers it from the store policy. Nothing was requested that a rule forbids, so the mode does not apply."
+  },
+  {
+   "scenario": "support-0019",
+   "trace_id": "334f16f1a8fde96a4ee827a4b0557a6a",
+   "why": "find_order returned three orders; the two marked refund_eligible false are not the one discussed. The order the user meant (961, Northwind Books) is refund-eligible and the agent offers the next step. Nothing was refused."
+  },
+  {
+   "scenario": "support-0021",
+   "trace_id": "065df74d26d4ee8df1000e96d5db3340",
+   "why": "find_order returned three orders; the order discussed (161) is refund-eligible and the agent sets up the refund. Nothing was refused. It carries a Homework 4 absent label, which stays in the Homework 4 file but is not a Homework 5 Pass."
+  }
+ ],
+ "rule_fix": "A refund refusal counts only when the order the conversation is about is refund_eligible false - a get_order result, or an issue_refund error. refund_eligible false on other orders in a find_order candidate list does not count.",
+ "close_variants": {
+  "rule": "One conversation per data_quality_case_id group, the lowest scenario id, chosen without looking at labels. The handout keeps one record from each group of duplicate runs or close scenario variants. Labels stay in the label files.",
+  "dropped": [
+   {
+    "scenario": "support-0208",
+    "trace_id": "d4bd9485143e2393399e6218e03cfbf3",
+    "group": "dq-order-missing-delivery-date",
+    "kept_instead": "support-0028"
+   },
+   {
+    "scenario": "support-0210",
+    "trace_id": "24bf4de9f49bcb02b6e1f8010e9839ad",
+    "group": "dq-order-missing-delivery-date",
+    "kept_instead": "support-0028"
+   },
+   {
+    "scenario": "support-0211",
+    "trace_id": "ce9e9be7f060faa00ad1c4361bf51d67",
+    "group": "dq-order-missing-delivery-date",
+    "kept_instead": "support-0028"
+   },
+   {
+    "scenario": "support-0212",
+    "trace_id": "23c4ca83e91d06faa6ffce956b81395b",
+    "group": "dq-order-reversed-dates",
+    "kept_instead": "support-0029"
+   },
+   {
+    "scenario": "support-0214",
+    "trace_id": "c813107b14c2ce5f95fef0b2b018605a",
+    "group": "dq-order-reversed-dates",
+    "kept_instead": "support-0029"
+   },
+   {
+    "scenario": "support-0222",
+    "trace_id": "09d2290782cb852c8ef57bd4182dee57",
+    "group": "dq-order-store-mismatch",
+    "kept_instead": "support-0046"
+   }
+  ]
+ }
+}

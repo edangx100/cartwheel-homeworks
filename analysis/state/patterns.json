@@ -883,6 +883,32 @@
           "note": "Rejected group, Part D. A repeat search against the seed catalog found 16 traces surfacing the three product-level data-quality cases (dq-product-duplicate-title on products 1 and 2, dq-product-missing-title on product 3, dq-product-invalid-price on product 4). Rejected on the evidence: only 4 of the 16 fall inside the reviewed sample, the reviewer had already read all four and recorded no failure, and three of them serve as close negatives for other modes today (support-0030, support-0047, support-0049, support-0227). The agent handles these records well in almost every trace - it names the blank title, calls the negative price a listing error, and lists the duplicate titles with their identifiers. One trace looks like a genuine miss, support-0223, which answers 'what's the price?' with 'The Rustic Pitcher is listed at -$5.00' against an expected outcome of do_not_present_negative_price_as_valid_offer, and even there the agent corrects itself in turn 2 when asked. One unreviewed trace does not support a mode: the handout allows an addition only when the reviewer's own traces and annotations back it. Recorded here so the considered alternative stays inspectable, and as the candidate to revisit if Homework 5 needs an eighth mode."
         }
       ]
+    },
+    {
+      "name": "governing_policy_not_retrieved",
+      "status": "candidate",
+      "definition": "Fail when the agent answers a policy-governed request without ever retrieving the policy that governs it, and answers from a different policy instead. Two shapes seen so far: (a) the request is a charge dispute and the agent never calls get_policy or search_help_center for cw-disputes, answering from the return policy instead (support-0188); (b) the order belongs to a store with a return-window override and the agent never retrieves that store policy, citing the 30-day platform default as the governing rule (support-0091, support-0229, support-0247). Pass when the governing policy appears in a tool result, whether or not the agent then applies it correctly.",
+      "boundary": "The test is what the tool results contain, not whether the final answer happened to be right: in support-0247 and support-0091 the refusal outcome is the same under either window, and both are still this mode. Not this mode when the governing policy was retrieved and then misread - that is refusal_mishandled (support-0195 read cw-disputes and misapplied its 60-day window). Not this mode for a general policy question answered from the relevant policies (support-0166, restocking fees). Differs from refusal_mishandled in the object: that mode judges the reply, this one judges what was looked up, and a trace can be a positive for both.",
+      "nearest_mode": "refusal_mishandled",
+      "spec_ref": "RESP-1, PURPOSE-1, cw-store-overrides",
+      "evaluator": "code check. The governing policy is determined by the request type (dispute -> cw-disputes) and the order's store (an override store -> that store policy); the check is whether that policy_id appears in any tool result. No judge is needed, which is why it is worth separating from refusal_mishandled rather than folding into it.",
+      "product_change": "Retrieval rule: before citing a window, look up the policy that governs the request type, and for an order from a store with an override, look up that store policy. Cite the rule that governs, not the platform default.",
+      "annotation_ids": [],
+      "positives": [
+        "c50d0372f0d2de6484943976c26f0d1a"
+      ],
+      "close_negatives": [
+        "854cbaa3f7ec1ef7b3e7c29ec047217d",
+        "7956e8e2bdcb3fd034a95307daefb163",
+        "6621fbce0e2dd65297ff0536204edad8"
+      ],
+      "revisions": [
+        {
+          "at": "2026-09-21T00:00:00Z",
+          "changes": [],
+          "note": "Opened as a candidate during Homework 5 Part A, not from open coding. The reviewer asked whether the taxonomy had a retrieval failure mode after noticing that support-0188 was called a wrong-rule refusal on the strength of a policy (cw-disputes) that the trace never retrieved. It does not: the seven final modes all judge the reply, so a retrieval failure is only ever counted through whichever mode catches its consequence, and a case where nothing relevant was retrieved but the answer came out right would go uncounted. A scan of all 350 traces found 7 candidate instances (support-0188 plus the store-override family support-0091, -0229, -0247, -0038, -0041, -0044) and one false positive (support-0166). Left as a candidate rather than promoted: the positives have not been read one by one against this definition, and four of them are already positives of refusal_mishandled, so the merge/split test has not been applied. Homework 5 judges refusal_mishandled; this mode is recorded so the gap is not lost."
+        }
+      ]
     }
   ]
 }

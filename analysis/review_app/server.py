@@ -20,6 +20,7 @@ a sample manifest, and a Langfuse score sync that reports pending writes.
     GET  /api/labels            current label per mode and trace, with sync state
     POST /api/labels            record one accepted judgment and sync it
     POST /api/sync              retry pending Langfuse writes and verify sent ones
+    GET  /api/judges            HW5 judge verdicts and critiques beside the human labels
 
 Labels. A judgment is 1 when the failure is present and 0 when it is absent.
 Each accepted judgment is appended to ``analysis/state/labels/<mode>.jsonl``
@@ -190,6 +191,57 @@ def append_label(body: dict[str, Any]) -> dict[str, Any]:
     return record
 
 
+def judge_reviews() -> dict[str, Any]:
+    """Homework 5 judge verdicts and critiques beside the human labels.
+
+    One entry per registered judge version, with rows for its split traces:
+    the human label and the judge verdict (both Pass/Fail) and the critique.
+    Test rows are withheld until that judge is frozen, the same guard the
+    helpers apply, so the page cannot show test predictions early.
+    """
+    from analysis.helpers.guards import is_frozen
+
+    judges_dir = STATE_DIR / "judges"
+    splits = read_json(STATE_DIR / "splits.json", {})
+    out = []
+    for path in sorted(judges_dir.glob("*.json")) if judges_dir.exists() else []:
+        if path.name.startswith("_"):
+            continue
+        judge = read_json(path, {})
+        mode = judge.get("mode")
+        label_file = STATE_DIR / "hw5_labels" / f"{mode}.jsonl"
+        if not mode or not label_file.exists() or mode not in splits:
+            continue
+        human = {}
+        for line in label_file.read_text(encoding="utf-8").splitlines():
+            if line.strip():
+                row = json.loads(line)
+                if not row.get("superseded_by"):
+                    human[row["trace_id"]] = "Pass" if row["label"] == 1 else "Fail"
+        preds = judge.get("predictions", {}).get(judge.get("prompt_hash"), {})
+        critiques = judge.get("critiques", {}).get(judge.get("prompt_hash"), {})
+        frozen = is_frozen(judge)
+        rows, hidden = [], {}
+        for split in ("dev", "test", "train"):
+            ids = splits[mode].get(split, [])
+            if split == "test" and not frozen:
+                hidden["test"] = len(ids)
+                continue
+            for tid in ids:
+                verdict = None if tid not in preds else ("Pass" if preds[tid] == 1 else "Fail")
+                rows.append({"trace_id": tid, "split": split, "human": human.get(tid),
+                             "judge": verdict, "critique": critiques.get(tid, "")})
+        out.append({"judge_id": judge.get("judge_id"), "mode": mode, "model": judge.get("model"),
+                    "status": judge.get("status"), "frozen": frozen, "rows": rows, "hidden": hidden})
+    out.sort(key=lambda j: (j["mode"], judge_version(j["judge_id"])))
+    return {"judges": out}
+
+
+def judge_version(judge_id: str) -> int:
+    match = re.search(r"-v(\d+)$", judge_id or "")
+    return int(match.group(1)) if match else -1
+
+
 def sync_labels() -> dict[str, Any]:
     """Send pending judgments to Langfuse, then verify previously sent ones.
 
@@ -291,6 +343,8 @@ class Handler(BaseHTTPRequestHandler):
             self._json(_DATA["sessions"])
         elif path == "/api/labels":
             self._json(current_labels())
+        elif path == "/api/judges":
+            self._json(judge_reviews())
         elif path in STATE_FILES:
             self._json(read_json(*STATE_FILES[path]))
         else:

@@ -1,0 +1,20 @@
+{
+  "versions": [
+    {
+      "judge_id": "refusal_mishandled-v0",
+      "prompt_hash": "dbab14bd8d0e"
+    },
+    {
+      "judge_id": "refusal_mishandled-v1",
+      "prompt_hash": "c8d41c678711"
+    },
+    {
+      "judge_id": "refusal_mishandled-v2",
+      "prompt_hash": "b182a9d5ce68"
+    },
+    {
+      "judge_id": "refusal_mishandled-v3",
+      "prompt_hash": "282fa4f1f62a"
+    }
+  ]
+}
