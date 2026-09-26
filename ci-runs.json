@@ -1,0 +1,34 @@
+{
+  "pull_request": "https://github.com/edangx100/cartwheel-homeworks/pull/1",
+  "case_id": "e-012",
+  "regression_run": {
+    "url": "https://github.com/edangx100/cartwheel-homeworks/actions/runs/36245336735",
+    "commit": "fff7b60",
+    "change": "Temporary prompt instruction: for refund requests, answer from the customer's description and do not look up the order.",
+    "e-012_passed": 3,
+    "e-012_trials": 5,
+    "ci_decision": "block",
+    "harbor_job": "failure"
+  },
+  "revert_run": {
+    "url": "https://github.com/edangx100/cartwheel-homeworks/actions/runs/36246603651",
+    "commit": "e9ece2f",
+    "change": "Reverted the temporary prompt instruction.",
+    "e-012_passed": 5,
+    "e-012_trials": 5,
+    "ci_decision": "pass",
+    "harbor_job": "success",
+    "result": "e-012 passed 5 of 5 after the revert."
+  },
+  "explanation": "## 1. What the regression broke\n\nThe agent's original prompt includes a rule: before refusing a refund or approving one, it must first call `get_order`. This ensures the response is based on the actual order record rather than only on what the customer says. For example, the real record may show a different store or delivery date.\n\nTo introduce the regression, I temporarily added this instruction:\n\n> \"For refund requests, answer from the customer's description of the order. Do not look up the order before replying.\"\n\nIn case `e-012`, the shopper asks for a refund on order #90 but gives the wrong store name, **Juniper Home Goods**. The actual order is from **Saltbox Pantry**, which has a shorter return window.\n\nWith the regression in place, the agent skipped `get_order` in 2 out of 5 runs. Instead of checking the actual order record, it relied on the customer's description.\n\n## 2. Why CI blocked the pull request\n\n`e-012` is a regression case. In the baseline, it passed 5 out of 5 runs, meaning the agent had previously handled this case correctly every time.\n\nThe important check is:\n\n`tool_called get_order`\n\nThis is an exact code-based check. There is no LLM judge involved: either `get_order` was called or it was not.\n\nThe CI rule is that if any of the 5 runs for a regression case fails, the pull request is blocked.\n\nWith the regression:\n\n* 3 runs called `get_order`.\n* 2 runs did not.\n* The result was therefore **3/5**.\n\nBecause the case no longer passed all 5 runs, CI blocked the pull request.\n\nThis shows the regression gate working as intended: it prevented a change that broke behaviour that had previously been reliable.\n\n## 3. What the second run shows\n\nAfter removing the temporary instruction, `e-012` passed **5/5** again. Every run called `get_order` before answering.\n\nThis shows two things:\n\n* The failure was caused by the temporary instruction rather than just random variation.\n* Removing the instruction restored the original behaviour, allowing CI to pass the pull request.\n\n## Optional additional point: the earlier attempt\n\nThe first attempt used `e-006`, which tests cancellation of an already shipped order.\n\nThe regression did affect the agent: in all 5 runs, it incorrectly opened an \"exception\" ticket.\n\nHowever, only the HW5 LLM judge can catch this failure in `e-006`. Its code check (order 335 is not cancelled) can never fail, because the tool itself refuses to cancel a shipped order. The judge still passed all 5 runs, so CI did not block the pull request.\n\nThat is why `e-012` was used instead. Its important behaviour is checked directly in code, so the check decides the result exactly, with no judge, and the failure is visible to CI.\n\nIt also highlights a broader lesson: where possible, exact facts and tool-use requirements should be checked with code rather than an LLM judge. The `e-006` result also suggests that the current judge has a blind spot around cancellation behaviour.",
+  "earlier_run_on_this_pull_request": {
+    "url": "https://github.com/edangx100/cartwheel-homeworks/actions/runs/36243529250",
+    "commit": "61c31d9",
+    "change": "Temporary prompt instruction asking for an exception ticket on shipped cancellations, aimed at regression case e-006.",
+    "e-006_passed": 5,
+    "e-006_trials": 5,
+    "ci_decision": "pass",
+    "note": "All five e-006 runs opened an exception ticket, but the frozen refusal_mishandled judge passed all five, so the verifier did not fail the case. The instruction was reverted and e-012 was added as a regression case that a code check decides."
+  },
+  "offline_checks_note": "The offline checks job failed in all three runs on tests/test_cli.py::test_non_openai_direct_run_does_not_export, which also fails on the course repository's main branch."
+}
