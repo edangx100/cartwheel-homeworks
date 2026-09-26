@@ -131,12 +131,15 @@ def _auth_context(case_input: dict[str, Any]) -> Any:
 
 
 def _extract_turn(new_items: list[Any]) -> dict[str, Any]:
-    """Collapse one Runner turn's items into {reply, tool_calls, steps}."""
+    """Collapse one Runner turn's items into {reply, tool_calls, steps,
+    sequence}. ``sequence`` keeps the order in which the agent's text and
+    tool calls happened: ``{"text": ...}`` or ``{"tool_call": index}``."""
     from agents.items import MessageOutputItem, ToolCallItem, ToolCallOutputItem
 
     calls: dict[str, dict[str, Any]] = {}
     ordered: list[dict[str, Any]] = []
     reply_parts: list[str] = []
+    sequence: list[dict[str, Any]] = []
     for item in new_items:
         if isinstance(item, ToolCallItem):
             raw = item.raw_item
@@ -146,6 +149,7 @@ def _extract_turn(new_items: list[Any]) -> dict[str, Any]:
                 "result": None,
             }
             calls[getattr(raw, "call_id", None)] = record
+            sequence.append({"tool_call": len(ordered)})
             ordered.append(record)
         elif isinstance(item, ToolCallOutputItem):
             call_id = None
@@ -161,10 +165,12 @@ def _extract_turn(new_items: list[Any]) -> dict[str, Any]:
                 text = getattr(part, "text", None)
                 if text:
                     reply_parts.append(text)
+                    sequence.append({"text": text})
     return {
         "reply": "\n".join(reply_parts),
         "tool_calls": ordered,
         "steps": len(new_items),
+        "sequence": sequence,
     }
 
 
@@ -383,6 +389,39 @@ def judge_trace_text(transcript: dict[str, Any]) -> str:
             lines.append(f"tool_call: {arguments}")
             lines.append(f"tool_result: {result}")
         lines.append(f"assistant: {turn.get('reply', '')}")
+    return "\n".join(lines)
+
+
+def hw5_judge_input_text(transcript: dict[str, Any], context: str) -> str:
+    """Format a runtime transcript like the judge inputs saved in
+    ``analysis/state/hw5_trace_inputs.json``: a context line first, then each
+    tool call written as ``name(args)`` and each result as ``name returned
+    result``. The agent's text sits between the calls where it happened when
+    the turn records a ``sequence``. Empty lines are dropped, as the HW5
+    renderer drops them."""
+    lines = [f"context: {context}"]
+    for turn in transcript.get("turns", []):
+        if turn.get("user"):
+            lines.append(f"user: {turn['user']}")
+        calls = turn.get("tool_calls", [])
+        sequence = turn.get("sequence")
+        if sequence is None:
+            sequence = [{"tool_call": i} for i in range(len(calls))]
+            sequence.append({"text": turn.get("reply", "")})
+        for step in sequence:
+            if "tool_call" in step:
+                call = calls[step["tool_call"]]
+                name = call.get("name")
+                arguments = json.dumps(
+                    call.get("args"), ensure_ascii=False, sort_keys=True, default=str
+                )
+                result = json.dumps(
+                    call.get("result"), ensure_ascii=False, sort_keys=True, default=str
+                )
+                lines.append(f"tool_call: {name}({arguments})")
+                lines.append(f"tool_result: {name} returned {result}")
+            elif step.get("text"):
+                lines.append(f"assistant: {step['text']}")
     return "\n".join(lines)
 
 

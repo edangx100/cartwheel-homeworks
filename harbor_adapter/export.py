@@ -9,7 +9,7 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
-from replay.rollout import EVAL_CASES_PATH, load_frozen_judge
+from replay.rollout import EVAL_CASES_PATH, _analysis_state_dir, load_frozen_judge
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUTPUT = REPO_ROOT / ".harbor" / "tasks"
@@ -60,6 +60,23 @@ def _provider_key(model: str) -> str | None:
     if "/" in normalized and re.fullmatch(r"[A-Za-z][A-Za-z0-9_-]*", provider):
         return f"{provider.upper().replace('-', '_')}_API_KEY"
     return None
+
+
+def _hw5_reference() -> str | None:
+    """Return the reference block that follows the role line in every saved
+    HW5 judge input, or None when no HW5 inputs were saved."""
+    path = _analysis_state_dir() / "hw5_trace_inputs.json"
+    if not path.exists():
+        return None
+    references = set()
+    for record in json.loads(path.read_text()):
+        first = record["trace"][0]
+        if first.get("role") != "context":
+            raise ValueError(f"{path}: {record['trace_id']} has no context message")
+        references.add(first["text"].split("\n", 1)[1])
+    if len(references) != 1:
+        raise ValueError(f"{path}: HW5 inputs disagree on the reference block")
+    return references.pop()
 
 
 def load_export_cases(path: Path | None = None) -> list[dict[str, Any]]:
@@ -228,9 +245,14 @@ def cartwheel_code_checks(workspace: Path) -> bool:
 '''
 
 
-def _judge_py(mode: str, expected: str, judge: dict[str, Any]) -> str:
-    """Run one frozen judge through the DocETL contract used in HW5."""
-    del mode
+def _judge_py(
+    mode: str, expected: str, judge: dict[str, Any], context: str | None = None
+) -> str:
+    """Run one frozen judge through the DocETL contract used in HW5, and save
+    its verdict and critique to ``/logs/verifier/judge_<mode>.json``.
+
+    With ``context``, the judge reads the trace in the layout of the saved HW5
+    inputs; without it, in the layout of :func:`judge_trace_text`."""
     template = '''from __future__ import annotations
 
 import json
@@ -240,11 +262,14 @@ from pathlib import Path
 from docetl.api import Dataset, MapOp, Pipeline, PipelineOutput, PipelineStep
 from rewardkit import criterion
 
-from replay.rollout import judge_trace_text
+from replay.rollout import hw5_judge_input_text, judge_trace_text
 
 PROMPT = __PROMPT__
 MODEL = __MODEL__
 EXPECTED = __EXPECTED__
+CONTEXT = __CONTEXT__
+NAME = __NAME__
+VERIFIER_LOGS = Path("/logs/verifier")
 
 
 def _decode(row: dict) -> str:
@@ -262,7 +287,11 @@ def _decode(row: dict) -> str:
 @criterion
 def cartwheel_judge(workspace: Path) -> bool:
     evidence = json.loads((workspace / "cartwheel-result.json").read_text())
-    content = judge_trace_text(evidence["transcript"])
+    content = (
+        hw5_judge_input_text(evidence["transcript"], CONTEXT)
+        if CONTEXT is not None
+        else judge_trace_text(evidence["transcript"])
+    )
     with tempfile.TemporaryDirectory(prefix="cartwheel-judge-") as directory:
         root = Path(directory)
         input_path = root / "input.json"
@@ -305,12 +334,31 @@ def cartwheel_judge(workspace: Path) -> bool:
         rows = json.loads(output_path.read_text())
     if len(rows) != 1:
         raise ValueError("judge returned an unexpected number of results")
-    return _decode(rows[0]) == EXPECTED
+    verdict = _decode(rows[0])
+    VERIFIER_LOGS.mkdir(parents=True, exist_ok=True)
+    (VERIFIER_LOGS / f"{NAME}.json").write_text(
+        json.dumps(
+            {
+                "judge": NAME,
+                "model": MODEL,
+                "expected": EXPECTED,
+                "verdict": verdict,
+                "raw_result": rows[0].get("result"),
+                "critique": rows[0].get("critique"),
+            },
+            indent=2,
+            ensure_ascii=False,
+        )
+        + "\\n"
+    )
+    return verdict == EXPECTED
 '''
     return (
         template.replace("__PROMPT__", repr(judge["prompt_text"]))
         .replace("__MODEL__", repr(_judge_model(judge["model"])))
         .replace("__EXPECTED__", repr(expected))
+        .replace("__CONTEXT__", repr(context))
+        .replace("__NAME__", repr(f"judge_{mode}"))
     )
 
 
@@ -355,6 +403,12 @@ def _write_task(root: Path, case: dict[str, Any]) -> None:
 
     judges: list[dict[str, Any]] = []
     judge_names: list[str] = []
+    reference = _hw5_reference()
+    context = (
+        f"The user is signed in as: {case['input']['role']}.\n{reference}"
+        if reference is not None
+        else None
+    )
     for mode, expected in case["expected"].get("judges", {}).items():
         if expected not in {"pass", "fail"}:
             raise ValueError(f"{case['id']}: judge expectation must be pass or fail")
@@ -364,7 +418,9 @@ def _write_task(root: Path, case: dict[str, Any]) -> None:
         judges.append(judge)
         filename = f"judge_{mode}"
         judge_names.append(filename)
-        (tests / f"{filename}.py").write_text(_judge_py(mode, expected, judge))
+        (tests / f"{filename}.py").write_text(
+            _judge_py(mode, expected, judge, context)
+        )
 
     (task_dir / "task.toml").write_text(_task_toml(case, judges))
     (task_dir / "instruction.md").write_text(_instruction(case))

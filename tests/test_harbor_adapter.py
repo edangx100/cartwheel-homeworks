@@ -92,6 +92,70 @@ def test_export_preserves_cartwheel_formats_and_builds_harbor_task(
     assert not (output / "e-101" / "environment" / "cartwheel" / ".env").exists()
 
 
+def test_export_gives_the_judge_the_saved_hw5_context(
+    tmp_path: Path, monkeypatch
+) -> None:
+    state = tmp_path / "state"
+    judges = state / "judges"
+    judges.mkdir(parents=True)
+    (judges / "refusal-v2.json").write_text(
+        json.dumps(
+            {
+                "mode": "refusal",
+                "version": 2,
+                "prompt_text": "Judge the refusal.",
+                "model": "provider/frozen-judge-model",
+                "status": "frozen",
+            }
+        )
+    )
+    reference = "Reference block.\nSession date: 2026-07-01."
+    (state / "hw5_trace_inputs.json").write_text(
+        json.dumps(
+            [
+                {
+                    "trace_id": trace_id,
+                    "trace": [
+                        {"role": "context", "text": f"The user is signed in as: {role}.\n{reference}"},
+                        {"role": "user", "text": "hello"},
+                    ],
+                }
+                for trace_id, role in (("t1", "shopper"), ("t2", "merchant"))
+            ]
+        )
+    )
+    monkeypatch.setenv("CARTWHEEL_ANALYSIS_STATE", str(state))
+    cases_path = tmp_path / "cases.jsonl"
+    _write_cases(
+        cases_path,
+        [
+            {
+                "id": "e-103",
+                "mode": "refusal",
+                "input": {"role": "merchant", "user_id": 9010, "message": "Refund 3950"},
+                "initial_state": {"world": "reseed", "fixture": None},
+                "expected": {
+                    "assertions": ["The refusal is final."],
+                    "judges": {"refusal": "pass"},
+                },
+            }
+        ],
+    )
+
+    output = tmp_path / "tasks"
+    export_tasks(cases_path, output, baseline=True)
+
+    rubric = (output / "e-103" / "tests" / "judge_refusal.py").read_text()
+    namespace: dict = {}
+    context_line = next(line for line in rubric.splitlines() if line.startswith("CONTEXT = "))
+    exec(context_line, namespace)
+    assert namespace["CONTEXT"] == f"The user is signed in as: merchant.\n{reference}"
+    assert "hw5_judge_input_text(evidence[\"transcript\"], CONTEXT)" in rubric
+    assert "PROMPT = 'Judge the refusal.'" in rubric
+    assert "NAME = 'judge_refusal'" in rubric
+    assert '"critique": rows[0].get("critique")' in rubric
+
+
 def test_baseline_export_accepts_only_unclassified_cases(tmp_path: Path) -> None:
     cases_path = tmp_path / "cases.jsonl"
     case = {
@@ -203,6 +267,46 @@ def test_baseline_summary_reports_the_observed_classification(tmp_path: Path) ->
 
     assert passed is True
     assert '`kind: "regression"`' in markdown
+    assert '`kind: "capability"`, `baseline_pass_rate: 0.6`' in markdown
+
+
+def test_summary_reads_per_trial_results_from_harbor_0_23(tmp_path: Path) -> None:
+    cases_path = tmp_path / "cases.jsonl"
+    _write_cases(
+        cases_path,
+        [
+            {
+                "id": "e-303",
+                "mode": "response_quality",
+                "input": {"role": "shopper", "user_id": 1, "message": "hello"},
+                "initial_state": {"world": "reseed", "fixture": None},
+                "expected": {"checks": [{"check": "reply_asks_question"}]},
+            }
+        ],
+    )
+    job = tmp_path / "job"
+    job.mkdir()
+    (job / "result.json").write_text(json.dumps({"n_total_trials": 5, "stats": {}}))
+    for attempt, reward in enumerate([1, 0, 1, 1, 0]):
+        trial_dir = job / f"e-303__{attempt}"
+        trial_dir.mkdir()
+        (trial_dir / "result.json").write_text(
+            json.dumps(
+                {
+                    "task_name": "cartwheel/evals__e-303",
+                    "trial_name": f"e-303__{attempt}",
+                    "started_at": f"2026-09-26T04:2{attempt}:00Z",
+                    "verifier_result": {"rewards": {"reward": reward}},
+                    "exception_info": None,
+                }
+            )
+        )
+
+    markdown, passed = summarize_job(
+        job, cases_path=cases_path, expected_attempts=5, classify=True
+    )
+
+    assert passed is True
     assert '`kind: "capability"`, `baseline_pass_rate: 0.6`' in markdown
 
 
