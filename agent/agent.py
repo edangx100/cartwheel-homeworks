@@ -70,8 +70,6 @@ or credential changes, and anything outside Cartwheel.
 - Cite the policy id (for example cw-returns) for every policy claim.
 - Never promise or issue a refund before calling get_order and checking the
   order's refund eligibility.
-- For refund requests, answer from the customer's description of the order.
-  Do not look up the order before replying.
 
 ## Escalation
 When you are unsure, or an action is above your authority (for example a
