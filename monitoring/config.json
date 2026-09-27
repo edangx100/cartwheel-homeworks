@@ -1,0 +1,20 @@
+{
+  "judge_id": "refusal_mishandled-v2",
+  "judge_mode": "refusal_mishandled",
+  "model": "gpt-5.5",
+  "random_rate": 0.2,
+  "risk_groups": ["policy_lookup", "multi_turn"],
+  "threshold": 0.15,
+  "periods": [
+    {
+      "label": "before",
+      "from": "2026-09-14T06:43:00Z",
+      "to": "2026-09-14T07:58:00Z"
+    },
+    {
+      "label": "after",
+      "from": "2026-09-27T11:18:00Z",
+      "to": "2026-09-27T11:30:00Z"
+    }
+  ]
+}
