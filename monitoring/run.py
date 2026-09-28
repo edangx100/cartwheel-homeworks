@@ -196,6 +196,7 @@ def build_conversations(
                     }
                 ),
                 "turn_count": len(turns),
+                "timestamp": turns[-1]["timestamp"],
                 "text": normalize_trace({"trace_id": final_id, "trace": messages})["text"],
             }
         )
@@ -280,7 +281,7 @@ def run(
         **summary,
         "random_ids": random_ids,
         "risk_groups": {name: [c["id"] for c in members] for name, members in plan["risk_groups"].items()},
-        "conversations": [{k: c[k] for k in ("id", "group_key", "trace_ids", "tools", "turn_count")} for c in conversations],
+        "conversations": [{k: c[k] for k in ("id", "group_key", "trace_ids", "tools", "turn_count", "timestamp")} for c in conversations],
     }
     if dry_run:
         _write_json(OUTPUT_DIR / f"{label}-plan.json", output)
@@ -297,6 +298,11 @@ def run(
     test_labels, test_preds = judge_test_data(config["judge_id"])
     estimate = corrected_mode_prevalence(list(random_verdicts.values()), test_labels, test_preds)
     records = build_score_records(config["judge_mode"], random_verdicts, risk_verdicts, estimate, label)
+    # Date each score by the conversations it describes, not by when it was
+    # written, so a dashboard over time shows each period at its own date.
+    when = {c["id"]: c["timestamp"] for c in conversations}
+    for record in records:
+        record["timestamp"] = when.get(record["trace_id"], summary["to"])
     written = post_scores(records)
     print(f"raw {estimate['raw']}, corrected {estimate['corrected']} "
           f"[{estimate['ci_low']}, {estimate['ci_high']}]; {written} scores written")

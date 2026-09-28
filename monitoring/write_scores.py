@@ -11,6 +11,7 @@ Langfuse is provided below it.
 from __future__ import annotations
 
 import hashlib
+from datetime import datetime
 from typing import Any
 
 
@@ -138,6 +139,10 @@ def post_scores(records: list[dict[str, Any]]) -> int:
             kwargs["session_id"] = MONITOR_SESSION_ID
         if record.get("comment"):
             kwargs["comment"] = record["comment"]
+        if record.get("timestamp"):
+            kwargs["timestamp"] = datetime.fromisoformat(
+                record["timestamp"].replace("Z", "+00:00")
+            )
         client.create_score(**kwargs)
     client.flush()
     return len(records)
