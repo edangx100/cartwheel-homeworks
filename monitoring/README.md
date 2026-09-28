@@ -195,16 +195,54 @@ Each grading result is saved in Langfuse next to its conversation:
 
 ### 1. Did the corrected failure estimate move between the two periods?
 
-*(pending: student)*
+- What changed: the corrected estimate dropped from 0.079 to 0.00, while the raw failure rate fell from 0.20 to 0.10.
+- What caused it: the difference came down to just one conversation. Of the 10 randomly sampled conversations, 2 were flagged before and 1 was flagged after.
+- Context: the agent itself did not change — the prompt version, model, code, and requests were the same. So the lower rate should not be treated as evidence that the agent improved. It reflects normal variation between two runs of the same agent.
 
 ### 2. Do the intervals support a conclusion, or is the result uncertain?
 
-*(pending: student)*
+- The result is still uncertain. The intervals, 0–0.49 and 0–0.28, overlap substantially, and both include 0.
+- Both intervals also include the 0.15 alarm threshold. This means neither period can rule out a true failure rate above 15%.
+- The main reason is the small sample size. With only 10 randomly sampled conversations, a single flagged case can shift the estimate by about 0.08. The grader's accuracy estimate is also based on only 29 test cases.
+- A firmer conclusion would require a larger random sample, for example by increasing the sampling rate.
 
 ### 3. What did the risk groups reveal that the random estimate did not?
 
-*(pending: student)*
+- Where failures were concentrated. Conversations involving a policy lookup were flagged more often: 5 of 14 before (36%) and 3 of 15 after (20%). These rates were higher than the random sample's raw rates of 20% and 10%. This is also consistent with HW5, where 35 of the 40 labelled failures involved a policy lookup.
+- Where failures were uncommon. Multi-turn conversations were rarely flagged: 1 of 10 before and 0 of 10 after. This suggests that users pushing back did not usually cause the agent's refusal to fail.
+- More failure examples to investigate. The risk groups identified 9 flagged conversations, compared with only 3 from the random sample.
+- Caveat: these are raw grader flags from a deliberately biased sample. They help identify where failures are more likely to occur, but they should not be used to estimate the overall failure rate.
+
+**How often each group was flagged by the grader**
+
+| Conversations | Before | After |
+| --- | --- | --- |
+| Random 10 (the normal rate) | 2 of 10 (20%) | 1 of 10 (10%) |
+| Agent looked up a policy | 5 of 14 (36%) | 3 of 15 (20%) |
+| User sent more than one message | 1 of 10 (10%) | 0 of 10 (0%) |
+| Any risky conversation | 6 of 20 (30%) | 3 of 21 (14%) |
+
+Policy lookups were flagged about twice as often as the random 10.
+Conversations with several messages were rarely flagged.
+
+**How many flagged conversations each method found (both runs together)**
+
+| Method | Flagged conversations found |
+| --- | --- |
+| Random 10 only | 3 |
+| Risky groups | 9, including the same 3 |
+
+The risky groups found every problem the random pick found, plus 6 more to
+look at.
+
+
 
 ### 4. What action should happen if the estimate crosses the threshold?
 
-*(pending: student)*
+* The trigger is a corrected failure rate above 0.15. With 10 random records, this corresponds to 3 or more conversations being flagged.
+* Then:
+  1. Pull the flagged conversations from both the random sample and the risk groups using the dashboard's flagged-traces table.
+  2. Perform error analysis, as in HW4: manually review each conversation and confirm whether the grader's flag is valid.
+  3. Add each confirmed failure as a new test case in the HW6 evaluation suite so that CI can catch the same issue in future.
+  4. Fix the agent, verify that the fix passes CI, and monitor the corrected estimate in the next period.
+* Because the confidence intervals are still wide, an optional step is to temporarily increase the sampling rate to confirm that the threshold crossing is real before starting a full investigation.
