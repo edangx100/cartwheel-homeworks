@@ -233,6 +233,11 @@ def run(
 ) -> dict[str, Any]:
     if scheduled:
         traces = fetch_window(start, end, lambda attrs: bool(attrs.get("cartwheel.session_id")))
+        # A configured period is already scored under its own label; judging
+        # it again would overwrite its per-trace verdicts with a new sample.
+        periods = [(_parse_time(p["from"]), _parse_time(p["to"])) for p in config["periods"]]
+        traces = [t for t in traces
+                  if not any(a <= _parse_time(t["timestamp"]) < b for a, b in periods)]
         check_models(traces, config["model"])
         conversations = build_conversations(traces, "cartwheel.session_id")
     else:

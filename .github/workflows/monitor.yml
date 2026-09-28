@@ -1,0 +1,43 @@
+# Homework 7: judge a sample of the last day's Cartwheel conversations with
+# the frozen Homework 5 judge and write the scores to Langfuse.
+#
+# Runs on a self-hosted runner because Langfuse is local to that machine.
+# Secrets: LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY, OPENAI_API_KEY (the
+# gpt-4o-mini judge). Variable: LANGFUSE_HOST. The Cartwheel model key is not
+# needed: the job reads existing traces and never runs the agent.
+name: monitor
+
+on:
+  schedule:
+    - cron: "0 1 * * *" # 01:00 UTC every day
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: monitor
+  cancel-in-progress: false
+
+jobs:
+  monitor:
+    runs-on: self-hosted
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync
+      - name: Sample, judge, correct and score the last 24 hours
+        env:
+          LANGFUSE_PUBLIC_KEY: ${{ secrets.LANGFUSE_PUBLIC_KEY }}
+          LANGFUSE_SECRET_KEY: ${{ secrets.LANGFUSE_SECRET_KEY }}
+          LANGFUSE_HOST: ${{ vars.LANGFUSE_HOST }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: uv run python -m monitoring.run --last-hours 24
+      - name: Upload the monitoring output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: monitor-output-${{ github.run_id }}
+          path: monitoring/output/
+          if-no-files-found: warn
