@@ -1,0 +1,12 @@
+{
+  "failure_mode": "refusal_mishandled",
+  "source": "Homework 5 failure report (homework/homework_5_report.md section 3), using the Homework 4 count of 10 of 110 reviewed traces. This is a sample fraction, not a prevalence estimate: the Homework 4 sample was steered toward failures. Homework 7 monitoring estimated 0.079 (judge-corrected) for the policy_lookup and multi_turn risk groups only.",
+  "prevalence": 0.091,
+  "requirement": "RESP-8",
+  "example_trace_ids": [
+    "f941bff05ece83b601420c902a3d05c5",
+    "94d97fbf9b29a0fe39887e725fc210ab",
+    "858840a29a398b8a63cddf847bc29f8a"
+  ],
+  "why_agent_can_change_it": "In all three traces get_order returned refund_eligible false, and the agent then chose to call escalate_to_human for an exception review that no policy offers: order 554 (ticket 163, 'whether an exception or other option is available', never says the 21-day Meridian window closed), order 2880 (ticket 178, 'review your request as an exception'), and order 5713 (ticket 186, 'review for any exception handling'). The tool result was correct each time; the failure is the agent's decision after reading it. That decision is shaped by the system prompt, by how the get_order and escalate_to_human tools describe a not-eligible result, and by the harness that lets an escalation follow a not-eligible result, so a prompt, tool, or harness change can address it."
+}
