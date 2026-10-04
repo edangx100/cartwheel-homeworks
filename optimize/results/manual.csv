@@ -1,0 +1,3 @@
+candidate,layer,predicted_effect,dev_score,write_pass_5,cost_per_100_conversations_usd,decision,git_commit,result_file
+starting_version,none,baseline (Part B),0.375,,1.936155,keep,a361f8525e6c14e49749969b701106f5f71de4d2,optimize/results/development-starting-glm-5.2-20261004-153535.json
+prompt_change,prompt,"A RESP-8/ESC-5 refusal rule in SYSTEM_PROMPT_TEMPLATE stops exception tickets after refund_eligible false: e-001 flips to pass, e-002/e-004/e-012 stay pass, e-007 uncertain (judge noise), e-008/e-009/e-011 unchanged; dev score about 0.5",,,,pending,,
