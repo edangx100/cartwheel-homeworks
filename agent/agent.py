@@ -214,7 +214,15 @@ def get_order_logic(ctx: AuthContext, order_id: int) -> dict[str, Any]:
         store = db.get_store(conn, order.store_id)
         payload = order.to_public_dict()
         payload["store_name"] = store.name if store else None
-        return {"ok": True, "order": payload}
+        result: dict[str, Any] = {"ok": True, "order": payload}
+        if not order.refund_eligible:
+            result["refund_decision"] = (
+                "not eligible: this eligibility check is final. No policy offers "
+                "an exception and escalate_to_human cannot override it. Tell the "
+                "user the order is not eligible and name the return window that "
+                "governs it (the store's policy when it overrides cw-returns)."
+            )
+        return result
 
 
 def issue_refund_logic(
@@ -387,7 +395,11 @@ def issue_refund(
 def escalate_to_human(
     wrapper: RunContextWrapper[AuthContext], summary: str, context: str
 ) -> dict[str, Any]:
-    """Open a ticket for a human support agent when a case is above your authority."""
+    """Open a ticket for a human support agent when a case is above your authority.
+
+    Not for requesting an exception to a failed refund eligibility check: when
+    get_order reports refund_eligible false, the refusal is final.
+    """
     return _call(wrapper, escalate_to_human_logic, summary, context)
 
 
