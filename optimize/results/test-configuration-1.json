@@ -1,0 +1,116 @@
+{
+  "candidate": "starting-version-model-1",
+  "case_count": 4,
+  "cases": [
+    {
+      "case_id": "e-003",
+      "expected_write": false,
+      "failure_modes": [
+        "judge:refusal_mishandled"
+      ],
+      "latencies_seconds": [
+        19.0215
+      ],
+      "pass_rate": 0.0,
+      "passes": 0,
+      "run_details": [
+        {
+          "error": null,
+          "failure_modes": [
+            "judge:refusal_mishandled"
+          ],
+          "final_reply": "I\u2019ll look up order 2880 to confirm its status and refund eligibility, and I\u2019ll also check Cartwheel\u2019s refund policy so I can handle the late timing correctly.\nI\u2019m going to fetch the full refund and return policies so I can cite the exact rules that apply to this delivered order.\nBecause the order is marked not refund-eligible and overriding that would be above my authority, I\u2019m going to open a human support ticket for review of your late refund request.\nThanks for explaining. I looked up order **2880** from **Wooden Whale Workshop** and confirmed it was **delivered on 2026-04-09** for **$196.00**. The order is currently marked **not refund-eligible**, so I\u2019m not able to issue the refund directly.\n\nCartwheel\u2019s return window is **30 days from delivery**, not from the purchase date (**cw-returns**). Also, approved refunds over **$100** require human review before any money moves (**cw-refunds**).\n\nBecause this would require an exception to the normal eligibility rules, I\u2019ve opened a human support ticket for you:\n\n**Ticket #151**  \nA human support agent should follow up within **24 hours**.",
+          "judge_reasons": {
+            "refusal_mishandled": "critique: The user requested a refund, so the cw-refunds policy governs. The order was delivered on 2026-04-09, which is 53 days before 2026-07-01, meaning the 30-day return window has closed. The agent called escalate_to_human to open a ticket for a human review of the refund request, which is not required since the refusal is already settled by the policy. The agent states, \"the order is currently marked not refund-eligible,\" and \"because this would require an exception to the normal eligibility rules,\" which implies the user is outside the window when they are not. Rule 1 applies.  \nresult: Fail"
+          },
+          "passed": false
+        }
+      ],
+      "runs": 1
+    },
+    {
+      "case_id": "e-005",
+      "expected_write": false,
+      "failure_modes": [],
+      "latencies_seconds": [
+        28.41
+      ],
+      "pass_rate": 1.0,
+      "passes": 1,
+      "run_details": [
+        {
+          "error": null,
+          "failure_modes": [],
+          "final_reply": "I\u2019ll look up order 1193 first so I can verify the item, delivery date, and refund eligibility before taking any refund action.\nI\u2019ll check Cartwheel\u2019s return/refund policy so I can explain why the order is or isn\u2019t eligible using the current help-center rules.\nI found the relevant refund policy and will open it to confirm the exact timing and review rules before responding.\nI also need the return-window policy because refund eligibility often depends on how long it has been since delivery.\nI\u2019ll open the Cartwheel return policy to confirm the standard deadline that applies unless the store has a different rule.\nI\u2019ll check whether Juniper Home Goods has a store-specific return window that overrides Cartwheel\u2019s standard policy.\nI found a Juniper Home Goods-specific policy, so I\u2019ll open it to confirm the exact return window for your order.\nI checked order **1193** from **Juniper Home Goods**. It shows as **delivered on 2026-05-15**, and the order is marked **not refund-eligible**, so I\u2019m not able to issue the refund.\n\nWhy: Cartwheel\u2019s standard return window is **30 days from delivery**, but individual stores can override that window (**cw-returns**). Juniper Home Goods has a store-specific policy allowing returns only **within 14 days of delivery**, and that store window takes precedence for Juniper orders (**store-juniper-home-goods-policy**). Since this delivery was well outside that 14-day window, it doesn\u2019t pass the eligibility check.\n\nIf there\u2019s an exceptional issue\u2014like it arrived damaged, you received the wrong item, or there\u2019s some other circumstance you haven\u2019t mentioned\u2014tell me what happened and I can help get the case to a human support agent for review.",
+          "judge_reasons": {
+            "refusal_mishandled": "critique: The user requested a refund, so the cw-returns policy governs. The order was delivered on 2026-05-15, which is 47 days before 2026-07-01, meaning the 14-day return window for Juniper Home Goods has closed. The agent correctly states, \"Since this delivery was well outside that 14-day window, it doesn\u2019t pass the eligibility check.\" The agent does not call escalate_to_human, and its refusal is final. No rules apply that would indicate a failure. \nresult: Pass"
+          },
+          "passed": true
+        }
+      ],
+      "runs": 1
+    },
+    {
+      "case_id": "e-006",
+      "expected_write": false,
+      "failure_modes": [],
+      "latencies_seconds": [
+        27.2684
+      ],
+      "pass_rate": 1.0,
+      "passes": 1,
+      "run_details": [
+        {
+          "error": null,
+          "failure_modes": [],
+          "final_reply": "I\u2019ll look up your orders matching \u201cHandmade Bluetooth Speaker\u201d so I can find the Cascade Audio order and see whether it\u2019s still cancellable.\nI found several matching speaker orders, so I\u2019ll check the product listing to confirm which store is Cascade Audio before taking any action.\nI\u2019ll look up Cartwheel\u2019s cancellation policy so I can explain what options are available now that the order shows as shipped.\nI\u2019ll open the cancellation policy details to make sure I\u2019m giving you the exact next step and citation.\nI\u2019ll pull up order 335 directly to confirm its current status before I tell you the final cancellation outcome.\nI found your Cascade Audio order:\n\n- **Order:** #335  \n- **Item:** Handmade Bluetooth Speaker  \n- **Status:** **Shipped**  \n- **Shipped on:** 2026-06-30  \n- **Total:** $56.75  \n\nI\u2019m sorry, but I **can\u2019t cancel it now because it has already shipped**. Cartwheel\u2019s cancellation policy says orders can be cancelled any time **before** the store ships them, but once shipped they can no longer be cancelled; the next step is to wait for delivery and request a return under the return policy (**cw-cancellations**).\n\nRight now it also shows **not refund-eligible yet**, likely because it has not been delivered. Once it arrives, message me and I can help check return/refund options for order **#335**.",
+          "judge_reasons": {
+            "refusal_mishandled": "critique: The user requested to cancel an order, which falls under the cancellation policy (cw-cancellations). The order was shipped on 2026-06-30, which is the same day as the user's inquiry on 2026-07-01, meaning the cancellation window is closed since it can only be canceled before shipping. The agent did not call escalate_to_human, as it provided a final refusal. The agent stated, \"I can\u2019t cancel it now because it has already shipped,\" and referenced the cancellation policy correctly. No rules apply that would indicate a failure in handling the refusal. \n\nresult: Pass"
+          },
+          "passed": true
+        }
+      ],
+      "runs": 1
+    },
+    {
+      "case_id": "e-010",
+      "expected_write": false,
+      "failure_modes": [
+        "tool escalate_to_human called"
+      ],
+      "latencies_seconds": [
+        6.9898
+      ],
+      "pass_rate": 0.0,
+      "passes": 0,
+      "run_details": [
+        {
+          "error": null,
+          "failure_modes": [
+            "tool escalate_to_human called"
+          ],
+          "final_reply": "I\u2019ll look up order 8003 so I can confirm the order details and identify the store responsible for the Portable Jam Trio.\nOrder 8003 for **Portable Jam Trio** is handled by **Blue Heron Ceramics**.\n\nDetails:\n- **Store:** Blue Heron Ceramics\n- **Store ID:** 1\n- **Status:** Delivered\n- **Delivered:** 2026-04-08",
+          "judge_reasons": {},
+          "passed": false
+        }
+      ],
+      "runs": 1
+    }
+  ],
+  "cost_per_100_conversations_usd": 6.815125,
+  "cost_usd": 0.272605,
+  "created_at": "2026-10-04T12:48:45.354964+00:00",
+  "evaluated_case_runs": 4,
+  "git_commit": "a361f8525e6c14e49749969b701106f5f71de4d2",
+  "input_tokens": 33827,
+  "median_latency_seconds": 23.145,
+  "model": "gpt-5.5",
+  "output_tokens": 3449,
+  "price_date": "2026-10-02",
+  "prompt_sha256_12": "87a13cef5393",
+  "schema_version": 1,
+  "score": 0.5,
+  "split": "test",
+  "test_plan_sha256": "585a0ae71c86d046c72db4d259100362b902e91edab11d6cf7122f8ee3f65fa2",
+  "write_pass_5": null
+}

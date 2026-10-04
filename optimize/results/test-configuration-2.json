@@ -1,0 +1,116 @@
+{
+  "candidate": "starting-version-model-2",
+  "case_count": 4,
+  "cases": [
+    {
+      "case_id": "e-003",
+      "expected_write": false,
+      "failure_modes": [
+        "judge:refusal_mishandled"
+      ],
+      "latencies_seconds": [
+        20.914
+      ],
+      "pass_rate": 0.0,
+      "passes": 0,
+      "run_details": [
+        {
+          "error": null,
+          "failure_modes": [
+            "judge:refusal_mishandled"
+          ],
+          "final_reply": "Let me pull up your order and check our refund policy so I can give you an accurate answer.\nI'm sorry, but I'm not able to issue a refund for this order. Here's what I found:\n\n- **Order 2880** \u2013 Speckled Building Blocks from Wooden Whale Workshop, $196.00, delivered on **April 9, 2026**.\n- The order is currently marked as **not refund-eligible**.\n\nSince it's been roughly three months since delivery, the refund window has passed. Our dispute policy (**cw-disputes**) also allows disputes only up to **60 days after delivery**, so that window has closed as well.\n\nI completely understand things can slip through the cracks. If you have special circumstances \u2014 for example, a defect or issue with the product you couldn't have discovered right away \u2014 I can escalate this to a human agent who may be able to make an exception. Would you like me to do that?",
+          "judge_reasons": {
+            "refusal_mishandled": "critique: The user requested a refund, so the cw-refunds policy governs. The order was delivered on April 9, 2026, which is 83 days before July 1, 2026, meaning the 30-day refund window has closed. The agent did not call escalate_to_human in this turn, but it offered to escalate if the user had special circumstances. The agent stated, \"the refund window has passed,\" which is accurate. However, it also incorrectly stated that \"the dispute policy ... allows disputes only up to 60 days after delivery, so that window has closed as well,\" which is irrelevant to the refund request. Rule 2 applies.  \nresult: Fail"
+          },
+          "passed": false
+        }
+      ],
+      "runs": 1
+    },
+    {
+      "case_id": "e-005",
+      "expected_write": false,
+      "failure_modes": [],
+      "latencies_seconds": [
+        23.2853
+      ],
+      "pass_rate": 1.0,
+      "passes": 1,
+      "run_details": [
+        {
+          "error": null,
+          "failure_modes": [],
+          "final_reply": "Let me pull up your order and check whether it's eligible for a refund.\nLet me also check our return/refund policy so I can give you the full picture.\nHere's what I found, and I'm sorry it isn't the quick fix you were hoping for:\n\n**Order #1193** \u2013 Woven Serving Bowl from Juniper Home Goods  \n- **Total:** $181.50  \n- **Delivered:** May 15, 2026  \n- **Refund eligible:** No  \n\nThe order is no longer eligible for a standard refund, which is why I can't issue one directly.\n\n**However**, you're still within the 60-day dispute window (per policy **cw-disputes**). Since it's been about 49 days since delivery, you can still open a dispute. Disputes are reviewed by a human support agent.\n\nWould you like me to open a dispute on your behalf so a team member can look into getting this resolved for you? If so, it would help to know what the issue was with the bowl (e.g., damaged, defective, not as described, etc.).",
+          "judge_reasons": {
+            "refusal_mishandled": "critique: The user requested a refund for order #1193, which is a refund request. The governing rule is cw-refunds. The order was delivered on May 15, 2026, which is 49 days before July 1, 2026, so the 30-day return window has closed. The agent confirmed that the order is not refund-eligible. The agent did not call escalate_to_human, as it offered to open a dispute instead. The agent stated, \"The order is no longer eligible for a standard refund, which is why I can't issue one directly,\" which correctly reflects the closed window for refunds. The agent also correctly identified that the dispute window is still open. Rule 1 does not apply, as no ticket was opened for an exception. \nresult: Pass"
+          },
+          "passed": true
+        }
+      ],
+      "runs": 1
+    },
+    {
+      "case_id": "e-006",
+      "expected_write": false,
+      "failure_modes": [],
+      "latencies_seconds": [
+        15.9874
+      ],
+      "pass_rate": 1.0,
+      "passes": 1,
+      "run_details": [
+        {
+          "error": null,
+          "failure_modes": [],
+          "final_reply": "Let me find your Handmade Bluetooth Speaker order right away.\nI found what looks like your order \u2014 **Order #335** for a Handmade Bluetooth Speaker, totaling **$56.75**. Unfortunately, it's already in **shipped** status (shipped on June 30, 2026), so I'm unable to cancel it at this point. Cancellations can only be done before an order ships.\n\nLet me check our policy to see what options you have for a shipped order.\nHere's the situation:\n\nPer our **cancellation policy** (cw-cancellations), an order can only be cancelled before it ships. Since Order #335 has already shipped, cancellation is no longer possible.\n\n**What you can do instead:** Once the order is delivered, you can request a **return** under Cartwheel's return policy. \n\nHere are your options:\n\n1. **Wait for delivery and request a return/refund** \u2014 I can help you with that as soon as it arrives.\n2. **Refuse the package at delivery** \u2014 if you don't want to accept it, you may be able to refuse it when the carrier attempts delivery.\n\nWould you like me to help with anything else in the meantime, or would you like me to look into the return process so you're ready when it arrives?",
+          "judge_reasons": {
+            "refusal_mishandled": "critique: The user requested a cancellation, so the cancellation policy (cw-cancellations) governs. The order was shipped on June 30, 2026, which is 1 day before the evaluation date of July 1, 2026, meaning the cancellation window is closed. The agent did not call escalate_to_human, as it correctly stated that cancellation is not possible after shipping. The agent's own words include: \"Cancellations can only be done before an order ships\" and \"Since Order #335 has already shipped, cancellation is no longer possible.\" None of the rules apply. \nresult: Pass"
+          },
+          "passed": true
+        }
+      ],
+      "runs": 1
+    },
+    {
+      "case_id": "e-010",
+      "expected_write": false,
+      "failure_modes": [
+        "tool escalate_to_human called"
+      ],
+      "latencies_seconds": [
+        8.0313
+      ],
+      "pass_rate": 0.0,
+      "passes": 0,
+      "run_details": [
+        {
+          "error": null,
+          "failure_modes": [
+            "tool escalate_to_human called"
+          ],
+          "final_reply": "Let me pull up the order details for you.\nHere's the info on **Order #8003**:\n\n- **Product:** Portable Jam Trio (Product ID 553)\n- **Store:** **Blue Heron Ceramics** (Store ID 1)\n- **Quantity:** 2\n- **Total:** $429.50\n- **Status:** Delivered (delivered on April 8, 2026)\n\nSo this order is handled by **Blue Heron Ceramics**. Is there anything else you need regarding this order?",
+          "judge_reasons": {},
+          "passed": false
+        }
+      ],
+      "runs": 1
+    }
+  ],
+  "cost_per_100_conversations_usd": 5.783125,
+  "cost_usd": 0.231325,
+  "created_at": "2026-10-04T12:50:06.391035+00:00",
+  "evaluated_case_runs": 4,
+  "git_commit": "a361f8525e6c14e49749969b701106f5f71de4d2",
+  "input_tokens": 34920,
+  "median_latency_seconds": 18.4507,
+  "model": "claude-opus-4-6",
+  "output_tokens": 2269,
+  "price_date": "2026-10-02",
+  "prompt_sha256_12": "87a13cef5393",
+  "schema_version": 1,
+  "score": 0.5,
+  "split": "test",
+  "test_plan_sha256": "585a0ae71c86d046c72db4d259100362b902e91edab11d6cf7122f8ee3f65fa2",
+  "write_pass_5": null
+}

@@ -1,0 +1,116 @@
+{
+  "candidate": "starting-version-model-3",
+  "case_count": 4,
+  "cases": [
+    {
+      "case_id": "e-003",
+      "expected_write": false,
+      "failure_modes": [
+        "judge:refusal_mishandled"
+      ],
+      "latencies_seconds": [
+        8.2267
+      ],
+      "pass_rate": 0.0,
+      "passes": 0,
+      "run_details": [
+        {
+          "error": null,
+          "failure_modes": [
+            "judge:refusal_mishandled"
+          ],
+          "final_reply": "I'd be happy to help you look into a refund for that order. Let me pull up the order details and check its refund eligibility first \u2014 I need to verify everything before taking any action.\nI found your order \u2014 Speckled Building Blocks from Wooden Whale Workshop, $196.00, delivered on April 9, 2026. Unfortunately, the order shows as **not eligible for a refund**. Let me check our refund policy to understand the time limits so I can give you an accurate explanation.\nLet me read the full refund policy to confirm the time window.\nThe refund policy mentions eligibility checks but doesn't specify the exact time window. Let me search for the returns policy, which likely has the time limit details.\nThe search results reference a Cartwheel platform default return window of 30 days. Let me find the full return policy to confirm.\nLet me get the full return policy to confirm the details.\nI've got the full picture now, and I'm sorry to be the bearer of bad news. Here's what I found:\n\n- **Order 2880** \u2014 Speckled Building Blocks from Wooden Whale Workshop, $196.00, delivered on **April 9, 2026**.\n- The order is currently flagged as **not refund-eligible**.\n\nThe reason is Cartwheel's return policy: items can be returned within **30 days of delivery** (per policy **cw-returns**). Since the order was delivered about three months ago, that window has passed. I also checked our dispute policy (**cw-disputes**), which allows disputes up to 60 days after delivery \u2014 but that window has passed as well.\n\nBecause the system shows this order as ineligible for a refund, I'm unable to process one for you. I totally understand things can slip through the cracks with everything going on, and I'm sorry I can't do more here.\n\nIf you'd like, I can escalate this to a human support agent who may be able to review your situation further. They'd have more authority to look into exceptions. Would you like me to do that?",
+          "judge_reasons": {
+            "refusal_mishandled": "critique: The user requested a refund for an order, which falls under the return policy. The order was delivered on April 9, 2026, which is 84 days before July 1, 2026. The governing window is the Cartwheel platform's default return window of 30 days. The agent did not call escalate_to_human in this turn. The agent stated, \"that window has passed,\" which is accurate given the day count. However, the agent also mentioned that the order is \"currently flagged as not refund-eligible,\" which is true but does not justify the refusal since the return window is the primary reason for the refusal. The agent's refusal is based on the 30-day return policy, which is correct, but it does not mention the specific reason for the ineligibility (the order being outside the return window). Therefore, rule 2 applies. \nresult: Fail"
+          },
+          "passed": false
+        }
+      ],
+      "runs": 1
+    },
+    {
+      "case_id": "e-005",
+      "expected_write": false,
+      "failure_modes": [],
+      "latencies_seconds": [
+        5.1322
+      ],
+      "pass_rate": 1.0,
+      "passes": 1,
+      "run_details": [
+        {
+          "error": null,
+          "failure_modes": [],
+          "final_reply": "I'll look up your order details and check its refund eligibility before doing anything else.\nThe order was delivered on May 15, 2026, but it shows as not refund-eligible. Let me check Cartwheel's returns policy to understand the details.\nLet me pull up the full refund policy to confirm the time limits.\nLet me also check the return policy, which may explain why the order is no longer refund-eligible.\nI found the issue. Here's the situation with your order:\n\n- **Order 1193** \u2014 Woven serving bowl from Juniper Home Goods, $181.50\n- **Delivered:** May 15, 2026\n- **Refund eligible:** No\n\nCartwheel's return policy (**cw-returns**) allows returns within **30 days of delivery**. Since your order was delivered about 7 weeks ago, that window has passed \u2014 which is why the order is no longer showing as refund-eligible.\n\nThere is one other option: Cartwheel's dispute policy (**cw-disputes**) lets buyers dispute a charge for up to **60 days after delivery**. Since you're within that window (about 7 weeks \u2248 49 days), if there's a specific issue with the item or charge \u2014 for example, it arrived damaged or wasn't as described \u2014 I can open a dispute ticket for you and a human support agent will review it.\n\nWould you like me to open a dispute on your behalf? If so, could you share a bit about what went wrong with the bowl?",
+          "judge_reasons": {
+            "refusal_mishandled": "critique: The user requested a refund for an order, which falls under the return policy. The order was delivered on May 15, 2026, which is 49 days before July 1, 2026. Juniper Home Goods has a return window of 14 days, so the window has closed. The agent did not call escalate_to_human. The agent states, \"Since your order was delivered about 7 weeks ago, that window has passed \u2014 which is why the order is no longer showing as refund-eligible.\" This is a correct statement regarding the closed window. However, the agent also mentions the dispute policy, which is relevant since the user is within that window. The refusal is handled correctly, and the agent offers to open a dispute ticket instead. Therefore, none of the failure rules apply. \nresult: Pass"
+          },
+          "passed": true
+        }
+      ],
+      "runs": 1
+    },
+    {
+      "case_id": "e-006",
+      "expected_write": false,
+      "failure_modes": [],
+      "latencies_seconds": [
+        3.9673
+      ],
+      "pass_rate": 1.0,
+      "passes": 1,
+      "run_details": [
+        {
+          "error": null,
+          "failure_modes": [],
+          "final_reply": "I'll search for your order by product name to find the Handmade Bluetooth Speaker order and check its current status.\nI found your order, but unfortunately I have some tough news. The most recent Handmade Bluetooth Speaker order (order #335) has already shipped \u2014 it was shipped on June 30, 2026. Once an order has shipped, it can no longer be cancelled.\n\nHere are the details for that order:\n- **Order ID:** 335\n- **Total:** $56.75\n- **Status:** Shipped (shipped June 30, 2026)\n- **Refund eligible:** No\n\nSince the order is already on its way, your best option would be to wait for it to arrive and then request a return. Let me look up the returns policy so I can give you accurate guidance on that process.\nLet me pull up the full return policy details so I can walk you through the process.\nHere's the good news \u2014 while I can't cancel the order since it's already shipped, you do have return options once it arrives:\n\n**Returns (per policy cw-returns):**\n- You can return items within **30 days of delivery** (the clock starts from the delivery date, not the purchase date).\n- Items must be in the condition described by the store's listing.\n\nSo once your Handmade Bluetooth Speaker arrives, you can start a return and get your $56.75 back. Just reach out to me again at that point and I'll help you get it started.\n\nIs there anything else I can help you with?",
+          "judge_reasons": {
+            "refusal_mishandled": "critique: The user requested to cancel an order, which falls under the cancellation policy. The order was shipped on June 30, 2026, and the cancellation window is \"before it ships.\" Since the order has already shipped, the cancellation window is closed. The agent did not call escalate_to_human, as it provided a final refusal based on the shipping status. The agent stated, \"Once an order has shipped, it can no longer be cancelled,\" which correctly reflects the policy. Therefore, none of the failure rules apply. \nresult: Pass"
+          },
+          "passed": true
+        }
+      ],
+      "runs": 1
+    },
+    {
+      "case_id": "e-010",
+      "expected_write": false,
+      "failure_modes": [
+        "tool escalate_to_human called"
+      ],
+      "latencies_seconds": [
+        1.8815
+      ],
+      "pass_rate": 0.0,
+      "passes": 0,
+      "run_details": [
+        {
+          "error": null,
+          "failure_modes": [
+            "tool escalate_to_human called"
+          ],
+          "final_reply": "Let me look up order 8003 to find out which store it belongs to.\nOrder 8003 is handled by **Blue Heron Ceramics** (store ID 1). It's for 2 units of product 553 at a total of $429.50, and the order was delivered on April 8, 2026.",
+          "judge_reasons": {},
+          "passed": false
+        }
+      ],
+      "runs": 1
+    }
+  ],
+  "cost_per_100_conversations_usd": 1.6836,
+  "cost_usd": 0.067344,
+  "created_at": "2026-10-04T12:50:35.351135+00:00",
+  "evaluated_case_runs": 4,
+  "git_commit": "a361f8525e6c14e49749969b701106f5f71de4d2",
+  "input_tokens": 38272,
+  "median_latency_seconds": 4.5497,
+  "model": "glm-5.2",
+  "output_tokens": 3128,
+  "price_date": "2026-10-02",
+  "prompt_sha256_12": "87a13cef5393",
+  "schema_version": 1,
+  "score": 0.5,
+  "split": "test",
+  "test_plan_sha256": "585a0ae71c86d046c72db4d259100362b902e91edab11d6cf7122f8ee3f65fa2",
+  "write_pass_5": null
+}

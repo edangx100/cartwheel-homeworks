@@ -1,0 +1,112 @@
+{
+  "candidate": "final-version-model-3",
+  "case_count": 4,
+  "cases": [
+    {
+      "case_id": "e-003",
+      "expected_write": false,
+      "failure_modes": [],
+      "latencies_seconds": [
+        5.4611
+      ],
+      "pass_rate": 1.0,
+      "passes": 1,
+      "run_details": [
+        {
+          "error": null,
+          "failure_modes": [],
+          "final_reply": "I understand \u2014 sometimes these things slip through the cracks. Let me look up that order so I can check its refund eligibility before anything else.\nI found the order \u2014 it was delivered on April 9, 2026, and the refund eligibility check came back as **not eligible**. Let me pull up the return policy so I can give you the specifics on why.\nLet me also check if Wooden Whale Workshop has a store-specific override for the return window.\nLet me also check if Wooden Whale Workshop has its own policy page with a different return window.\nI'm sorry, but I'm not able to issue a refund on this order. Here's why:\n\n- Your order (Speckled Building Blocks from Wooden Whale Workshop) was delivered on **April 9, 2026**.\n- Cartwheel's return policy allows returns within **30 days of delivery** (cw-returns).\n- No store-specific override was found for Wooden Whale Workshop, so the platform default of 30 days applies.\n\nSince it's been about three months since delivery, the order is well past the return window. Unfortunately, this eligibility decision is final and I'm not able to override it or escalate it for an exception.\n\nI'm sorry I couldn't help more with this one. Is there anything else I can assist you with?",
+          "judge_reasons": {
+            "refusal_mishandled": "critique: The user requested a refund, so the cw-returns policy governs. The order was delivered on April 9, 2026, which is 83 days before July 1, 2026, meaning the 30-day return window has closed. The agent did not call escalate_to_human, and its final reply states, \"the order is well past the return window.\" This is accurate as the window is closed. The agent does not offer to escalate the matter, and the refusal is final. None of the rules apply.  \nresult: Pass"
+          },
+          "passed": true
+        }
+      ],
+      "runs": 1
+    },
+    {
+      "case_id": "e-005",
+      "expected_write": false,
+      "failure_modes": [],
+      "latencies_seconds": [
+        3.0934
+      ],
+      "pass_rate": 1.0,
+      "passes": 1,
+      "run_details": [
+        {
+          "error": null,
+          "failure_modes": [],
+          "final_reply": "Let me pull up your order details to check the item and its refund eligibility.\nI can see the order was delivered on May 15th, 2026 \u2014 about 7 weeks ago. The system reports it's not eligible for a refund. Let me look up the return policy so I can give you the specifics on why.\nThe default Cartwheel return window is 30 days, but stores can override that. Let me check whether Juniper Home Goods has a different return window.\nI'm sorry, but this order isn't eligible for a refund. Juniper Home Goods has a **14-day return window** from delivery, which overrides Cartwheel's default 30-day policy (per **store-juniper-home-goods-policy**). Since your order was delivered about 7 weeks ago, it's well outside that window.\n\nThis eligibility decision is final \u2014 there's no exception or review process available for orders past the return window. I'm sorry I can't do more here, but please let me know if there's anything else I can help with.",
+          "judge_reasons": {
+            "refusal_mishandled": "critique: The user requested a refund, so the return policy governs. The order was delivered on 2026-05-15, which is 47 days before 2026-07-01, outside the 14-day return window set by Juniper Home Goods. The agent did not call escalate_to_human, as the refusal was final. The agent stated, \"Juniper Home Goods has a 14-day return window from delivery, which overrides Cartwheel's default 30-day policy.\" This is accurate, and the refusal is correctly grounded in the applicable rule. No rule violations apply. \nresult: Pass"
+          },
+          "passed": true
+        }
+      ],
+      "runs": 1
+    },
+    {
+      "case_id": "e-006",
+      "expected_write": false,
+      "failure_modes": [],
+      "latencies_seconds": [
+        5.1579
+      ],
+      "pass_rate": 1.0,
+      "passes": 1,
+      "run_details": [
+        {
+          "error": null,
+          "failure_modes": [],
+          "final_reply": "Let me look up your order for the Handmade Bluetooth Speaker right away so I can check its status and see if it can be cancelled.\nI found your order \u2014 it's order #335 from Cascade Audio. Unfortunately, it has already shipped (it shipped on June 30, 2026), so I'm not able to cancel it at this point. Cancellations are only possible for orders that haven't shipped yet.\n\nLet me pull up the full order details so we can look at your options together.\nThe order has shipped but hasn't been delivered yet, so a refund isn't available at this moment either. Let me check the return policy so I can tell you what your options are once it arrives.\nLet me get the full return policy to check whether Cascade Audio has its own return window.\nLet me check whether Cascade Audio has its own return window that overrides the standard policy.\nHere's the full picture on your order:\n\n**Order #335 \u2014 Handmade Bluetooth Speaker \u2014 Cascade Audio**\n- **Status:** Shipped (shipped June 30, 2026, not yet delivered)\n- **Total:** $56.75\n\nUnfortunately, I'm not able to cancel this order because it has already shipped. Cancellations are only possible before an order ships.\n\n**Your options once it arrives:**\n\nYou can return the item within **30 days of delivery** (per the Cartwheel return policy, [cw-returns](#cw-returns), which Cascade Audio follows \u2014 [store-cascade-audio-policy](#store-cascade-audio-policy)). Just keep in mind that Cascade Audio charges a **restocking fee of up to 15%** on opened items.\n\nOnce the order is delivered, the refund eligibility check should pass and you can request a return/refund at that point. Is there anything else I can help with in the meantime?",
+          "judge_reasons": {
+            "refusal_mishandled": "critique: The user requested a cancellation, which is governed by the cancellation policy that states cancellations are only possible before an order ships. The order shipped on June 30, 2026, which is 1 day before the evaluation date of July 1, 2026, meaning the cancellation window is closed. The agent did not call escalate_to_human, as it provided a final refusal based on the shipping status. The agent stated, \"Unfortunately, I'm not able to cancel this order because it has already shipped. Cancellations are only possible before an order ships.\" This aligns with the cancellation policy. Therefore, none of the failure rules apply. \nresult: Pass"
+          },
+          "passed": true
+        }
+      ],
+      "runs": 1
+    },
+    {
+      "case_id": "e-010",
+      "expected_write": false,
+      "failure_modes": [
+        "tool escalate_to_human called"
+      ],
+      "latencies_seconds": [
+        1.258
+      ],
+      "pass_rate": 0.0,
+      "passes": 0,
+      "run_details": [
+        {
+          "error": null,
+          "failure_modes": [
+            "tool escalate_to_human called"
+          ],
+          "final_reply": "I'll look up order 8003 to find out which store handles it.\nOrder 8003 (Portable Jam Trio) is handled by **Blue Heron Ceramics** (store ID 1). The order has been delivered and contains 2 units for a total of $429.50.",
+          "judge_reasons": {},
+          "passed": false
+        }
+      ],
+      "runs": 1
+    }
+  ],
+  "cost_per_100_conversations_usd": 1.54518,
+  "cost_usd": 0.061807,
+  "created_at": "2026-10-04T12:50:58.927286+00:00",
+  "evaluated_case_runs": 4,
+  "git_commit": "6c455c7ef6a6b6b3e19d980a9f3e78a442c6839a",
+  "input_tokens": 37262,
+  "median_latency_seconds": 4.1257,
+  "model": "glm-5.2",
+  "output_tokens": 2191,
+  "price_date": "2026-10-02",
+  "prompt_sha256_12": "67403e66ac0d",
+  "schema_version": 1,
+  "score": 0.75,
+  "split": "test",
+  "test_plan_sha256": "585a0ae71c86d046c72db4d259100362b902e91edab11d6cf7122f8ee3f65fa2",
+  "write_pass_5": null
+}
