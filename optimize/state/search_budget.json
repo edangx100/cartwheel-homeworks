@@ -1,0 +1,16 @@
+{
+  "maximum_calls": 150,
+  "reservations": [
+    {
+      "calls": 8,
+      "label": "loop-1-delivery-days",
+      "reserved_at": "2026-10-04T12:27:46.485880+00:00"
+    },
+    {
+      "calls": 8,
+      "label": "loop-2-plain-refusal",
+      "reserved_at": "2026-10-04T12:34:18.797185+00:00"
+    }
+  ],
+  "used_calls": 16
+}

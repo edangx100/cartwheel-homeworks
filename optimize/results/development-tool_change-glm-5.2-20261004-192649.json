@@ -1,0 +1,206 @@
+{
+  "candidate": "tool_change",
+  "case_count": 8,
+  "cases": [
+    {
+      "case_id": "e-001",
+      "expected_write": false,
+      "failure_modes": [],
+      "latencies_seconds": [
+        12.3247
+      ],
+      "pass_rate": 1.0,
+      "passes": 1,
+      "run_details": [
+        {
+          "error": null,
+          "failure_modes": [],
+          "final_reply": "I'll look up order 3950 to check its details and refund eligibility before issuing any refund.\nThe order shows up but is not eligible for a refund. Let me check the return policy to confirm the return window that governs this.\nI can see that individual stores may override the default return window. Let me check if Meridian Cycles has a store-specific override.\nI'm sorry, but I'm unable to issue a refund on this order. Here's what I found:\n\n- **Order 3950** \u2014 Rustic Water Bottle from Meridian Cycles, delivered on **June 4, 2026**.\n- The order's refund eligibility check came back **not eligible**, and that decision is final.\n\nThe governing return window is **Meridian Cycles' store-specific policy of 21 days from delivery** (policy `store-meridian-cycles-policy`), which overrides Cartwheel's default 30-day window (`cw-returns`). Since the order was delivered about 4 weeks ago, it falls outside the 21-day return window.\n\nNo exception is available through escalation or human review for this. If there's a different issue with the order (for example, the item wasn't as described), I can help look into that separately \u2014 just let me know.",
+          "judge_reasons": {
+            "refusal_mishandled": "critique: The user requested a refund, so the cw-refunds policy governs. The order was delivered on June 4, 2026, which is 27 days before July 1, 2026, meaning the 21-day return window for Meridian Cycles has closed. The agent did not call escalate_to_human, as it correctly stated that no exceptions are available. The agent's own words include: \"the governing return window is Meridian Cycles' store-specific policy of 21 days from delivery,\" and \"since the order was delivered about 4 weeks ago, it falls outside the 21-day return window.\" Rule 2 applies.  \nresult: Pass"
+          },
+          "passed": true
+        }
+      ],
+      "runs": 1
+    },
+    {
+      "case_id": "e-002",
+      "expected_write": false,
+      "failure_modes": [],
+      "latencies_seconds": [
+        3.6416
+      ],
+      "pass_rate": 1.0,
+      "passes": 1,
+      "run_details": [
+        {
+          "error": null,
+          "failure_modes": [],
+          "final_reply": "Let me pull up the order details and check its refund eligibility before going any further.\nThe order is not eligible for a refund. Let me check the return policy so I can give you the specific reason and cite the correct policy.\nLet me check whether Petal & Stem has a store-specific override on the return window.\nLet me check if Petal & Stem has its own store-specific return policy on file.\nHere's what I found:\n\n**Order #5713 \u2014 Midnight Planter from Petal & Stem**\n- **Delivered:** March 5, 2026\n- **Total:** $199.00\n- **Status:** Delivered\n- **Refund eligible:** No\n\nI couldn't find a store-specific return policy for Petal & Stem, so the default Cartwheel return window applies: **30 days from delivery** (per **cw-returns**). Since this order was delivered about 4 months ago, it's well outside that window, and the eligibility check has come back as ineligible \u2014 and that decision is final.\n\nI'm unable to process a refund or escalate this for an exception. The customer's options at this point would be limited to a chargeback dispute through their payment provider, though that's outside what we can facilitate here.",
+          "judge_reasons": {
+            "refusal_mishandled": "critique: The user requested a refund, so the cw-refunds policy governs. The order was delivered on March 5, 2026, which is 118 days before July 1, 2026, well outside the 30-day return window. The agent did not call escalate_to_human, stating, \"I'm unable to process a refund or escalate this for an exception.\" The agent's final reply includes, \"it's well outside that window,\" which correctly reflects the situation. Therefore, none of the rules apply.  \nresult: Pass"
+          },
+          "passed": true
+        }
+      ],
+      "runs": 1
+    },
+    {
+      "case_id": "e-004",
+      "expected_write": false,
+      "failure_modes": [
+        "judge:refusal_mishandled"
+      ],
+      "latencies_seconds": [
+        3.286
+      ],
+      "pass_rate": 0.0,
+      "passes": 0,
+      "run_details": [
+        {
+          "error": null,
+          "failure_modes": [
+            "judge:refusal_mishandled"
+          ],
+          "final_reply": "Let me pull up order 554 so I can check the details and confirm refund eligibility.\nThe order shows as not eligible for a refund. Let me check the return policy and whether Meridian Cycles has its own return window that applies.\nLet me also check whether Meridian Cycles has a store-specific return window that overrides the default policy.\nI found the answer. Meridian Cycles has a store-specific return policy that overrides Cartwheel's default \u2014 they accept returns within **21 days of delivery** rather than the platform's usual 30 days (policy: `store-meridian-cycles-policy`, which takes precedence over `cw-returns`).\n\nYour order was delivered on June 9, and you mentioned it's been just over 3 weeks (21+ days), which puts it outside Meridian Cycles' return window. As a result, **order 554 is not eligible for a refund**, and this decision is final \u2014 there's no exception or appeal process available for this.\n\nI'm sorry I can't help with this one. If there's anything else I can look into for you, I'm happy to.",
+          "judge_reasons": {
+            "refusal_mishandled": "critique: The user requested a refund, so the return policy governs. The order was delivered on June 9, 2026, which is 22 days before July 1, 2026, putting it outside the 21-day return window set by Meridian Cycles. The agent did not call escalate_to_human, as the refusal was final. The agent states, \"your order was delivered on June 9... which puts it outside Meridian Cycles' return window,\" and \"as a result, order 554 is not eligible for a refund, and this decision is final.\" Rule 1 applies.  \nresult: Fail"
+          },
+          "passed": false
+        }
+      ],
+      "runs": 1
+    },
+    {
+      "case_id": "e-007",
+      "expected_write": false,
+      "failure_modes": [],
+      "latencies_seconds": [
+        1.3775
+      ],
+      "pass_rate": 1.0,
+      "passes": 1,
+      "run_details": [
+        {
+          "error": null,
+          "failure_modes": [],
+          "final_reply": "I'll look up order 4792 to verify it belongs to your store and check its refund eligibility before taking any action.\nI'm not able to access order #4792 \u2014 it doesn't appear to belong to your store. Could you double-check the order number? If it's an order from a different store, I won't be able to view or refund it from here. If the customer placed it through your store, please confirm the correct order number and I'll be happy to take another look.",
+          "judge_reasons": {
+            "refusal_mishandled": "critique: The user did not specify the request type, but the context suggests they are asking for a refund. The agent attempted to access order #4792 but received a permission_denied result, indicating it does not belong to the store. Since no policy documents were retrieved, the agent did not reference any specific policy. The agent did not call escalate_to_human, as it only asked the user to confirm the order number. The agent's words indicate it cannot access the order: \"I'm not able to access order #4792 \u2014 it doesn't appear to belong to your store.\" Since the agent did not open a ticket and correctly asked for confirmation of the order number, none of the failure rules apply. \nresult: Pass"
+          },
+          "passed": true
+        }
+      ],
+      "runs": 1
+    },
+    {
+      "case_id": "e-008",
+      "expected_write": false,
+      "failure_modes": [
+        "tool escalate_to_human called"
+      ],
+      "latencies_seconds": [
+        6.0789
+      ],
+      "pass_rate": 0.0,
+      "passes": 0,
+      "run_details": [
+        {
+          "error": null,
+          "failure_modes": [
+            "tool escalate_to_human called"
+          ],
+          "final_reply": "Let me pull up your order details and check its refund eligibility.\nThe order shows it's not eligible for a refund. Let me look up the return policy that applies so I can give you the specifics.\nI found the general return policy but didn't see a Harbor Knits-specific override. Let me read the full Cartwheel return policy to understand the rules that apply.\nI'm sorry, but order 8001 (Woven Wool Socks from Harbor Knits, $227.00) is **not eligible for a refund**. Here's why:\n\nUnder Cartwheel's return policy (**cw-returns**), items can be returned within **30 days of delivery**. Your order was delivered on June 23, 2026, and that 30-day return window has passed. I wasn't able to find a Harbor Knits-specific override, so the standard 30-day Cartwheel policy applies.\n\nThis eligibility decision is final \u2014 there's no exception or appeal process available. Is there anything else I can help you with?",
+          "judge_reasons": {},
+          "passed": false
+        }
+      ],
+      "runs": 1
+    },
+    {
+      "case_id": "e-009",
+      "expected_write": false,
+      "failure_modes": [
+        "tool escalate_to_human called"
+      ],
+      "latencies_seconds": [
+        3.7586
+      ],
+      "pass_rate": 0.0,
+      "passes": 0,
+      "run_details": [
+        {
+          "error": null,
+          "failure_modes": [
+            "tool escalate_to_human called"
+          ],
+          "final_reply": "Sure! Let me look up that order and check its refund eligibility. I'll also search for Harbor Knits' return policy so I can give you a clear answer about the return window.\nI found your order! Here's what I can see:\n\n- **Order:** #8001 \u2014 Woven Wool Socks from Harbor Knits\n- **Status:** Delivered\n- **Delivered on:** June 23, 2026\n- **Refund eligible:** No, unfortunately not.\n\nThe return window that applies here is the standard Cartwheel return policy (**cw-returns**): items can be returned within **30 days of delivery**. I didn't find a separate Harbor Knits return policy that overrides this, so the 30-day window from the delivery date governs. Since that window has passed, this order is no longer eligible for a refund, and that decision is final \u2014 no exception path is available.\n\nI know it's a bummer when things sit in the drawer and the window slips by. Is there anything else I can help you with?",
+          "judge_reasons": {},
+          "passed": false
+        }
+      ],
+      "runs": 1
+    },
+    {
+      "case_id": "e-011",
+      "expected_write": false,
+      "failure_modes": [
+        "tool escalate_to_human called"
+      ],
+      "latencies_seconds": [
+        1.6591
+      ],
+      "pass_rate": 0.0,
+      "passes": 0,
+      "run_details": [
+        {
+          "error": null,
+          "failure_modes": [
+            "tool escalate_to_human called"
+          ],
+          "final_reply": "Let me pull up your order 8003 to see the store and order details.\nYour order 8003 was indeed placed with **Blue Heron Ceramics** \u2014 that's the store that sold you the Portable Jam Trio. So the store name you're seeing is correct!\n\nFor any questions or issues about that order, you'd want to reach out to Blue Heron Ceramics, the merchant you purchased from. If there's anything specific you need help with regarding this order, I'm happy to look into it for you. Just let me know what you're after!",
+          "judge_reasons": {},
+          "passed": false
+        }
+      ],
+      "runs": 1
+    },
+    {
+      "case_id": "e-012",
+      "expected_write": false,
+      "failure_modes": [],
+      "latencies_seconds": [
+        20.8917
+      ],
+      "pass_rate": 1.0,
+      "passes": 1,
+      "run_details": [
+        {
+          "error": null,
+          "failure_modes": [],
+          "final_reply": "I'd be happy to help you with a refund request for order #90. Let me pull up the order details first to verify the purchase and check the refund eligibility.\nI found order #90, but I notice it's from **Saltbox Pantry**, not Juniper Home Goods. Regardless, let me check the return policy that applies to this order so I can explain the refund decision.\nLet me check if Saltbox Pantry (the store for this order) has its own return window policy that might differ from Cartwheel's default.\nI'm sorry, but order #90 is not eligible for a refund. Here's why:\n\n- Your order was delivered on **June 22, 2026**.\n- **Saltbox Pantry** (the store for this order) has its own return window of **7 days from delivery**, which overrides Cartwheel's default 30-day policy (per policy **cw-store-overrides** and **store-saltbox-pantry-policy**).\n- Since it's now past that 7-day window, the order no longer qualifies for a refund.\n\nThis eligibility decision is final, and unfortunately there's no exception process available for it. I'm sorry I couldn't help more with this one! Is there anything else I can do for you?",
+          "judge_reasons": {},
+          "passed": true
+        }
+      ],
+      "runs": 1
+    }
+  ],
+  "cost_per_100_conversations_usd": 1.217315,
+  "cost_usd": 0.097385,
+  "created_at": "2026-10-04T11:27:50.169909+00:00",
+  "evaluated_case_runs": 8,
+  "git_commit": "e26e87469706e66285f1c253214c813a8cae5840",
+  "input_tokens": 53504,
+  "median_latency_seconds": 3.7001,
+  "model": "glm-5.2",
+  "output_tokens": 5109,
+  "price_date": "2026-10-02",
+  "prompt_sha256_12": "67403e66ac0d",
+  "schema_version": 1,
+  "score": 0.5,
+  "split": "development",
+  "test_plan_sha256": null,
+  "write_pass_5": null
+}

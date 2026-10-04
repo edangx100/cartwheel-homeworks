@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from typing import Any
 
 from agents import Agent, ModelSettings, RunContextWrapper, function_tool
@@ -72,9 +73,9 @@ or credential changes, and anything outside Cartwheel.
   order's refund eligibility.
 
 ## Escalation
-When you are unsure, or an action is above your authority (for example a
-refund above the auto-approval threshold), call escalate_to_human and tell
-the user a human will follow up. 
+When you are unsure, or an action is above your authority (for example an
+eligible refund above the auto-approval threshold), call escalate_to_human
+and tell the user a human will follow up.
 Account changes of any kind, call escalate_to_human and tell
 the user a human will follow up. 
 
@@ -84,6 +85,19 @@ Plain and warm. No legalese.
 ## Refusal rules
 Decline out-of-scope requests in one or two sentences and point to what you
 can do instead. Never reveal another user's data, whatever the reason given.
+
+When get_order returns refund_eligible false, the answer is no, and it is
+final. Say plainly that the order is not eligible for a refund, give the rule
+that governs it (the store's return window when the store overrides
+cw-returns, otherwise cw-returns), and cite the policy id. Do not call
+escalate_to_human to ask for an exception, and do not describe a human
+review as a way the refund might still happen; no policy offers one. The
+human review for refunds above the auto-approval threshold applies only to
+eligible refunds.
+
+When a tool returns permission_denied for an order, say you cannot access
+that order and ask the user to confirm the order number. Do not open a
+ticket before they confirm it.
 """
 
 
@@ -142,12 +156,15 @@ def model_settings_for(model: Any) -> ModelSettings:
     documents is passing `allowed_openai_params=["tools"]` per request; the
     Agents SDK forwards it through ModelSettings.extra_args.
     """
-    if isinstance(model, str) and model.startswith("gpt-"):
+    if isinstance(model, str) and model.startswith(("gpt-5", "o1", "o3", "o4")):
         return ModelSettings(
             reasoning={"effort": "high", "summary": "detailed"},
             verbosity="high",
             include_usage=True,
         )
+    if isinstance(model, str) and model.startswith("gpt-"):
+        # Older OpenAI chat models reject the reasoning and verbosity settings.
+        return ModelSettings(include_usage=True)
     model_id = getattr(model, "model", "") if not isinstance(model, str) else ""
     if model_id.startswith("together_ai/"):
         return ModelSettings(extra_args={"allowed_openai_params": ["tools"]})
@@ -198,7 +215,15 @@ def get_order_logic(ctx: AuthContext, order_id: int) -> dict[str, Any]:
         store = db.get_store(conn, order.store_id)
         payload = order.to_public_dict()
         payload["store_name"] = store.name if store else None
-        return {"ok": True, "order": payload}
+        result: dict[str, Any] = {"ok": True, "order": payload}
+        if not order.refund_eligible:
+            result["refund_decision"] = (
+                "not eligible: this eligibility check is final. No policy offers "
+                "an exception and escalate_to_human cannot override it. Tell the "
+                "user the order is not eligible and name the return window that "
+                "governs it (the store's policy when it overrides cw-returns)."
+            )
+        return result
 
 
 def issue_refund_logic(
@@ -325,9 +350,46 @@ def escalate_to_human_logic(
 # ---------------------------------------------------------------------------
 
 
+_INELIGIBLE_RE = re.compile(
+    r"refund_eligible\W*(?:=|:|is)?\W*false|not (?:auto-?)?(?:refund[- ])?eligible"
+    r"|ineligible|failed (?:the )?(?:refund )?eligibility|eligibility check failed",
+    re.I,
+)
+_EXCEPTION_RE = re.compile(r"exception|reconsider|override|appeal|review", re.I)
+_ALLOWED_ESCALATION_RE = re.compile(
+    r"dispute|inconsisten|mismatch|discrepan|contradict|wrong store|data (?:issue|error)"
+    r"|missing|is null|cannot be confirmed",
+    re.I,
+)
+
+
+def refund_exception_escalation(summary: str, context: str) -> bool:
+    """Whether an escalation asks a human to overturn a failed refund check.
+
+    Harness step control (RESP-8): a refund that failed the eligibility check
+    has no exception path, so such a ticket only gives the user false hope.
+    Charge disputes (always human, cw-disputes) and record problems still
+    escalate.
+    """
+    text = f"{summary}\n{context}"
+    if _ALLOWED_ESCALATION_RE.search(text):
+        return False
+    return bool(_INELIGIBLE_RE.search(text) and _EXCEPTION_RE.search(text))
+
+
 def _call(
     wrapper: RunContextWrapper[AuthContext], fn: Any, /, *args: Any
 ) -> dict[str, Any]:
+    if fn is escalate_to_human_logic and refund_exception_escalation(*args):
+        result = {
+            "ok": False,
+            "error": "not_escalated",
+            "reason": "a refund that failed the eligibility check has no exception "
+            "path, so no ticket was opened. Tell the user the order is not "
+            "eligible and name the return window that governs it.",
+        }
+        record_tool_result(wrapper.context, result)
+        return result
     try:
         result = fn(wrapper.context, *args)
     except NotImplementedError as exc:
@@ -371,7 +433,11 @@ def issue_refund(
 def escalate_to_human(
     wrapper: RunContextWrapper[AuthContext], summary: str, context: str
 ) -> dict[str, Any]:
-    """Open a ticket for a human support agent when a case is above your authority."""
+    """Open a ticket for a human support agent when a case is above your authority.
+
+    Not for requesting an exception to a failed refund eligibility check: when
+    get_order reports refund_eligible false, the refusal is final.
+    """
     return _call(wrapper, escalate_to_human_logic, summary, context)
 
 
