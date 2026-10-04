@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from typing import Any
 
 from agents import Agent, ModelSettings, RunContextWrapper, function_tool
@@ -349,9 +350,46 @@ def escalate_to_human_logic(
 # ---------------------------------------------------------------------------
 
 
+_INELIGIBLE_RE = re.compile(
+    r"refund_eligible\W*(?:=|:|is)?\W*false|not (?:auto-?)?(?:refund[- ])?eligible"
+    r"|ineligible|failed (?:the )?(?:refund )?eligibility|eligibility check failed",
+    re.I,
+)
+_EXCEPTION_RE = re.compile(r"exception|reconsider|override|appeal|review", re.I)
+_ALLOWED_ESCALATION_RE = re.compile(
+    r"dispute|inconsisten|mismatch|discrepan|contradict|wrong store|data (?:issue|error)"
+    r"|missing|is null|cannot be confirmed",
+    re.I,
+)
+
+
+def refund_exception_escalation(summary: str, context: str) -> bool:
+    """Whether an escalation asks a human to overturn a failed refund check.
+
+    Harness step control (RESP-8): a refund that failed the eligibility check
+    has no exception path, so such a ticket only gives the user false hope.
+    Charge disputes (always human, cw-disputes) and record problems still
+    escalate.
+    """
+    text = f"{summary}\n{context}"
+    if _ALLOWED_ESCALATION_RE.search(text):
+        return False
+    return bool(_INELIGIBLE_RE.search(text) and _EXCEPTION_RE.search(text))
+
+
 def _call(
     wrapper: RunContextWrapper[AuthContext], fn: Any, /, *args: Any
 ) -> dict[str, Any]:
+    if fn is escalate_to_human_logic and refund_exception_escalation(*args):
+        result = {
+            "ok": False,
+            "error": "not_escalated",
+            "reason": "a refund that failed the eligibility check has no exception "
+            "path, so no ticket was opened. Tell the user the order is not "
+            "eligible and name the return window that governs it.",
+        }
+        record_tool_result(wrapper.context, result)
+        return result
     try:
         result = fn(wrapper.context, *args)
     except NotImplementedError as exc:
