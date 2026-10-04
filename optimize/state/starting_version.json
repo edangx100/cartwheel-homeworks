@@ -1,0 +1,18 @@
+{
+  "comparison_models": [
+    "gpt-5.5",
+    "claude-opus-4-6",
+    "glm-5.2"
+  ],
+  "created_at": "2026-10-04T07:44:17.909172+00:00",
+  "development_model": "glm-5.2",
+  "development_result": "/home/ed/maven/cartwheel-homeworks/optimize/results/latest-development.json",
+  "development_score": 0.375,
+  "git_commit": "a361f8525e6c14e49749969b701106f5f71de4d2",
+  "grader_sha256": "a6e7eb993559e77d234e9877e94e97194469d59f3f6ebc0dafb8d9393b4cea66",
+  "kind": "starting",
+  "model_selection_sha256": "8702258b84c44623dd94ebc28808d34df4f8ac40775231d5ea7b359f7f3a1ca4",
+  "prompt_sha256_12": "87a13cef5393",
+  "split_membership_sha256": "8ebfe190ef30f042a5b9a3354e9872724e53adaaa7cde38f6b134818c3eae3a8",
+  "write_pass_5": null
+}
