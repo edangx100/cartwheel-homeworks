@@ -17,7 +17,6 @@ The mapping from concept to SDK primitive, stated once: the loop is
 from __future__ import annotations
 
 import hashlib
-from datetime import date
 import json
 import re
 from typing import Any
@@ -217,13 +216,6 @@ def get_order_logic(ctx: AuthContext, order_id: int) -> dict[str, Any]:
         payload = order.to_public_dict()
         payload["store_name"] = store.name if store else None
         result: dict[str, Any] = {"ok": True, "order": payload}
-        # RESP-9: give the agent today's date and the elapsed days from a tool,
-        # so window claims rest on two tool dates instead of the user's guess.
-        as_of = db.world_asof(conn)
-        result["as_of"] = as_of.isoformat()
-        if payload.get("delivered_at"):
-            delivered = date.fromisoformat(str(payload["delivered_at"])[:10])
-            result["days_since_delivery"] = (as_of - delivered).days
         if not order.refund_eligible:
             result["refund_decision"] = (
                 "not eligible: this eligibility check is final. No policy offers "
