@@ -468,5 +468,10 @@ def judge_reply_with_text(judge: dict[str, Any], reply: str, docs: str) -> tuple
     match = re.search(r'"answer"\s*:\s*"(pass|fail)"', text)
     if match:
         return match.group(1), text
+    # Module 2 judges end with a "result: Pass" or "result: Fail" line. Read
+    # that line, because the critique above it may use words like "failure".
+    results = re.findall(r"^\W*result\W*:\W*(pass|fail)\b", text, re.I | re.M)
+    if results:
+        return results[-1].lower(), text
     lowered = text.lower()
     return ("fail" if "fail" in lowered else "pass"), text
